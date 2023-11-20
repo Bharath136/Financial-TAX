@@ -1,0 +1,150 @@
+.tax-interview-container {
+    margin-top: 10vh;
+    height: 90vh;
+    padding: 1rem;
+    width: 100%;
+    text-align: start;
+    overflow: auto;
+    background-color: var(--main-background);
+}
+
+
+.tax-interview-container h1 {
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+.tax-description {
+    font-size: 18px;
+    color: var(--cc-text);
+    margin-bottom: 30px;
+}
+
+.cta-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.upload-button {
+    background-color: var(--accent-background);
+    color: var(--button-text);
+    height: 56px;
+    font-size: 20px;
+    border: none;
+    padding: 0 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+    background-color: var(--cc-button-hover);
+    color: var(--cc-button-text);
+}
+
+.drag-drop-area {
+    border: 4px dashed var(--border);
+    padding: 30px;
+    width: 100%;
+    margin: 30px 0;
+    border-radius: 10px;
+    font-size: 22px;
+    color: #555;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+@media screen and (max-width:768px) {
+    .drag-drop-area {
+            width: 100%;
+        }
+}
+
+.drag-drop-icon {
+    font-size: 48px;
+    color: #3498db;
+    margin-bottom: 20px;
+}
+
+.selected-file {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #555;
+}
+
+
+@media (max-width: 768px) {
+    .tax-interview-container {
+        max-width: 100%;
+        padding: 20px;
+    }
+
+    .drag-drop-area {
+        padding: 20px;
+    }
+
+    .upload-button {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+}
+
+.document-image{
+    height: 120px;
+}
+@media screen and (max-width:768px) {
+    .document-image{
+        height: 80px;
+    }
+}
+
+.display-image{
+    height: 150px;
+}
+
+
+
+
+.document-table-container {
+    margin-top: 20px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.document-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.document-table th,
+.document-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.document-table th {
+    background-color: #f2f2f2;
+}
+
+.btn-light {
+    background-color: #f8f9fa;
+    color: #212529;
+    border: 1px solid #ced4da;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-light:hover {
+    background-color: #e2e6ea;
+}
+
+

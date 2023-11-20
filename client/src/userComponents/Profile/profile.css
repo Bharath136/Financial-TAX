@@ -1,0 +1,110 @@
+/* profile.css */
+
+/* Default styles */
+
+.profile-container {
+    padding: 20px;
+    margin-top: 10vh;
+    height: 90vh;
+    overflow-y: auto;
+    background-color: var(--main-background);
+    width: 100%;
+}
+
+.profile-container h2 {
+    margin-bottom: 20px;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.dashboard-item {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 4px 4px 0px 0px var(--accent-background);
+}
+
+/* .dashboard-item-2 {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+} */
+
+.dashboard-icons{
+    color:var(--accent-background)
+}
+
+.dashboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    text-align: left;
+}
+
+.dashboard-item-2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    text-align: left;
+}
+
+.dashboard-item-2 .dashboard-icon {
+    margin-right: 20px;
+    /* Adjust the margin as needed */
+}
+
+.dashboard-icon {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+}
+
+.dashboard-text {
+    margin-bottom: 10px;
+}
+
+.dashboard-bar {
+    height: 10px;
+    background-color: #4caf50;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+
+.current-user {
+    color: #007bff;
+}
+
+.shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive styles */
+
+@media (max-width: 768px) {
+
+    .dashboard-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dashboard-item,
+    .dashboard-item-2 {
+        width: 100%;
+    }
+
+    .dashboard-item-2 .dashboard-icon {
+        margin-right: 0;
+        /* Adjust the margin for the icon in dashboard-item-2 as needed */
+    }
+}

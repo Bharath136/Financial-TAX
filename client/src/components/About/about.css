@@ -1,0 +1,14 @@
+.about-container{
+    margin-top: 10vh;
+    min-height: 90vh;
+    display: flex;
+    padding: 10px;
+}
+
+.section-title {
+    text-decoration: underline;
+}
+
+p{
+    font-size: 18px;
+}

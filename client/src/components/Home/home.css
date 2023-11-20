@@ -1,0 +1,33 @@
+.home-container{
+    margin-top: 10vh;
+    min-height: 90vh;
+}
+
+/* Home.css */
+.slick-slider {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.slick-slide img {
+    margin: 0 auto;
+}
+
+.image-slide{
+    max-height: 550px;
+}
+
+.why-choose-us-container{
+    padding: 30px;
+}
+
+h3{
+    color: #faae0b;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+/* .img-fluid:hover{
+    transform:matrix(2)
+} */

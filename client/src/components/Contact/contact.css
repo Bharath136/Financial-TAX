@@ -1,0 +1,46 @@
+.contact-us-container{
+    margin-top: 10vh;
+    min-height: 90vh;
+    display: flex;
+    padding: 10px;
+}
+
+.section-title{
+    text-decoration: underline;
+    font-family: 'Bree Serif';
+}
+
+.button{
+    padding: 10px 20px;
+    background-color: #f8be42;
+    color: white;
+    font-weight: bolder;
+}
+
+.content{
+    padding: 0 40px;
+    font-size: 18px;
+}
+
+@media screen and (max-width:978px) {
+    .content {
+        padding: 0 20px;
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .content{
+        padding: 0;
+    }
+}
+
+.form-control{
+    padding: 12px;
+}
+
+.span-text{
+    font-weight: bold;
+    font-size: 18px;
+    font-family: 'Bree Serif';
+}

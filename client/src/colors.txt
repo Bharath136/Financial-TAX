@@ -1,0 +1,7 @@
+#c972f7,
+grey,
+black,
+white,
+dark bg,
+#f8be42 bg,
+#faae0b text,

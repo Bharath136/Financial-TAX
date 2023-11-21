@@ -10,8 +10,8 @@ const createCustomerNewTaxComment = async (req, res) => {
         financial_year,
         financial_quarter,
         financial_month,
-        comment_status
     } = req.body;
+    console.log(req.body);
 
     try {
         const commentQuery = `
@@ -27,7 +27,7 @@ const createCustomerNewTaxComment = async (req, res) => {
             financial_year,
             financial_quarter,
             financial_month,
-            comment_status,
+            'Pending', // Assign 'Pending' to comment_status
             new Date(),
             new Date(),
         ];
@@ -39,10 +39,11 @@ const createCustomerNewTaxComment = async (req, res) => {
 
         res.status(201).json({ message: 'Comment created successfully.', document_id: createdDocumentId });
     } catch (error) {
-        console.error(error);
+        console.error('Error adding comment:', error);
         res.status(500).json({ error: 'Error Adding Comment' });
     }
-}
+};
+
 
 
 // Get customer all comments

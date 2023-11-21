@@ -114,18 +114,20 @@ const TaxInterview = () => {
             <div className='d-flex'>
             <Sidebar/>
             <div className="tax-interview-container" onDragOver={handleDragOver} onDrop={handleDrop}>
-                <h1>Tax Interview</h1>
+                <h1>Upload Tax Document</h1>
                 <p className='tax-description'>
                     Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
                 </p>
                 <div className='cta-section shadow'>
-                    <form onSubmit={handleUpload} encType="multipart/form-data" className='form-container'>
+                    <h1>Enter Tax Document Details Below</h1>
+                    <form onSubmit={handleUpload} encType="multipart/form-data" className='form-container document-form-container p-md-4'>
+                        
                         <div className='d-flex flex-column flex-md-row'>
                             {initialFormFields.map((field, index) => (
                                 <div className="mb-2 d-flex flex-column m-2" key={index}>
                                     <div className='d-flex justify-content-between'>
                                         <label htmlFor={field.name} className="form-label text-dark m-0">
-                                            {field.label}
+                                            <strong>{field.label}</strong>
                                         </label>
                                     </div>
                                     <input
@@ -148,12 +150,14 @@ const TaxInterview = () => {
                             onClick={() => document.querySelector('input[type="file"]').click()}
                         >
                             <p>Drag & Drop or Click to Upload</p>
-                            <img src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" className="document-image img-fluid" />
+                            <img src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" className="document-image" />
                         </div>
                         {errorMsg && <p className='text-danger'>{errorMsg}</p>}
-                        <button className='btn upload-button' type='submit'>
-                            Upload Tax Documents
-                        </button>
+                        <div className='w-100 text-center'>
+                            <button className='upload-button' type='submit'>
+                                Upload Tax Documents
+                            </button>
+                        </div>
                     </form>
 
                     {documents.length > 0 &&
@@ -166,7 +170,7 @@ const TaxInterview = () => {
                                         <th>Date & Time</th>
                                         <th>Assigned Status</th>
                                         <th>Review Status</th>
-                                        <th></th>
+                                        <th>Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody>

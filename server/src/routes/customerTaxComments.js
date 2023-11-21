@@ -5,14 +5,14 @@ const router = express.Router();
 const { createCustomerNewTaxComment, getCustomerAllComments, updateCustomerComments, getCustomerCommentById, deleteCustomerCommentById } = require('../controllers/customerTaxComments')
 
 
-router.post('/create',createCustomerNewTaxComment)
+router.post('/create',authenticate(['CUSTOMER']), createCustomerNewTaxComment)
 
-router.get('/', getCustomerAllComments)
+router.get('/',authenticate(['CUSTOMER', 'STAFF', 'ADMIN']), getCustomerAllComments)
 
 // Authorized user api
 router.route("/:id")
-    .get(getCustomerCommentById)
-    .put( updateCustomerComments)
-    .delete( deleteCustomerCommentById);
+    .get(authenticate(['CUSTOMER', 'STAFF', 'ADMIN']),getCustomerCommentById)
+    .put(authenticate(['CUSTOMER']), updateCustomerComments)
+    .delete(authenticate(['CUSTOMER', 'ADMIN']), deleteCustomerCommentById);
 
 module.exports = router

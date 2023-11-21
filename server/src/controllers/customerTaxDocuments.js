@@ -51,7 +51,7 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
             financial_month,
             assigned_status,
             review_status,
-            2,  // You may want to set the default value for assigned_staff
+            21,  // You may want to set the default value for assigned_staff
             updated_by,
             updated_by,  // Updated_by was missing a closing quote
             new Date(),
@@ -132,11 +132,14 @@ const updateCustomerDocument = async (req, res) => {
 const updateDocumentAssignedStatus = async (req, res) => {
     const id = req.params.id
 
+
     const {
         user_id,
         assigned_status,
         assigned_staff
     } = req.body
+
+    console.log(req.body)
 
     const updatedOn = new Date().toISOString();
 

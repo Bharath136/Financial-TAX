@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+
 import './sidebar.css';
 import {
     MdPayments,
     MdDarkMode,
     MdOutlineDarkMode,
+    MdDashboardCustomize
 } from 'react-icons/md';
-import {
-    FaLaptopHouse,
-    FaCloudUploadAlt,
-} from 'react-icons/fa';
 import {
     BiSolidArrowToLeft,
     BiSolidArrowToRight,
@@ -17,27 +15,28 @@ import {
 import { HiDocumentDuplicate } from 'react-icons/hi';
 import { TbLogout2 } from 'react-icons/tb';
 import {
-    FaHome,
     FaUser,
     FaFileAlt,
     FaCheck,
     FaCalculator,
     FaCog,
+    FaCloudUploadAlt,
+    FaComments
 } from 'react-icons/fa';
 import AuthContext from '../../AuthContext/AuthContext';
 
 const menuItems = [
-    { path: '/user-dashboard', label: 'Home', icon: <FaHome size={25} /> },
-    { path: '/tax-interview', label: 'Tax Interview', icon: <FaLaptopHouse size={25} /> },
-    { path: '/upload-document', label: 'Upload Document', icon: <FaCloudUploadAlt size={25} /> },
+    { path: '/user-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
+    { path: '/tax-interview', label: 'Upload Document', icon: <FaCloudUploadAlt size={25} /> },
+    { path: '/comment-to-document', label: 'Add Comment', icon: <FaComments size={25} /> },
     { path: '/my-summary', label: 'Summary', icon: <HiDocumentDuplicate size={25} /> },
     { path: '/make-payment', label: 'Payments', icon: <MdPayments size={25} /> },
     { path: '/my-tax-documents', label: 'Documents', icon: <FaFileAlt size={25} /> },
 ];
 
 const staffMenuItems = [
-    { path: '/staff-dashboard', label: 'Home', icon: <FaHome size={25} /> },
-    { path: '/clients', label: 'Clients', icon: <FaUser size={25} /> },
+    { path: '/staff-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
+    { path: '/assigned-clients', label: 'Clients', icon: <FaUser size={25} /> },
     { path: '/staff-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
     { path: '/review', label: 'Summary', icon: <FaCheck size={25} /> },
     { path: '/calculator', label: 'Calculator', icon: <FaCalculator size={25} /> },
@@ -45,7 +44,7 @@ const staffMenuItems = [
 ];
 
 const adminMenuItems = [
-    { path: '/admin-dashboard', label: 'Home', icon: <FaHome size={25} /> },
+    { path: '/admin-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
     { path: '/clients', label: 'Clients', icon: <FaUser size={25} /> },
     { path: '/staff-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
     { path: '/review', label: 'Summary', icon: <FaCheck size={25} /> },

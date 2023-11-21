@@ -6,8 +6,7 @@ import Register from './components/Register/register';
 import About from './components/About/about';
 import Services from './components/Services/services';
 import Contact from './components/Contact/contact';
-import Profile from './userComponents/Profile/profile';
-import UploadDocument from './userComponents/UploadDocument/uploadDocument';
+import CommentDocument from './userComponents/CommentDocument/commentDocument';
 import MySummary from './userComponents/MySummary/mySummary';
 import MakePayment from './userComponents/MakePayment/makePayment';
 import MyTaxDocuments from './userComponents/MyTaxDocuments/myTaxDocuments';
@@ -17,6 +16,8 @@ import ProtectedRoute from './userComponents/ProtectedRoute/protectedRoute';
 import AuthContext from './AuthContext/AuthContext';
 import showAlert from './SweetAlert/sweetalert';
 import StaffDashboard from './staffComponents/StaffDashboard/staffDashboard';
+import UserDashboard from './userComponents/UserDashboard/userDashboard';
+import AssignedClientList from './staffComponents/AssignedClients/assignedClients';
 
 // const routes = [
 //   { path: '/', element: <Landingpage /> },
@@ -75,15 +76,16 @@ function App() {
     { path: '/contact', element: <Contact /> },
 
     // Register user components
-    { path: '/user-dashboard', element: <ProtectedRoute Component={Profile} /> },
+    { path: '/user-dashboard', element: <ProtectedRoute Component={UserDashboard} /> },
     { path: '/tax-interview', element: <ProtectedRoute Component={TaxInterview} /> },
-    { path: '/upload-document', element: <ProtectedRoute Component={UploadDocument} /> },
+    { path: '/comment-to-document', element: <ProtectedRoute Component={CommentDocument} /> },
     { path: '/my-summary', element: <ProtectedRoute Component={MySummary} /> },
     { path: '/make-payment', element: <ProtectedRoute Component={MakePayment} /> },
     { path: '/my-tax-documents', element: <ProtectedRoute Component={MyTaxDocuments} /> },
 
     //Staff components
     { path: '/staff-dashboard', element: <ProtectedRoute Component={StaffDashboard} /> },
+    { path: '/assigned-clients', element: <ProtectedRoute Component={AssignedClientList} /> }
   ];
 
   const onLogin = () => {

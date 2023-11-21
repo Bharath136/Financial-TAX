@@ -13,16 +13,19 @@ const { createCustomerNewTaxDocument,
     getCustomerDocumentById, 
     getCustomerDocumentByUserId,
     updateCustomerDocument, 
+    updateDocumentAssignedStatus,
     deleteCustomerDocumentById } = require('../controllers/customerTaxDocuments')
 
-router.post('/upload', upload.single('documents', 12), createCustomerNewTaxDocument)
+router.post('/upload',authenticate(['CUSTOMER']), upload.single('documents', 12), createCustomerNewTaxDocument)
 
 router.get('/', authenticate(['CUSTOMER', 'ADMIN']), getCustomerAllDocuments)
 
-router.get('/customer/:id', getCustomerDocumentByUserId)
+router.get('/customer/:id', authenticate(['CUSTOMER', 'STAFF', 'ADMIN']), getCustomerDocumentByUserId)
+
+router.put('/assigned-status/:id', authenticate(['ADMIN']), updateDocumentAssignedStatus)
 
 router.route('/:id')
-    .get(authenticate(['CUSTOMER', 'ADMIN']), getCustomerDocumentById)
+    .get(authenticate(['CUSTOMER', 'STAFF', 'ADMIN']), getCustomerDocumentById)
     .put(authenticate(['CUSTOMER']), updateCustomerDocument)
     .delete(authenticate(['CUSTOMER', 'ADMIN']), deleteCustomerDocumentById)
 

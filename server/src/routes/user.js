@@ -18,12 +18,12 @@ router.post('/register', userRegistration)
 router.post('/login', userLogin)
 
 // Authorized user api
-router.get('/', getAllUsers);
+router.get('/',authenticate(['STAFF', 'ADMIN']), getAllUsers);
 
 // Authorized user api
 router.route("/:id")
-    .get(authenticate(['CUSTOMER','ADMIN']), getUserById)
-    .put(authenticate(['CUSTOMER']), updateUserById)
+    .get(authenticate(['CUSTOMER','ADMIN','STAFF']), getUserById)
+    .put(authenticate(['CUSTOMER','STAFF','ADMIN']), updateUserById)
     .delete(authenticate(['CUSTOMER']), deleteUserById);
 
 

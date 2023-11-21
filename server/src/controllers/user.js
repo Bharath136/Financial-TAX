@@ -10,7 +10,6 @@ const userRegistration = async (req, res) => {
         email_address,
         contact_number,
         password,
-        role,
     } = req.body;
 
 
@@ -30,6 +29,9 @@ const userRegistration = async (req, res) => {
         // Hash the password before saving it in the database
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        const role = 'CUSTOMER'
+        const status = 'ACTIVE'
+
         const query = `
             INSERT INTO user_logins (first_name, last_name, email_address, contact_number, password, role, status, created_on, updated_on, created_by, updated_by)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
@@ -42,7 +44,7 @@ const userRegistration = async (req, res) => {
             contact_number,
             hashedPassword,
             role,
-            'ACTIVE',
+            status,
             new Date(),
             new Date(),
             null,
@@ -133,10 +135,7 @@ const updateUserById = async (req, res) => {
         last_name,
         email_address,
         contact_number,
-        password,
-        role,
     } = req.body;
-
     const updatedOn = new Date().toISOString(); 
 
     try {
@@ -154,8 +153,6 @@ const updateUserById = async (req, res) => {
             `first_name = '${first_name}'`,
             `last_name = '${last_name}'`,
             `contact_number = '${contact_number}'`,
-            `password = '${password}'`,
-            `role = '${role}'`,
             `status = 'ACTIVE'`,
             `updated_on = '${updatedOn}'`,
             `updated_by = 1`,

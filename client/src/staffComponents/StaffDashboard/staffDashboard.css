@@ -29,17 +29,9 @@
     text-align: center;
     border-radius: 10px;
     margin-bottom: 20px;
-    box-shadow: 4px 4px 0px 0px var(--accent-background);
+    /* box-shadow: 4px 4px 0px 0px var(--accent-background); */
 }
 
-/* .dashboard-item-2 {
-    flex: 1;
-    background-color: #fff;
-    padding: 20px;
-    text-align: center;
-    border-radius: 10px;
-    margin-bottom: 20px;
-} */
 
 .dashboard-icons {
     color: var(--accent-background)

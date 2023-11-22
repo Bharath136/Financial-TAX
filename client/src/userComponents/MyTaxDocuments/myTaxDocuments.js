@@ -60,7 +60,7 @@ const MyTaxDocuments = () => {
         <div className='d-flex'>
             <Sidebar />
             <div className="my-tax-documents-container">
-                <h2>Documents</h2>
+                <h3>Documents</h3>
                 {taxDocuments.map(document => (
                     <div key={document.document_id}>
                         {/* Render your document data */}

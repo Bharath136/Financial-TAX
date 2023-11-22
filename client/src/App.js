@@ -7,7 +7,7 @@ import About from './components/About/about';
 import Services from './components/Services/services';
 import Contact from './components/Contact/contact';
 import CommentDocument from './userComponents/CommentDocument/commentDocument';
-import MySummary from './userComponents/MySummary/mySummary';
+import MySummary from './userComponents/TaxreturnReview/taxreturnReview';
 import MakePayment from './userComponents/MakePayment/makePayment';
 import MyTaxDocuments from './userComponents/MyTaxDocuments/myTaxDocuments';
 import TaxInterview from './userComponents/TaxInterview/taxInterview';
@@ -18,6 +18,11 @@ import showAlert from './SweetAlert/sweetalert';
 import StaffDashboard from './staffComponents/StaffDashboard/staffDashboard';
 import UserDashboard from './userComponents/UserDashboard/userDashboard';
 import AssignedClientList from './staffComponents/AssignedClients/assignedClients';
+import ClientDocuments from './staffComponents/ClientDocuments/ClientDocuments';
+import TaxReturnDocument from './staffComponents/TaxReturnDocument/taxReturnDocument';
+import Clients from './AdminComponents/Clients/clients';
+import Staff from './AdminComponents/Staff/staff';
+import ClientTaxDocuments from './AdminComponents/ClientTaxDocuments/clientTaxDocuments';
 
 // const routes = [
 //   { path: '/', element: <Landingpage /> },
@@ -79,13 +84,21 @@ function App() {
     { path: '/user-dashboard', element: <ProtectedRoute Component={UserDashboard} /> },
     { path: '/tax-interview', element: <ProtectedRoute Component={TaxInterview} /> },
     { path: '/comment-to-document', element: <ProtectedRoute Component={CommentDocument} /> },
-    { path: '/my-summary', element: <ProtectedRoute Component={MySummary} /> },
+    { path: '/tax-return-review', element: <ProtectedRoute Component={MySummary} /> },
     { path: '/make-payment', element: <ProtectedRoute Component={MakePayment} /> },
     { path: '/my-tax-documents', element: <ProtectedRoute Component={MyTaxDocuments} /> },
 
     //Staff components
     { path: '/staff-dashboard', element: <ProtectedRoute Component={StaffDashboard} /> },
-    { path: '/assigned-clients', element: <ProtectedRoute Component={AssignedClientList} /> }
+    { path: '/assigned-clients', element: <ProtectedRoute Component={AssignedClientList} /> },
+    { path: '/staff-tax-documents', element: <ProtectedRoute Component={ClientDocuments} /> },
+    { path: '/customer-tax-return', element: <ProtectedRoute Component={TaxReturnDocument}/>},
+
+     //admin components
+    { path: '/admin-dashboard', element: <ProtectedRoute Component={StaffDashboard} /> },
+    { path: '/clients', element: <ProtectedRoute Component={Clients} /> },
+    { path: '/staff', element: <ProtectedRoute Component={Staff} /> },
+    { path: '/client-tax-documents', element: <ProtectedRoute Component={ClientTaxDocuments} /> }
   ];
 
   const onLogin = () => {

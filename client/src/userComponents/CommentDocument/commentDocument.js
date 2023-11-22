@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './commentDocument.css'; // Make sure to update the CSS file if needed
+import './commentDocument.css';
 import Sidebar from '../SideBar/sidebar';
 import axios from 'axios';
 import domain from '../../domain/domain';
@@ -8,40 +8,28 @@ import { MdDelete } from 'react-icons/md';
 
 const CommentDocument = () => {
     const [documents, setDocuments] = useState([]);
-    const [formData, setFormData] = useState({
-        financial_year: '',
-        financial_quarter:'',
-        financial_month:"", 
-        comment: '', 
-    });
+    const [formData, setFormData] = useState({});
     const [showCommentInput, setShowCommentInput] = useState(false);
+    const [showComments, setShowComments] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState({});
-    const [comments, setComments] = useState([])
-    const [showComments, setShowComments] = useState(false)
-    const user = JSON.parse(localStorage.getItem('currentUser'))
+    const [comments, setComments] = useState([]);
+    const user = JSON.parse(localStorage.getItem('currentUser'));
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('customerJwtToken');
-                // Fetch documents from the API (updated endpoint)
                 const response = await axios.get(`${domain.domain}/customer-tax-document`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                 });
-                const data = response.data;
-                const filteredData = data.documents.filter((document) => {
-                    return document.customer_id === user.user_id
-                })
+                const filteredData = response.data.documents.filter((doc) => doc.customer_id === user.user_id);
                 setDocuments(filteredData);
             } catch (error) {
                 console.error('Error fetching documents:', error);
             }
         };
-
         fetchData();
-    }, []);
+    }, [user]);
 
     const handleToggleCommentInput = (document) => {
         setShowCommentInput(!showCommentInput);
@@ -49,33 +37,21 @@ const CommentDocument = () => {
     };
 
     const handleCommentSubmit = async () => {
-        const newFormData = {
-            customer_id: user.user_id,
-            staff_id:selectedDocument.assigned_staff,
-            document_id:selectedDocument.document_id,
-            comment:formData.comment,
-            financial_year: formData.financial_year,
-            financial_quarter: formData.financial_quarter,
-            financial_month: formData.financial_month
-        }
         try {
             const token = localStorage.getItem('customerJwtToken');
-            const response = await axios.post(
-                `${domain.domain}/customer-tax-comment/create`,
-                newFormData,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                }
-            );
-            const data = response.data;
-            showAlert({
-                title:data.message,
-                text:'',
-                icon:'success',
-                confirmButtonText:'Ok',
-            })
+            const newComment = {
+                customer_id: user.user_id,
+                staff_id: selectedDocument.assigned_staff,
+                document_id: selectedDocument.document_id,
+                comment: formData.comment,
+                financial_year: formData.financial_year,
+                financial_quarter: formData.financial_quarter,
+                financial_month: formData.financial_month,
+            };
+            await axios.post(`${domain.domain}/customer-tax-comment/create`, newComment, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            showAlert({ title: 'Comment Submitted Successfully!', icon: 'success' });
         } catch (error) {
             console.error('Error submitting comment:', error);
         }
@@ -83,38 +59,37 @@ const CommentDocument = () => {
     };
 
     const handleGetComments = async (document) => {
-        onShowComments()
-        setSelectedDocument(document)
         try {
             const token = localStorage.getItem('customerJwtToken');
-            // Update the API endpoint and include comment data in the request body
-            const response = await axios.get(
-                `${domain.domain}/customer-tax-comment/`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                }
-            );
-            const data = response.data;
-            const filteredData = data.filter((comment) => {
-                return comment.document_id === document.document_id
-            })
-            setComments(filteredData)
+            const response = await axios.get(`${domain.domain}/customer-tax-comment/`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            const filteredData = response.data.filter((comment) => comment.document_id === document.document_id);
+            setComments(filteredData);
+            setShowComments(!showComments)
+            setSelectedDocument(document)
         } catch (error) {
-            console.error('Error submitting comment:', error);
+            console.error('Error getting comments:', error);
         }
-    } 
+    };
 
-    const onShowComments = () => {
-        setShowComments(!showComments)
-    }
+    const onDeleteDocumentComment = async (id) => {
+        try {
+            const token = localStorage.getItem('customerJwtToken');
+            await axios.delete(`${domain.domain}/customer-tax-comment/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            handleGetComments(selectedDocument);
+            showAlert({ title: 'Comment Deleted Successfully!', icon: 'success' });
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+        }
+    };
 
     const formatDateTime = (dateTimeString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
         return new Date(dateTimeString).toLocaleString('en-US', options);
     };
-
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -126,40 +101,19 @@ const CommentDocument = () => {
         { label: 'Quarter', name: 'financial_quarter', type: 'number', placeholder: 'Ex:- 1' }
     ];
 
-    const onDeleteDocumentComment = async (id) => {
-        
-        const accessToken = localStorage.getItem('customerJwtToken')
-            try {
-                const response = await axios.delete(`${domain.domain}/customer-tax-comment/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-                handleGetComments()
-                showAlert({
-                    title:'Comment Deleted Successfully!',
-                    text:'',
-                    icon:'success',
-                    confirmButtonText: 'OK',
-                })
-            } catch (error) {
-                console.error('Error deleting document:', error.message);
-            }
-    };
-
     return (
-        <div className='d-flex'>
+        <div className="d-flex">
             <Sidebar />
             <div className="comment-document-container">
-                <h1>Comment on Document</h1>
-                <p className='document-description'>
+                <h3>Comment on Document</h3>
+                <p className="document-description">
                     Welcome to our Comment Document service! Add comments to the documents for your tax return process.
                 </p>
-                <div className='cta-section w-100 border shadow'>
-                    <form className='w-100'>
-                        {documents.length > 0 &&
+                <div className="cta-section w-100 border shadow">
+                    <form className="w-100">
+                        {documents.length > 0 && (
                             <div className="document-table-container">
-                                <h4 className='text-dark'>Documents with Comments</h4>
+                                <h4 className="text-dark">Documents with Comments</h4>
                                 <table className="document-table">
                                     <thead>
                                         <tr>
@@ -177,14 +131,14 @@ const CommentDocument = () => {
                                                 <td>{document.document_path}</td>
                                                 <td>{formatDateTime(document.created_on)}</td>
                                                 <td>{document.assigned_status}</td>
-                                                <td>{document.review_status}</td>
+                                                <td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></td>
                                                 <td>
-                                                    <button type="button" onClick={() => handleToggleCommentInput(document)}>
-                                                         Comment
+                                                    <button type="button" className='button' onClick={() => handleToggleCommentInput(document)}>
+                                                        Comment
                                                     </button>
                                                 </td>
                                                 <td>
-                                                    <button type="button" onClick={() => handleGetComments(document)} className='view-button' >
+                                                    <button type="button" onClick={() => handleGetComments(document)} className="view-button button">
                                                         View
                                                     </button>
                                                 </td>
@@ -193,22 +147,23 @@ const CommentDocument = () => {
                                     </tbody>
                                 </table>
                             </div>
-                        }
+                        )}
 
                         {showCommentInput && selectedDocument && (
-                            <div>
-                                <label><strong>Comment for Document:</strong> {documents.find(doc => doc.document_id === selectedDocument.document_id)?.document_path}</label>
-                                <div className='d-flex flex-column flex-md-row'>
+                            <div className="mt-5">
+                                <label><strong>Comment for Document:</strong> {documents.find((doc) => doc.document_id === selectedDocument.document_id)?.document_path}</label>
+                                <div className="d-flex flex-column flex-md-row">
                                     {initialFormFields.map((field, index) => (
                                         <div className="mb-2 d-flex flex-column m-2 mt-4" key={index}>
-                                            <div className='d-flex justify-content-between'>
+                                            <div className="d-flex justify-content-between">
                                                 <label htmlFor={field.name} className="form-label text-dark m-0">
                                                     <strong>{field.label}</strong>
                                                 </label>
                                             </div>
                                             <input
                                                 type={field.type}
-                                                className="p-2 text-dark w-100" style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
+                                                className="p-2 text-dark w-100"
+                                                style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
                                                 id={field.name}
                                                 placeholder={field.placeholder}
                                                 name={field.name}
@@ -217,26 +172,24 @@ const CommentDocument = () => {
                                                 required
                                             />
                                         </div>
-
                                     ))}
                                 </div>
                                 <textarea
                                     id="commentInput"
                                     rows={6}
                                     value={formData.comment || ''}
-                                    placeholder='Write your comment to the document...'
+                                    placeholder="Write your comment to the document..."
                                     onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                                 />
-                                <button type="button" onClick={handleCommentSubmit}>
+                                <button type="button" className='button' onClick={handleCommentSubmit}>
                                     Send Comment
                                 </button>
                             </div>
                         )}
 
-
-                        {!showCommentInput && comments.length >= 0 && showComments &&
+                        {showComments && comments.length >= 0 && (
                             <div className="document-table-container mt-5">
-                                <label><strong>Comments for Document:</strong> {documents.find(doc => doc.document_id === selectedDocument.document_id)?.document_path}</label>
+                                <label><strong>Comments for Document:</strong> {selectedDocument.document_path}</label>
                                 <table className="document-table">
                                     <thead>
                                         <tr>
@@ -259,25 +212,27 @@ const CommentDocument = () => {
                                                 <td>{comment.staff_id}</td>
                                                 <td>{comment.document_id}</td>
                                                 <td>{comment.comment}</td>
-                                                <td>{comment.comment_status}</td>
+                                                <td className={`status-${comment.comment_status.toLowerCase()}`}>
+                                                    <strong>{comment.comment_status}</strong>
+                                                </td>
                                                 <td>{formatDateTime(comment.created_on)}</td>
                                                 <td>{formatDateTime(comment.updated_on)}</td>
                                                 <td>
-                                                    <button className='btn btn-light ml-2' title='delete document' onClick={() => {
-                                                        onDeleteDocumentComment(comment.comment_id)
-                                                    }}>{<MdDelete size={25} className='text-danger' />}</button>
+                                                    <button className="btn btn-light ml-2" title="delete document" onClick={() => onDeleteDocumentComment(comment.comment_id)}>
+                                                        <MdDelete size={25} className="text-danger" />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
-                        }
+                        )}
                     </form>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default CommentDocument;

@@ -8,7 +8,6 @@
     background-color: var(--main-background);
 }
 
-
 .tax-interview-container h1 {
     font-size: 24px;
     margin-bottom: 20px;
@@ -58,19 +57,23 @@
     flex-direction: column;
     align-items: center;
 }
-@media screen and (max-width:768px) {
-    .drag-drop-area {
-            width: 100%;
-        }
-}
 
+/* Added styles for small text in mobile view */
+@media screen and (max-width: 768px) {
+    .drag-drop-area {
+        width: 100%;
+        font-size: 14px; /* Adjust as needed */
+    }
+    .tax-description {
+        font-size: 14px; /* Adjust as needed */
+    }
+}
 
 .selected-file {
     margin-top: 20px;
     font-size: 16px;
     color: #555;
 }
-
 
 @media (max-width: 768px) {
     .tax-interview-container {
@@ -88,21 +91,19 @@
     }
 }
 
-.document-image{
+.document-image {
     height: 120px;
 }
-@media screen and (max-width:768px) {
-    .document-image{
+
+@media screen and (max-width: 768px) {
+    .document-image {
         height: 80px;
     }
 }
 
-.display-image{
+.display-image {
     height: 150px;
 }
-
-
-
 
 .document-table-container {
     margin-top: 20px;
@@ -141,13 +142,23 @@
     background-color: #e2e6ea;
 }
 
-
-.document-form-container{
+.document-form-container {
     box-shadow: 0 4px 8px #bbbbbb;
     border-radius: 4px;
 }
-@media screen and (max-width:768px) {
-    .form-container{
+
+@media screen and (max-width: 768px) {
+    .form-container {
         box-shadow: none;
     }
+}
+
+.status-pending {
+    color: orange;
+    /* Set your preferred color for 'pending' status */
+}
+
+.status-assigned {
+    color: green;
+    /* Set your preferred color for 'reviewed' status */
 }

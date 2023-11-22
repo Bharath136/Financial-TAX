@@ -4,9 +4,8 @@ import { NavLink } from 'react-router-dom';
 import { BiLogIn } from 'react-icons/bi';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import './header.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AuthContext from '../../AuthContext/AuthContext';
-import { CgProfile } from "react-icons/cg";
 import EditModal from '../../SweetPopup/sweetPopup';
 
 const Header = () => {
@@ -14,7 +13,14 @@ const Header = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(null)
     const [navItemId, setNavItemId] = useState('1');
+    const [showNavItems, setShowNavItems] = useState(true)
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    useEffect(() => {
+        if (token) {
+            setShowNavItems(false);
+        } 
+    }, [token]);
 
     const handleChange = (id) => {
         setNavItemId(id);
@@ -72,7 +78,7 @@ const Header = () => {
                             <Navbar.Collapse id="navbarSupportedContent" >
                                 <div className="w-100 d-flex align-items-start justify-content-lg-end">
                                     <Nav className="ml-auto">
-                                        {navLinks.map((link, index) => (
+                                        {showNavItems && navLinks.map((link, index) => (
                                             <NavLink
                                                 key={index}
                                                 to={link.to}
@@ -91,12 +97,13 @@ const Header = () => {
                                             </NavLink>
                                         ))}
 
-                                        {token && <div className='d-flex align-items-center' onClick={() => handleEditClick(currentUser.user_id)} style={{ cursor: 'pointer' }}>
-                                            <CgProfile size={24} title='Profile' style={{ cursor: 'pointer' }} className="m-2 d-flex align-items-center pl-2 pr-2 pt-0 pb-0" />
-                                            <label style={{ cursor: 'pointer' }}>{currentUser.first_name}</label>
-                                        </div>}
 
-                                        {!token &&
+
+                                        {token ? <div className='d-flex align-items-center' onClick={() => handleEditClick(currentUser.user_id)} style={{ cursor: 'pointer' }}>
+                                            {/* <CgProfile size={24} title='Profile' style={{ cursor: 'pointer' }} className="m-2 d-flex align-items-center pl-2 pr-2 pt-0 pb-0" /> */}
+                                            <img src='https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small/default-avatar-profile-icon-of-social-media-user-vector.jpg' width={40} className='profile-image' alt='profile'/>
+                                            <label style={{ cursor: 'pointer' }}>{currentUser.first_name}</label>
+                                        </div> :
                                             <NavLink to='/login' className="auth-button ml-2 d-flex align-items-center pl-2 pr-2 pt-0 pb-0">
                                                 <BiLogIn /><span className="nav-span">Login</span>
                                             </NavLink>
@@ -104,7 +111,6 @@ const Header = () => {
                                     </Nav>
                                 </div>
                             </Navbar.Collapse>
-                            {/* </div> */}
                         </div>
 
 

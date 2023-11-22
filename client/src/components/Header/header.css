@@ -82,3 +82,9 @@
     background-color: var(--main-background-shade);
 }
 
+
+.profile-image{
+    border-radius: 50%;
+    /* border: 2px solid rgb(0, 81, 255); */
+    margin-right: 4px;
+}

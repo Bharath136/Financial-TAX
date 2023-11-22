@@ -1,4 +1,4 @@
-import React, { } from 'react';
+import React, { useEffect } from 'react';
 import Modal from 'react-modal';
 import UserProfile from '../userComponents/UserProfile/userProfile';
 

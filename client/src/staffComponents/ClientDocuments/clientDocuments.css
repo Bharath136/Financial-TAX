@@ -1,0 +1,71 @@
+.comment-document-container {
+    margin-top: 10vh;
+    height: 90vh;
+    padding: 1rem;
+    width: 100%;
+    text-align: start;
+    overflow: auto;
+    background-color: var(--main-background);
+}
+
+.comment-document-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.document-description {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.cta-section {
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.document-table-container {
+    margin-bottom: 20px;
+}
+
+.document-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.document-table th,
+.document-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.document-table th {
+    background-color: #f2f2f2;
+}
+
+.text-dark {
+    color: #333;
+}
+
+.btn-warning{
+    background-color: rgb(56, 131, 235);
+    color: white;
+    border-radius: 4px;
+}
+
+/* Add your CSS styles here */
+.status-pending {
+    color: orange;
+    /* Set your preferred color for 'pending' status */
+}
+
+.status-reviewed {
+    color: green;
+    /* Set your preferred color for 'reviewed' status */
+}
+
+.status-rejected {
+    color: red;
+    /* Set your preferred color for 'rejected' status */
+}

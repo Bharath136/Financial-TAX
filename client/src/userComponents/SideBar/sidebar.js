@@ -29,7 +29,7 @@ const menuItems = [
     { path: '/user-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
     { path: '/tax-interview', label: 'Upload Document', icon: <FaCloudUploadAlt size={25} /> },
     { path: '/comment-to-document', label: 'Add Comment', icon: <FaComments size={25} /> },
-    { path: '/my-summary', label: 'Summary', icon: <HiDocumentDuplicate size={25} /> },
+    { path: '/tax-return-review', label: 'Taxreturn Review', icon: <HiDocumentDuplicate size={25} /> },
     { path: '/make-payment', label: 'Payments', icon: <MdPayments size={25} /> },
     { path: '/my-tax-documents', label: 'Documents', icon: <FaFileAlt size={25} /> },
 ];
@@ -38,7 +38,7 @@ const staffMenuItems = [
     { path: '/staff-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
     { path: '/assigned-clients', label: 'Clients', icon: <FaUser size={25} /> },
     { path: '/staff-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/review', label: 'Summary', icon: <FaCheck size={25} /> },
+    { path: '/customer-tax-return', label: 'Tax Return', icon: <FaCheck size={25} /> },
     { path: '/calculator', label: 'Calculator', icon: <FaCalculator size={25} /> },
     { path: '/settings', label: 'Settings', icon: <FaCog size={25} /> },
 ];
@@ -46,8 +46,8 @@ const staffMenuItems = [
 const adminMenuItems = [
     { path: '/admin-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
     { path: '/clients', label: 'Clients', icon: <FaUser size={25} /> },
-    { path: '/staff-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/review', label: 'Summary', icon: <FaCheck size={25} /> },
+    { path: '/staff', label: 'Staff', icon: <FaUser size={25} /> },
+    { path: '/client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
     { path: '/calculator', label: 'Calculator', icon: <FaCalculator size={25} /> },
     { path: '/settings', label: 'Settings', icon: <FaCog size={25} /> },
 ];

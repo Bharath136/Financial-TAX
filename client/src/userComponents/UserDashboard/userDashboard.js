@@ -26,7 +26,7 @@ const UserDashboard = () => {
         <div className='d-flex'>
             <Sidebar />
             <div className="profile-container">
-                <h2>Welcome <span className="current-user">{currentUser}</span></h2>
+                <h3>Welcome <span className="current-user">{currentUser}</span></h3>
                 <div className="dashboard-container">
                     {Object.entries(data).map(([key, value]) => (
                         <div key={key} className={`col-md-4 dashboard-item ${key === 'payments' || key === 'summary' ? 'dashboard-item-2' : ''}`}>

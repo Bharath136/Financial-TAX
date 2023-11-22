@@ -6,7 +6,7 @@ const MakePayment = () => {
         <div className='d-flex'>
         <Sidebar/>
             <div className="make-payment-container">
-                <h2>Summary</h2>
+                <h3>Summary</h3>
             </div>
         </div>
     )

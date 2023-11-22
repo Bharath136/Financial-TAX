@@ -11,7 +11,8 @@
     width: 100%;
 }
 
-.profile-container h2 {
+.profile-container h1 {
+    font-size: 24px;
     margin-bottom: 20px;
 }
 
@@ -86,7 +87,7 @@
 }
 
 .current-user {
-    color: #007bff;
+    color: rgb(206, 57, 247)
 }
 
 .shadow {

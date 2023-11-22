@@ -6,24 +6,23 @@ import { FaFileAlt, FaClock, FaCheck, FaMoneyBillAlt, FaClipboardList } from 're
 
 const StaffDashboard = () => {
 
-    const [currentUser, setCurrentUser] = useState('')
+    const [currentUser, setCurrentUser] = useState('');
 
-    const user = JSON.parse(localStorage.getItem('currentUser'))
+    const user = JSON.parse(localStorage.getItem('currentUser'));
 
     useEffect(() => {
         if (user) {
-            setCurrentUser(user.first_name)
+            setCurrentUser(user.first_name);
         }
     }, [user]);
 
     const data = {
-        total: 100,
-        pending: 25,
-        reviewed: 45,
-        payments: 60,
-        summary: 80,
+        total: { value: 100, description: 'Total documents' },
+        pending: { value: 25, description: 'Pending documents' },
+        reviewed: { value: 45, description: 'Reviewed documents' },
+        payments: { value: 60, description: 'Total payments' },
+        summary: { value: 80, description: 'Summary details' },
     };
-
 
     return (
         <div className='d-flex'>
@@ -31,53 +30,21 @@ const StaffDashboard = () => {
             <div className="profile-container">
                 <h2>Welcome <span className="current-user">{currentUser}</span></h2>
                 <div className="dashboard-container">
-                    <div className="dashboard-item ">
-                        <div className="dashboard-icon"><FaFileAlt className='dashboard-icons' size={80} /></div>
-                        <div className="dashboard-text">
-                            <h4>Total</h4>
-                            <p>{data.total}%</p>
-                        </div>
-                        {/* <div className="dashboard-bar" style={{ width: `${data.total}%` }}></div> */}
-                    </div>
-
-                    <div className="dashboard-item ">
-                        <div className="dashboard-icon"><FaClock className='dashboard-icons' size={80} /></div>
-                        <div className="dashboard-text">
-                            <h4>Pending</h4>
-                            <p>{data.pending}%</p>
-                        </div>
-                        {/* <div className="dashboard-bar" style={{ width: `${data.pending}%` }}></div> */}
-                    </div>
-
-                    <div className="dashboard-item ">
-                        <div className="dashboard-icon"><FaCheck className='dashboard-icons' size={80} /></div>
-                        <div className="dashboard-text">
-                            <h4>Reviewed</h4>
-                            <p>{data.reviewed}%</p>
-                        </div>
-                        {/* <div className="dashboard-bar border" style={{ width: `${data.reviewed}%` }}></div> */}
-                    </div>
-                </div>
-                <div className="dashboard-container" style={{ gap: '30px' }}>
-                    <div className="dashboard-item dashboard-item-2 ">
-                        <div className="dashboard-icon"><FaMoneyBillAlt className='dashboard-icons' size={80} /></div>
-                        <div className="dashboard-text">
-                            <h4>Payments</h4>
-                            <p>{data.payments}%</p>
-                        </div>
-                        {/* <div className="dashboard-bar" style={{ width: `${data.payments}%` }}></div> */}
-                    </div>
-
-                    <div className="dashboard-item dashboard-item-2">
-                        <div className='d-flex align-items-center'>
-                            <div className="dashboard-icon"><FaClipboardList className='dashboard-icons' size={80} /></div>
+                    {Object.entries(data).map(([key, value]) => (
+                        <div key={key} className={`col-md-4 dashboard-item ${key === 'payments' || key === 'summary' ? 'dashboard-item-2' : ''}`}>
+                            <div className={`dashboard-icon dashboard-icon-${key}`}>
+                                {key === 'total' && <FaFileAlt size={80} />}
+                                {key === 'pending' && <FaClock size={80} />}
+                                {key === 'reviewed' && <FaCheck size={80} />}
+                                {key === 'payments' && <FaMoneyBillAlt size={80} />}
+                                {key === 'summary' && <FaClipboardList size={80} />}
+                            </div>
                             <div className="dashboard-text">
-                                <h4>Summary</h4>
-                                <p>{data.summary}%</p>
+                                <h4>{value.description}</h4>
+                                <p>{value.value}%</p>
                             </div>
                         </div>
-                        {/* <div className="dashboard-bar" style={{ width: `${data.summary}%` }}></div> */}
-                    </div>
+                    ))}
                 </div>
             </div>
         </div>

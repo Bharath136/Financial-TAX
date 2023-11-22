@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './assignedClients.css'; // Import the associated CSS file
+import './clients.css'; // Import the associated CSS file
+import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
-import domain from '../../domain/domain';
+import SweetLoading from '../../SweetLoading/SweetLoading';
 
-const AssignedClientList = () => {
+const Clients = () => {
     const [clients, setClients] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(19);
     const token = localStorage.getItem('customerJwtToken');
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
+        setLoading(true)
         const fetchClients = async () => {
             try {
                 const response = await axios.get(`${domain.domain}/user`, {
@@ -19,18 +22,23 @@ const AssignedClientList = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setClients(response.data);
+                const data = response.data;
+                const filteredData = data.filter((user) => {
+                    return user.role === 'CUSTOMER'
+                })
+                setClients(filteredData);
+                setLoading(false)
             } catch (error) {
                 console.error('Error fetching clients:', error);
             }
         };
-
-        fetchClients();
+        fetchClients()
     }, [token]);
 
-    const handleEditClick = (clientId) => {
+
+
+    const handleEditClick = () => {
         setIsEditModalOpen(!isEditModalOpen);
-        setProfileId(clientId);
     };
 
     const handleEditModalClose = () => {
@@ -42,28 +50,31 @@ const AssignedClientList = () => {
             <Sidebar />
             <div className="client-list-container">
                 <h4>Clients</h4>
-                <div className="table-container shadow mt-4">
+                {loading ? <SweetLoading loading={loading} setLoading={setLoading} /> : <div className="table-container shadow mt-4">
                     <table className="client-table">
                         <thead>
                             <tr>
-                                <th className="text-center">ID</th>
-                                <th className="text-center">Name</th>
-                                <th className="text-center">Email</th>
-                                <th className="text-center">Phone</th>
-                                <th className="text-center">Actions</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {clients.map((client) => (
                                 <tr key={client.user_id} className="client-row">
-                                    <td className="text-center">{client.user_id}</td>
-                                    <td className="text-center">{client.first_name}</td>
-                                    <td className="text-center">{client.email_address}</td>
-                                    <td className="text-center">{client.contact_number}</td>
-                                    <td className="text-center">
+                                    <td>{client.user_id}</td>
+                                    <td>{client.first_name}</td>
+                                    <td>{client.email_address}</td>
+                                    <td>{client.contact_number}</td>
+                                    <td>
                                         <button
                                             className="view-profile-button"
-                                            onClick={() => handleEditClick(client.user_id)}
+                                            onClick={() => {
+                                                handleEditClick();
+                                                setProfileId(client.user_id);
+                                            }}
                                         >
                                             View
                                         </button>
@@ -72,7 +83,7 @@ const AssignedClientList = () => {
                             ))}
                         </tbody>
                     </table>
-                </div>
+                </div>}
             </div>
 
             <EditModal
@@ -86,4 +97,4 @@ const AssignedClientList = () => {
     );
 };
 
-export default AssignedClientList;
+export default Clients;

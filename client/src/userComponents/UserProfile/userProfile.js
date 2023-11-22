@@ -60,7 +60,7 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
                     text: 'Your profile has been updated.',
                     confirmButtonText: 'OK',
                 });
-                isOpen()
+                isOpen();
             }
         } catch (error) {
             console.error('Error updating data:', error);
@@ -76,6 +76,8 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
     return (
         <div className="user-profile-container">
             <h2>Your Profile</h2>
+
+            {/* User Profile Items */}
             <div className="user-profile-item">
                 <strong>First Name: </strong>
                 {isEditing ? (
@@ -90,6 +92,7 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
                     userData.first_name
                 )}
             </div>
+
             <div className="user-profile-item">
                 <strong>Last Name: </strong>
                 {isEditing ? (
@@ -104,6 +107,7 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
                     userData.last_name
                 )}
             </div>
+
             <div className="user-profile-item">
                 <strong>Email Address: </strong>
                 {isEditing ? (
@@ -118,6 +122,7 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
                     userData.email_address
                 )}
             </div>
+
             <div className="user-profile-item">
                 <strong>Contact Number: </strong>
                 {isEditing ? (
@@ -132,30 +137,36 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
                     userData.contact_number
                 )}
             </div>
+
             {!isEditing && (
                 <div className="user-profile-item">
                     <strong>Role: </strong> {userData.role}
                 </div>
             )}
+
             {!isEditing && (
                 <div className="user-profile-item">
                     <strong>Status: </strong> {userData.status}
                 </div>
             )}
-            {isEditable && <div className="user-profile-buttons d-flex align-items-center justify-content-between">
-                {isEditing ? (
-                    <button className="apply-button" onClick={handleApplyClick}>
-                        Apply
+
+            {/* Action Buttons */}
+            {isEditable && (
+                <div className="user-profile-buttons d-flex align-items-center justify-content-between">
+                    {isEditing ? (
+                        <button className="apply-button" onClick={handleApplyClick}>
+                            Apply
+                        </button>
+                    ) : (
+                        <button className="edit-button" onClick={handleEditClick}>
+                            Edit
+                        </button>
+                    )}
+                    <button className="close-button" onClick={() => isOpen()}>
+                        Close
                     </button>
-                ) : (
-                    <button className="edit-button" onClick={handleEditClick}>
-                        Edit
-                    </button>
-                )}
-                <button className="close-button" onClick={() => {isOpen()}}>
-                    Close
-                </button>
-            </div>}
+                </div>
+            )}
         </div>
     );
 };

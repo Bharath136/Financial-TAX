@@ -132,14 +132,11 @@ const updateCustomerDocument = async (req, res) => {
 const updateDocumentAssignedStatus = async (req, res) => {
     const id = req.params.id
 
-
     const {
         user_id,
         assigned_status,
         assigned_staff
     } = req.body
-
-    console.log(req.body)
 
     const updatedOn = new Date().toISOString();
 
@@ -148,7 +145,6 @@ const updateDocumentAssignedStatus = async (req, res) => {
         const result = await client.query(updatedUserQuery, [user_id])
 
         const updated_by = `${result.rows[0].first_name} ${result.rows[0].last_name}`;
-        console.log(updated_by)
 
         const queryParams = [
             `assigned_status = '${assigned_status}'`,
@@ -189,7 +185,6 @@ const updateDocumentReviewStatus = async (req, res) => {
         const result = await client.query(updatedUserQuery, [user_id])
 
         const updated_by = `${result.rows[0].first_name} ${result.rows[0].last_name}`;
-        console.log(updated_by)
 
         const queryParams = [
             `review_status = '${review_status}'`,
@@ -205,7 +200,7 @@ const updateDocumentReviewStatus = async (req, res) => {
         `;
         await client.query(commentQuery, [id]);
 
-        res.send('Document assigned updated successfully');
+        res.send('Document review status updated successfully');
     } catch (error) {
         console.log(error)
         res.status(500).json({ error: 'Error update comments' })
@@ -233,7 +228,6 @@ const getCustomerDocumentById = async (req, res) => {
 // Get document by id api
 const getCustomerDocumentByUserId = async (req, res) => {
     const id = req.params.id
-    console.log(id)
 
     try {
         const deleteDocumentQuery = 'SELECT * FROM customer_tax_documents WHERE customer_id = $1';

@@ -21,12 +21,12 @@
 .why-choose-us-container{
     padding: 30px;
 }
-
+/* 
 h3{
-    color: #faae0b;
+    color: var(--accent-background);
     font-weight: bold;
     font-size: 30px;
-}
+} */
 
 /* .img-fluid:hover{
     transform:matrix(2)

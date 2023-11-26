@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const port = 8000;
 const userRouter = require('./routes/user');
+const staffCustomerAssignmentsRouter = require('./routes/staffCustomerAssignments');
 const customerTaxCommentsRouter = require('./routes/customerTaxComments');
 const customerTaxDocumentsRouter = require('./routes/customerTaxDocuments');
 const customerTaxInputs = require('./routes/customerTaxInputs');
@@ -76,6 +77,9 @@ app.use('/tax-inputs', taxInputs);
 
 // Mount the tax documents
 app.use('/tax-documents', taxDocuments);
+
+// Mount the staff customer assignments
+app.use('/staff-customer-assignments', staffCustomerAssignmentsRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

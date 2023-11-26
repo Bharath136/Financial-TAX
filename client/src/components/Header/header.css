@@ -32,6 +32,10 @@
 .nav-link {
     position: relative;
     font-size: 14px;
+    margin-right: 10px;
+    background-color: white;
+    border-radius: 4px;
+    text-align: center;
 }
 
 .nav-link::before {
@@ -43,10 +47,12 @@
     height: 2px;
     background-color: var(--accent-background);
     transition: width .4s;
+    color: white;
 }
 
 .nav-link:hover::before {
     width: 100%;
+    color: white;
 }
 
 .auth-button{
@@ -85,6 +91,10 @@
 
 .profile-image{
     border-radius: 50%;
-    /* border: 2px solid rgb(0, 81, 255); */
     margin-right: 4px;
+}
+
+
+.logo-link{
+    text-decoration: none;
 }

@@ -3,36 +3,24 @@ import { Dropdown, DropdownButton } from 'react-bootstrap';
 import axios from 'axios';
 import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
-
-import './clientTaxDocuments.css';
 import showAlert from '../../SweetAlert/sweetalert';
+import { ClientDocumentContainer, CtaSection, Description, DocumentTable, DocumentTableContainer, H1, Td, Th } from './styledComponents';
 
 const ClientTaxDocuments = () => {
-    const [documents, setDocuments] = useState([]);
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
+    const [documents, setDocuments] = useState([]);
 
     const fetchDocuments = async () => {
         try {
             const response = await axios.get(`${domain.domain}/customer-tax-document`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+                headers: { Authorization: `Bearer ${accessToken}` },
             });
-            const filteredData = response.data.documents.filter((document) => {
-                return document.assigned_staff === user.user_id;
-            });
-            setDocuments(filteredData);
+            setDocuments(response.data.documents);
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
     };
-
-
-
-    useEffect(() => {
-        fetchDocuments();
-    }, []);
 
     const formatDateTime = (dateTimeString) => {
         const options = {
@@ -49,112 +37,86 @@ const ClientTaxDocuments = () => {
 
     const onChangeDocumentStatus = async (id, status) => {
         try {
-            const response = await axios.put(
+            await axios.put(
                 `${domain.domain}/customer-tax-document/review-status/${id}`,
                 { user_id: user.user_id, review_status: status },
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-
+                { headers: { Authorization: `Bearer ${accessToken}` } }
             );
             showAlert({
-                title: response.data,
+                title: 'Status Updated Successfully!',
                 text: '',
                 icon: 'success',
-                confirmButtonText: 'Ok'
-            })
+                confirmButtonText: 'Ok',
+            });
             fetchDocuments();
-            setDocuments((prevDocuments) =>
-                prevDocuments.map((document) =>
-                    document.document_id === id
-                        ? { ...document, assigned_status: status }
-                        : document
-                )
-            );
         } catch (error) {
             console.error('Error updating document status:', error.message);
         }
     };
 
+    useEffect(() => {
+        fetchDocuments();
+    }, []);
+
     return (
         <div className="d-flex">
             <Sidebar />
-            <div className="tax-interview-container">
-                <h1>Tax Documents</h1>
-                <p className="tax-description">
-                    Welcome to our Tax Interview service! Download the tax notes below,
-                    fill in the required information, and upload the necessary tax
-                    documents to get started on your tax return process.
-                </p>
-                <div className="cta-section shadow">
+            <ClientDocumentContainer >
+                <H1>Tax Documents</H1>
+                <Description >
+                    Welcome to our Tax Interview service! Download the tax notes below, fill in
+                    the required information, and upload the necessary tax documents to get
+                    started on your tax return process.
+                </Description>
+                <CtaSection className="shadow">
                     {documents.length > 0 && (
-                        <div className="document-table-container">
-                            <h4 className="text-dark">Uploaded Documents</h4>
-                            <table className="document-table">
+                        <DocumentTableContainer >
+                            <H1>Uploaded Documents</H1>
+                            <DocumentTable >
                                 <thead>
                                     <tr>
-                                        <th>Document Name</th>
-                                        <th>Date & Time</th>
-                                        <th>Assigned Status</th>
-                                        <th>Review Status</th>
-                                        <th>Change Status</th>
+                                        <Th>Document Name</Th>
+                                        <Th>Date & Time</Th>
+                                        <Th>Assigned Status</Th>
+                                        <Th>Review Status</Th>
+                                        <Th>Change Status</Th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {documents.map((document) => (
                                         <tr key={document.document_id}>
-                                            <td>{document.document_path}</td>
-                                            <td>{formatDateTime(document.created_on)}</td>
-                                            <td>{document.assigned_status}</td>
-                                            <td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></td>
-                                            <td>
+                                            <Td>{document.document_path}</Td>
+                                            <Td>{formatDateTime(document.created_on)}</Td>
+
+                                            <Td pending={document.assigned_status.toLowerCase() === 'pending'} assigned={document.assigned_status.toLowerCase() === 'assigned'}  ><strong>{document.assigned_status}</strong></Td>
+                                            <Td pending={document.review_status.toLowerCase() === 'pending'} rejected={document.review_status.toLowerCase() === 'rejected'} reviewed={document.review_status.toLowerCase() === 'reviewed'}>
+                                                <strong>{document.review_status}</strong>
+                                            </Td>
+                                            <Td>
                                                 <DropdownButton
                                                     id={`dropdown-button-${document.document_id}`}
                                                     title="Change"
                                                     variant="warning"
+                                                    
                                                 >
-                                                    <Dropdown.Item
-                                                        onClick={() =>
-                                                            onChangeDocumentStatus(
-                                                                document.document_id,
-                                                                'Pending'
-                                                            )
-                                                        }
-                                                    >
-                                                        Pending
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item
-                                                        onClick={() =>
-                                                            onChangeDocumentStatus(
-                                                                document.document_id,
-                                                                'Reviewed'
-                                                            )
-                                                        }
-                                                    >
-                                                        Reviewed
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item
-                                                        onClick={() =>
-                                                            onChangeDocumentStatus(
-                                                                document.document_id,
-                                                                'Rejected'
-                                                            )
-                                                        }
-                                                    >
-                                                        Rejected
-                                                    </Dropdown.Item>
+                                                    {['Pending', 'Reviewed', 'Rejected'].map((statusOption) => (
+                                                        <Dropdown.Item
+                                                            key={statusOption}
+                                                            onClick={() => onChangeDocumentStatus(document.document_id, statusOption)}
+                                                        >
+                                                            {statusOption}
+                                                        </Dropdown.Item>
+                                                    ))}
                                                 </DropdownButton>
-                                            </td>
+                                            </Td>
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
-                        </div>
+                            </DocumentTable>
+                        </DocumentTableContainer>
                     )}
-                </div>
-            </div>
+                </CtaSection>
+            </ClientDocumentContainer>
         </div>
     );
 };

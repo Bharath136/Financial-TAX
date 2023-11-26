@@ -24,6 +24,7 @@ import {
     FaComments
 } from 'react-icons/fa';
 import AuthContext from '../../AuthContext/AuthContext';
+import { IoPersonAddSharp } from "react-icons/io5";
 
 const menuItems = [
     { path: '/user-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
@@ -36,20 +37,20 @@ const menuItems = [
 
 const staffMenuItems = [
     { path: '/staff-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
-    { path: '/assigned-clients', label: 'Clients', icon: <FaUser size={25} /> },
+    { path: '/staff-assigned-clients', label: 'Clients', icon: <FaUser size={25} /> },
     { path: '/staff-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/customer-tax-return', label: 'Tax Return', icon: <FaCheck size={25} /> },
-    { path: '/calculator', label: 'Calculator', icon: <FaCalculator size={25} /> },
-    { path: '/settings', label: 'Settings', icon: <FaCog size={25} /> },
+    { path: '/staff-customer-tax-return', label: 'Tax Return', icon: <FaCheck size={25} /> },
+    { path: '/staff-calculator', label: 'Calculator', icon: <FaCalculator size={25} /> },
+    { path: '/staff-settings', label: 'Settings', icon: <FaCog size={25} /> },
 ];
 
 const adminMenuItems = [
     { path: '/admin-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
-    { path: '/clients', label: 'Clients', icon: <FaUser size={25} /> },
-    { path: '/staff', label: 'Staff', icon: <FaUser size={25} /> },
-    { path: '/client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/calculator', label: 'Calculator', icon: <FaCalculator size={25} /> },
-    { path: '/settings', label: 'Settings', icon: <FaCog size={25} /> },
+    { path: '/admin-clients', label: 'Clients', icon: <FaUser size={25} /> },
+    { path: '/admin-staff', label: 'Staff', icon: <FaUser size={25} /> },
+    { path: '/admin-client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
+    { path: '/admin-add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> },
+    { path: '/admin-settings', label: 'Settings', icon: <FaCog size={25} /> },
 ];
 
 const Sidebar = () => {

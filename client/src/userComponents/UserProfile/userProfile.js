@@ -40,11 +40,12 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
 
     const handleApplyClick = async () => {
         const token = localStorage.getItem('customerJwtToken');
-
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'))
         try {
+            const newData = { ...editedData, updated_by: currentUser.first_name}
             const response = await axios.put(
                 `${domain.domain}/user/${profileId}`,
-                editedData,
+                newData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

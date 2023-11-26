@@ -1,10 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import './commentDocument.css';
 import Sidebar from '../SideBar/sidebar';
 import axios from 'axios';
 import domain from '../../domain/domain';
 import showAlert from '../../SweetAlert/sweetalert';
 import { MdDelete } from 'react-icons/md';
+
+import {
+    CommentDescription,
+    CommentDocumentContainer,
+    H1,
+    CtaSection,
+    DocumentsTableContainer,
+    DocumentTableContainer,
+    DocumentTable,
+    CommentButton,
+    ViewButton,
+    CommentSectionContainer,
+    CommentSection,
+    CommentInputFieldsContainer,
+    Lable,
+    InputField,
+    SendButton,
+    ButtonContainer,
+    TextArea,
+    Button,
+} from './styledComponents';
 
 const CommentDocument = () => {
     const [documents, setDocuments] = useState([]);
@@ -104,17 +124,17 @@ const CommentDocument = () => {
     return (
         <div className="d-flex">
             <Sidebar />
-            <div className="comment-document-container">
-                <h3>Comment on Document</h3>
-                <p className="document-description">
+            <CommentDocumentContainer>
+                <H1>Comment on Document</H1>
+                <CommentDescription>
                     Welcome to our Comment Document service! Add comments to the documents for your tax return process.
-                </p>
-                <div className="cta-section w-100 border shadow">
-                    <form className="w-100">
+                </CommentDescription>
+                <CtaSection className="shadow">
+                    <DocumentsTableContainer >
                         {documents.length > 0 && (
-                            <div className="document-table-container">
-                                <h4 className="text-dark">Documents with Comments</h4>
-                                <table className="document-table">
+                            <DocumentTableContainer className="document-table-container">
+                                <H1>Documents with Comments</H1>
+                                <DocumentTable className="document-table">
                                     <thead>
                                         <tr>
                                             <th>Document Name</th>
@@ -133,37 +153,33 @@ const CommentDocument = () => {
                                                 <td>{document.assigned_status}</td>
                                                 <td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></td>
                                                 <td>
-                                                    <button type="button" className='button' onClick={() => handleToggleCommentInput(document)}>
+                                                    <CommentButton type="button" className='commit-button button' onClick={() => handleToggleCommentInput(document)}>
                                                         Comment
-                                                    </button>
+                                                    </CommentButton>
                                                 </td>
                                                 <td>
-                                                    <button type="button" onClick={() => handleGetComments(document)} className="view-button button">
+                                                    <ViewButton type="button" onClick={() => handleGetComments(document)} className="view-button button">
                                                         View
-                                                    </button>
+                                                    </ViewButton>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
-                                </table>
-                            </div>
+                                </DocumentTable>
+                            </DocumentTableContainer>
                         )}
 
                         {showCommentInput && selectedDocument && (
-                            <div className="mt-5">
-                                <label><strong>Comment for Document:</strong> {documents.find((doc) => doc.document_id === selectedDocument.document_id)?.document_path}</label>
-                                <div className="d-flex flex-column flex-md-row">
+                            <CommentSectionContainer>
+                                <Lable><strong>Comment for Document:</strong> {documents.find((doc) => doc.document_id === selectedDocument.document_id)?.document_path}</Lable>
+                                <CommentSection>
                                     {initialFormFields.map((field, index) => (
-                                        <div className="mb-2 d-flex flex-column m-2 mt-4" key={index}>
-                                            <div className="d-flex justify-content-between">
-                                                <label htmlFor={field.name} className="form-label text-dark m-0">
-                                                    <strong>{field.label}</strong>
-                                                </label>
-                                            </div>
-                                            <input
+                                        <CommentInputFieldsContainer key={index}>
+                                            <Lable htmlFor={field.name}>
+                                                <strong>{field.label}</strong>
+                                            </Lable>
+                                            <InputField
                                                 type={field.type}
-                                                className="p-2 text-dark w-100"
-                                                style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
                                                 id={field.name}
                                                 placeholder={field.placeholder}
                                                 name={field.name}
@@ -171,26 +187,31 @@ const CommentDocument = () => {
                                                 onChange={handleChange}
                                                 required
                                             />
-                                        </div>
+                                        </CommentInputFieldsContainer>
                                     ))}
-                                </div>
-                                <textarea
+                                </CommentSection>
+                                <Lable >
+                                    <strong>Comment</strong>
+                                </Lable>
+                                <TextArea
                                     id="commentInput"
                                     rows={6}
                                     value={formData.comment || ''}
                                     placeholder="Write your comment to the document..."
                                     onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                                 />
-                                <button type="button" className='button' onClick={handleCommentSubmit}>
-                                    Send Comment
-                                </button>
-                            </div>
+                                <ButtonContainer>
+                                    <SendButton type="button" onClick={handleCommentSubmit}>
+                                        Send Comment
+                                    </SendButton>
+                                </ButtonContainer>
+                            </CommentSectionContainer>
                         )}
 
                         {showComments && comments.length >= 0 && (
-                            <div className="document-table-container mt-5">
-                                <label><strong>Comments for Document:</strong> {selectedDocument.document_path}</label>
-                                <table className="document-table">
+                            <DocumentTableContainer>
+                                <Lable><strong>Comments for Document:</strong> {selectedDocument.document_path}</Lable>
+                                <DocumentTable className="document-table">
                                     <thead>
                                         <tr>
                                             <th>Comment ID</th>
@@ -218,19 +239,19 @@ const CommentDocument = () => {
                                                 <td>{formatDateTime(comment.created_on)}</td>
                                                 <td>{formatDateTime(comment.updated_on)}</td>
                                                 <td>
-                                                    <button className="btn btn-light ml-2" title="delete document" onClick={() => onDeleteDocumentComment(comment.comment_id)}>
+                                                    <Button className="btn btn-light ml-2" title="delete document" onClick={() => onDeleteDocumentComment(comment.comment_id)}>
                                                         <MdDelete size={25} className="text-danger" />
-                                                    </button>
+                                                    </Button>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
-                                </table>
-                            </div>
+                                </DocumentTable>
+                            </DocumentTableContainer>
                         )}
-                    </form>
-                </div>
-            </div>
+                    </DocumentsTableContainer>
+                </CtaSection>
+            </CommentDocumentContainer>
         </div>
     );
 };

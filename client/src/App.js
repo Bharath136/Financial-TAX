@@ -10,7 +10,6 @@ import CommentDocument from './userComponents/CommentDocument/commentDocument';
 import MySummary from './userComponents/TaxreturnReview/taxreturnReview';
 import MakePayment from './userComponents/MakePayment/makePayment';
 import MyTaxDocuments from './userComponents/MyTaxDocuments/myTaxDocuments';
-import TaxInterview from './userComponents/TaxInterview/taxInterview';
 import Landingpage from './components/Landingpage/landingpage';
 import ProtectedRoute from './userComponents/ProtectedRoute/protectedRoute';
 import AuthContext from './AuthContext/AuthContext';
@@ -23,6 +22,9 @@ import TaxReturnDocument from './staffComponents/TaxReturnDocument/taxReturnDocu
 import Clients from './AdminComponents/Clients/clients';
 import Staff from './AdminComponents/Staff/staff';
 import ClientTaxDocuments from './AdminComponents/ClientTaxDocuments/clientTaxDocuments';
+import NotFound from './NotFound/notFound';
+import AddStaff from './AdminComponents/AddStaff/addStaff';
+import UploadDocument from './userComponents/UploadDocument/uploadDocument';
 
 // const routes = [
 //   { path: '/', element: <Landingpage /> },
@@ -45,6 +47,7 @@ import ClientTaxDocuments from './AdminComponents/ClientTaxDocuments/clientTaxDo
 function App() {
   const [currentToken, setCurrentToken] = useState('');
   const [hideSidebar, setHideSidebar] = useState(false);
+  const [showNav,setShowNav] = useState(true)
 
   useEffect(() => {
     const userToken = localStorage.getItem('customerJwtToken');
@@ -52,16 +55,14 @@ function App() {
   }, [currentToken]);
 
   const onLogout = async () => {
-
     const popup = {
       title: 'Logout Successful!',
       text: 'You have successfully logged out. Thank you for using our financial tax app!',
       icon: 'success',
       confirmButtonText: 'OK'
     };
-
+    setShowNav(true)
     showAlert(popup);
-
     localStorage.clear();
     setCurrentToken('');
   };
@@ -73,8 +74,9 @@ function App() {
 
 
   const routes = [
+    // Landing components 
     { path: '/', element: <Landingpage /> },
-    { path: '/login', element: <Login /> },
+    { path: '/login', element: <Login setShowNav={setShowNav} /> },
     { path: '/signup', element: <Register /> },
     { path: '/about', element: <About /> },
     { path: '/services', element: <Services /> },
@@ -82,7 +84,7 @@ function App() {
 
     // Register user components
     { path: '/user-dashboard', element: <ProtectedRoute Component={UserDashboard} /> },
-    { path: '/tax-interview', element: <ProtectedRoute Component={TaxInterview} /> },
+    { path: '/tax-interview', element: <ProtectedRoute Component={UploadDocument} /> },
     { path: '/comment-to-document', element: <ProtectedRoute Component={CommentDocument} /> },
     { path: '/tax-return-review', element: <ProtectedRoute Component={MySummary} /> },
     { path: '/make-payment', element: <ProtectedRoute Component={MakePayment} /> },
@@ -90,15 +92,19 @@ function App() {
 
     //Staff components
     { path: '/staff-dashboard', element: <ProtectedRoute Component={StaffDashboard} /> },
-    { path: '/assigned-clients', element: <ProtectedRoute Component={AssignedClientList} /> },
+    { path: '/staff-assigned-clients', element: <ProtectedRoute Component={AssignedClientList} /> },
     { path: '/staff-tax-documents', element: <ProtectedRoute Component={ClientDocuments} /> },
-    { path: '/customer-tax-return', element: <ProtectedRoute Component={TaxReturnDocument}/>},
+    { path: '/staff-customer-tax-return', element: <ProtectedRoute Component={TaxReturnDocument}/>},
 
      //admin components
     { path: '/admin-dashboard', element: <ProtectedRoute Component={StaffDashboard} /> },
-    { path: '/clients', element: <ProtectedRoute Component={Clients} /> },
-    { path: '/staff', element: <ProtectedRoute Component={Staff} /> },
-    { path: '/client-tax-documents', element: <ProtectedRoute Component={ClientTaxDocuments} /> }
+    { path: '/admin-clients', element: <ProtectedRoute Component={Clients} /> },
+    { path: '/admin-staff', element: <ProtectedRoute Component={Staff} /> },
+    { path: '/admin-client-tax-documents', element: <ProtectedRoute Component={ClientTaxDocuments} /> },
+    { path: '/admin-add-staff', element: <ProtectedRoute Component={AddStaff} /> },
+
+    // Not Found router
+    { path: "*", element: <NotFound /> }
   ];
 
   const onLogin = () => {
@@ -127,17 +133,17 @@ function App() {
       <BrowserRouter>
         <AuthContext.Provider value={{
           hideSidebar,
+          showNav,
           changeSidebar: onHideSidebar,
           changeRole: onLogout,
           changeLogin: onLogin,
         }}>
-          <Header />
+          <Header setShowNav={setShowNav} />
           <Routes>
             {routes.map(({ path, element }, index) => (
               <Route key={index} path={path} element={element} />
             ))}
           </Routes>
-          {/* <Footer/> */}
         </AuthContext.Provider>
       </BrowserRouter>
     </div>

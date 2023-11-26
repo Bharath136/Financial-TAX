@@ -1,0 +1,64 @@
+
+.add-staff-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--main-background);
+    border-radius: 8px;
+    margin-top: 10vh;
+    height: 90vh;
+}
+
+.add-staff-card {
+    padding: 30px;
+    width: 50%;
+    background-color: var(--background-white);
+}
+@media screen and (max-width:768px) {
+    .add-staff-card{
+        flex: 1;
+        margin: 20px;
+    }
+}
+
+.add-staff-header {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-container {
+    width: 100%;
+}
+
+.mb-2 {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.text-dark {
+    color: #333;
+}
+
+.p-2 {
+    padding: 8px;
+}
+
+.add-staff-button {
+    background-color: var(--accent-background);
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-staff-button:hover {
+    background-color: #2980b9;
+}

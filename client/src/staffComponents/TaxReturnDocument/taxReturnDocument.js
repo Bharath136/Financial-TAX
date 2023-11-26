@@ -1,37 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import '../../userComponents/TaxInterview/taxInterview.css'
+import React, { useState } from 'react';
 import axios from 'axios';
 import domain from '../../domain/domain';
-import { MdDelete } from 'react-icons/md';
+// import { MdDelete } from 'react-icons/md';
 import Sidebar from '../../userComponents/SideBar/sidebar';
+import { ButtonContainer, CtaSection, DocumentImage, DragDropArea, Form, H1, InputField, InputFieldsContainer, InputFieldsSubContainer, TaxDescription, TaxDocumentContainer, UploadButton } from './styledComponents';
 
 const TaxReturnDocument = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [formData, setFormData] = useState({});
     const [errorMsg, setErrorMsg] = useState(null);
-    const [documents, setDocuments] = useState([]);
-    const user = JSON.parse(localStorage.getItem('currentUser'))
-    const accessToken = localStorage.getItem('customerJwtToken');
-
-    useEffect(() => {
-        const fetchDocuments = async () => {
-            try {
-                const response = await axios.get(`${domain.domain}/customer-tax-document`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                })
-                const filteredData = response.data.documents.filter(document => {
-                    return document.customer_id === user.user_id
-                })
-                setDocuments(filteredData);
-            } catch (error) {
-                console.error('Error fetching documents:', error);
-            }
-        };
-
-        fetchDocuments();
-    }, [user.user_id, accessToken]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -53,7 +30,7 @@ const TaxReturnDocument = () => {
     };
 
     const handleUpload = async (e) => {
-        e.preventDefault(); // Prevent form submission
+        e.preventDefault();
 
         try {
             if (!selectedFile) {
@@ -61,8 +38,6 @@ const TaxReturnDocument = () => {
                 return;
             }
 
-            // Implement your upload logic here, e.g., send the file to the server
-            // const formData = new FormData();
             formData.append('file', selectedFile);
 
             console.log(formData);
@@ -70,12 +45,8 @@ const TaxReturnDocument = () => {
             const response = await axios.post(`${domain.domain}/customer-tax-document/upload`, { file: selectedFile });
 
             console.log(response)
-            // Clear selected file after successful upload
             setSelectedFile(null);
 
-            // Refetch the updated document list
-            const updatedDocuments = await axios.get(`${domain.domain}/customer-tax-document`);
-            setDocuments(updatedDocuments.data.documents);
         } catch (error) {
             console.error('Error uploading file:', error);
         }
@@ -87,51 +58,26 @@ const TaxReturnDocument = () => {
         { label: 'Quarter', name: 'financial_quarter', type: 'number', placeholder: 'Ex:- 1' }
     ];
 
-    const formatDateTime = (dateTimeString) => {
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        return new Date(dateTimeString).toLocaleString('en-US', options);
-    };
-
-    const onDeleteDocument = async (id) => {
-        const result = window.confirm("Are you sure you want to delete this document?");
-        if (result) {
-            try {
-                const response = await axios.delete(`${domain.domain}/customer-tax-document/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-                console.log(response);
-                setDocuments((prevDocuments) => prevDocuments.filter(document => document.document_id !== id));
-            } catch (error) {
-                console.error('Error deleting document:', error.message);
-            }
-        }
-    };
-
     return (
         <div className='d-flex'>
             <Sidebar />
-            <div className="tax-interview-container" onDragOver={handleDragOver} onDrop={handleDrop}>
-                <h1>Upload Tax Return Document</h1>
-                <p className='tax-description'>
+            <TaxDocumentContainer className="tax-interview-container" onDragOver={handleDragOver} onDrop={handleDrop}>
+                <H1>Upload Tax Return Document</H1>
+                <TaxDescription className='tax-description'>
                     Welcome to our Tax Return service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
-                </p>
-                <div className='cta-section shadow'>
-                    <h1>Enter Tax Return Document Details Below</h1>
-                    <form onSubmit={handleUpload} encType="multipart/form-data" className='form-container document-form-container p-md-4'>
-
-                        <div className='d-flex flex-column flex-md-row'>
+                </TaxDescription>
+                <CtaSection className='cta-section shadow'>
+                    <H1>Enter Tax Return Document Details Below</H1>
+                    <Form onSubmit={handleUpload} encType="multipart/form-data" >
+                        <InputFieldsContainer>
                             {initialFormFields.map((field, index) => (
-                                <div className="mb-2 d-flex flex-column m-2" key={index}>
-                                    <div className='d-flex justify-content-between'>
-                                        <label htmlFor={field.name} className="form-label text-dark m-0">
-                                            <strong>{field.label}</strong>
-                                        </label>
-                                    </div>
-                                    <input
+                                <InputFieldsSubContainer className='w-100' key={index}>
+                                    <label htmlFor={field.name} >
+                                        <strong>{field.label}</strong>
+                                    </label>
+                                    <InputField
                                         type={field.type}
-                                        className="p-2 text-dark w-100" style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
+                                        className="text-dark w-100"
                                         id={field.name}
                                         placeholder={field.placeholder}
                                         name={field.name}
@@ -139,26 +85,25 @@ const TaxReturnDocument = () => {
                                         onChange={handleChange}
                                         required
                                     />
-                                </div>
+                                </InputFieldsSubContainer>
                             ))}
-                        </div>
+                        </InputFieldsContainer>
                         <input type="file" onChange={handleFileChange} name='documents' style={{ display: 'none' }} />
-                        <div
-                            className='drag-drop-area'
+                        <DragDropArea
                             onClick={() => document.querySelector('input[type="file"]').click()}
                         >
                             <p>Drag & Drop or Click to Upload</p>
-                            <img src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" className="document-image" />
-                        </div>
+                            <DocumentImage src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" />
+                        </DragDropArea>
                         {errorMsg && <p className='text-danger'>{errorMsg}</p>}
-                        <div className='w-100 text-center'>
-                            <button className='upload-button' type='submit'>
-                                Upload Tax Return Documents
-                            </button>
-                        </div>
-                    </form>
+                        <ButtonContainer className='w-100 text-center'>
+                            <UploadButton type='submit'>
+                                Upload Documents
+                            </UploadButton>
+                        </ButtonContainer>
+                    </Form>
 
-                    {documents.length > 0 &&
+                    {/* {documents.length > 0 &&
                         <div className="document-table-container">
                             <h4 className='text-dark'>Uploaded Tax Return Documents</h4>
                             <table className="document-table">
@@ -188,9 +133,9 @@ const TaxReturnDocument = () => {
                                 </tbody>
                             </table>
                         </div>
-                    }
-                </div>
-            </div>
+                    } */}
+                </CtaSection>
+            </TaxDocumentContainer>
         </div>
     );
 }

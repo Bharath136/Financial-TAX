@@ -47,8 +47,8 @@ const userRegistration = async (req, res) => {
             status,
             new Date(),
             new Date(),
-            null,
-            null,
+            first_name,
+            first_name
         ];
 
         const result = await client.query(query, values);
@@ -61,6 +61,66 @@ const userRegistration = async (req, res) => {
 
 
 
+
+// Adding Staff by admin
+const addStaff = async (req, res) => {
+    const {
+        created_by,
+        first_name,
+        last_name,
+        email_address,
+        contact_number,
+        password,
+    } = req.body;
+
+    try {
+        // Check if the user already exists
+        const existingUserQuery = 'SELECT user_id FROM user_logins WHERE email_address = $1';
+        const existingUserResult = await client.query(existingUserQuery, [email_address]);
+
+        if (existingUserResult.rows.length > 0) {
+            // A user with the same email address already exists
+            return res.status(400).json({ success: false, error: 'User with this email address already exists' });
+        }
+
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+
+        // Hash the password before saving it in the database
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const role = 'STAFF'
+        const status = 'ACTIVE'
+
+        const query = `
+            INSERT INTO user_logins (first_name, last_name, email_address, contact_number, password, role, status, created_on, updated_on, created_by, updated_by)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            RETURNING user_id
+        `;
+        const values = [
+            first_name,
+            last_name,
+            email_address,
+            contact_number,
+            hashedPassword,
+            role,
+            status,
+            new Date(),
+            new Date(),
+            created_by,
+            created_by
+        ];
+
+        const result = await client.query(query, values);
+        res.status(201).json({ success: true, message: 'Staff Added successfully', user_id: result.rows[0].user_id });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error adding staff' });
+    }
+};
+
+
+// user login
 const userLogin = async (req, res) => {
     const { email_address, password } = req.body;
 
@@ -131,6 +191,7 @@ const getUserById = async (req, res) => {
 const updateUserById = async (req, res) => {
     const id = req.params.id;
     const {
+        updated_by,
         first_name,
         last_name,
         email_address,
@@ -155,7 +216,7 @@ const updateUserById = async (req, res) => {
             `contact_number = '${contact_number}'`,
             `status = 'ACTIVE'`,
             `updated_on = '${updatedOn}'`,
-            `updated_by = 1`,
+            `updated_by = '${updated_by}'`,
         ];
 
         // Include email update in the query only if it has changed
@@ -202,7 +263,6 @@ const deleteUserById = async (req, res) => {
     }
 }
 
-
 function validatePassword(password) {
     // password validation logic here
     return password.length >= 8;
@@ -214,5 +274,6 @@ module.exports = {
     updateUserById,
     deleteUserById,
     userRegistration,
-    userLogin
+    userLogin,
+    addStaff
 };

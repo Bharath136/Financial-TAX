@@ -4,7 +4,7 @@ import axios from 'axios';
 import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import showAlert from '../../SweetAlert/sweetalert';
-import './clientDocuments.css';
+import { ClientDocumentContainer, CtaSection, Description, DocumentTable, DocumentTableContainer, H1, Td, Th } from './styledComponents';
 
 const ClientDocuments = () => {
     const user = JSON.parse(localStorage.getItem('currentUser'));
@@ -64,37 +64,37 @@ const ClientDocuments = () => {
     return (
         <div className="d-flex">
             <Sidebar />
-            <div className="tax-interview-container">
-                <h1>Tax Documents</h1>
-                <p className="tax-description">
+            <ClientDocumentContainer >
+                <H1>Tax Documents</H1>
+                <Description >
                     Welcome to our Tax Interview service! Download the tax notes below, fill in
                     the required information, and upload the necessary tax documents to get
                     started on your tax return process.
-                </p>
-                <div className="cta-section shadow">
+                </Description>
+                <CtaSection className="shadow">
                     {documents.length > 0 && (
-                        <div className="document-table-container">
-                            <h4 className="text-dark">Uploaded Documents</h4>
-                            <table className="document-table">
+                        <DocumentTableContainer className="document-table-container">
+                            <H1>Uploaded Documents</H1>
+                            <DocumentTable className="document-table">
                                 <thead>
                                     <tr>
-                                        <th>Document Name</th>
-                                        <th>Date & Time</th>
-                                        <th>Assigned Status</th>
-                                        <th>Review Status</th>
-                                        <th>Change Status</th>
+                                        <Th>Document Name</Th>
+                                        <Th>Date & Time</Th>
+                                        <Th>Assigned Status</Th>
+                                        <Th>Review Status</Th>
+                                        <Th>Change Status</Th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {documents.map((document) => (
                                         <tr key={document.document_id}>
-                                            <td>{document.document_path}</td>
-                                            <td>{formatDateTime(document.created_on)}</td>
-                                            <td>{document.assigned_status}</td>
-                                            <td className={`status-${document.review_status.toLowerCase()}`}>
+                                            <Td>{document.document_path}</Td>
+                                            <Td>{formatDateTime(document.created_on)}</Td>
+                                            <Td pending={document.assigned_status.toLowerCase() === 'pending'} assigned={document.assigned_status.toLowerCase() === 'assigned'}  ><strong>{document.assigned_status}</strong></Td>
+                                            <Td pending={document.review_status.toLowerCase() === 'pending'} rejected={document.review_status.toLowerCase() === 'rejected'} reviewed={document.review_status.toLowerCase() === 'reviewed'}>
                                                 <strong>{document.review_status}</strong>
-                                            </td>
-                                            <td>
+                                            </Td>
+                                            <Td>
                                                 <DropdownButton
                                                     id={`dropdown-button-${document.document_id}`}
                                                     title="Change"
@@ -109,15 +109,15 @@ const ClientDocuments = () => {
                                                         </Dropdown.Item>
                                                     ))}
                                                 </DropdownButton>
-                                            </td>
+                                            </Td>
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
-                        </div>
+                            </DocumentTable>
+                        </DocumentTableContainer>
                     )}
-                </div>
-            </div>
+                </CtaSection>
+            </ClientDocumentContainer>
         </div>
     );
 };

@@ -8,7 +8,8 @@ const {
     userRegistration, 
     updateUserById, 
     deleteUserById, 
-    userLogin
+    userLogin,
+    addStaff
 } = require('../controllers/user');
 
 // Register a new user api
@@ -16,6 +17,9 @@ router.post('/register', userRegistration)
 
 // Login a registered user api
 router.post('/login', userLogin)
+
+// Add Staff by admin
+router.post('/add-staff',authenticate(['ADMIN']), addStaff)
 
 // Authorized user api
 router.get('/',authenticate(['STAFF', 'ADMIN']), getAllUsers);

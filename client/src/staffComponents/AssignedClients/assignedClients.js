@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './assignedClients.css'; // Import the associated CSS file
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
 import domain from '../../domain/domain';
+import { ClientListContainer, H1, Table, TableContainer, Td, Th, ViewButton } from './styledComponents';
 
 const AssignedClientList = () => {
     const [clients, setClients] = useState([]);
@@ -40,40 +40,39 @@ const AssignedClientList = () => {
     return (
         <div className="d-flex">
             <Sidebar />
-            <div className="client-list-container">
-                <h4>Clients</h4>
-                <div className="table-container shadow mt-4">
-                    <table className="client-table">
+            <ClientListContainer>
+                <H1>Clients</H1>
+                <TableContainer>
+                    <Table>
                         <thead>
                             <tr>
-                                <th className="text-center">ID</th>
-                                <th className="text-center">Name</th>
-                                <th className="text-center">Email</th>
-                                <th className="text-center">Phone</th>
-                                <th className="text-center">Actions</th>
+                                <Th>ID</Th>
+                                <Th>Name</Th>
+                                <Th>Email</Th>
+                                <Th>Phone</Th>
+                                <Th>Actions</Th>
                             </tr>
                         </thead>
                         <tbody>
                             {clients.map((client) => (
-                                <tr key={client.user_id} className="client-row">
-                                    <td className="text-center">{client.user_id}</td>
-                                    <td className="text-center">{client.first_name}</td>
-                                    <td className="text-center">{client.email_address}</td>
-                                    <td className="text-center">{client.contact_number}</td>
-                                    <td className="text-center">
-                                        <button
-                                            className="view-profile-button"
+                                <tr key={client.user_id}>
+                                    <Td>{client.user_id}</Td>
+                                    <Td>{client.first_name}</Td>
+                                    <Td>{client.email_address}</Td>
+                                    <Td>{client.contact_number}</Td>
+                                    <Td>
+                                        <ViewButton
                                             onClick={() => handleEditClick(client.user_id)}
                                         >
-                                            View
-                                        </button>
-                                    </td>
+                                            View Profile
+                                        </ViewButton>
+                                    </Td>
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
-                </div>
-            </div>
+                    </Table>
+                </TableContainer>
+            </ClientListContainer>
 
             <EditModal
                 isOpen={isEditModalOpen}

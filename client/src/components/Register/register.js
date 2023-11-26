@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import domain from '../../domain/domain';
 import axios from 'axios';
 import showAlert from '../../SweetAlert/sweetalert';
+import authImage from '../../Assets/loginbg.png'
 
 const Register = () => {
     const initialFormFields = [
@@ -45,7 +46,7 @@ const Register = () => {
     return (
         <div className='register-main-container'>
             <div className="container register-container d-flex">
-                <img src='https://estudentbook.com/img/nwdesign/loginbg.png' alt='loginImage' className='img-fluid d-none d-md-block' />
+                <img src={authImage} alt='loginImage' className='img-fluid d-none d-md-block' />
                 <div className="register-card shadow text-start">
                     <h2 className="register-header">Register</h2>
                     <p className='signup-description mt-3'>Already have an account? <NavLink className='link' to='/login'> Sign In</NavLink></p>

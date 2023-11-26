@@ -26,10 +26,10 @@ const UserDashboard = () => {
         <div className='d-flex'>
             <Sidebar />
             <div className="profile-container">
-                <h3>Welcome <span className="current-user">{currentUser}</span></h3>
-                <div className="dashboard-container">
+                <h1>Welcome <span className="current-user">{currentUser}</span></h1>
+                <div className="dashboard-items">
                     {Object.entries(data).map(([key, value]) => (
-                        <div key={key} className={`col-md-4 dashboard-item ${key === 'payments' || key === 'summary' ? 'dashboard-item-2' : ''}`}>
+                        <div key={key} className={`dashboard-item ${key === 'payments' || key === 'summary' ? 'dashboard-item-2' : ''}`}>
                             <div className={`dashboard-icon dashboard-icon-${key}`}>
                                 {key === 'total' && <FaFileAlt size={80} />}
                                 {key === 'pending' && <FaClock size={80} />}

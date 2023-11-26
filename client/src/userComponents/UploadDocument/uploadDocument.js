@@ -3,9 +3,26 @@ import axios from 'axios';
 import { MdDelete } from 'react-icons/md';
 import Sidebar from '../SideBar/sidebar';
 import domain from '../../domain/domain';
-import './taxInterview.css';
+import {
+    TaxInterviewContainer,
+    H1,
+    TaxDescription,
+    CtaSection,
+    InputFieldsContainer,
+    InputFieldsSubContainer,
+    InputField,
+    UploadButton,
+    DragDropArea,
+    ButtonContainer,
+    DocumentImage,
+    DocumentTableContainer,
+    DocumentTable,
+    Form,
+    Th,
+    Td
+} from './styledComponents';
 
-const TaxInterview = () => {
+const UploadDocument = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [formData, setFormData] = useState({});
     const [errorMsg, setErrorMsg] = useState(null);
@@ -103,26 +120,23 @@ const TaxInterview = () => {
     return (
         <div className='d-flex'>
             <Sidebar />
-            <div className="tax-interview-container" onDragOver={handleDragOver} onDrop={handleDrop}>
-                <h3>Upload Tax Document</h3>
-                <p className='tax-description'>
+            <TaxInterviewContainer onDragOver={handleDragOver} onDrop={handleDrop}>
+                <H1>Upload Tax Document</H1>
+                <TaxDescription>
                     Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
-                </p>
-                <div className='cta-section shadow'>
-                    <h1>Enter Tax Document Details Below</h1>
-                    <form onSubmit={handleUpload} encType="multipart/form-data" className='form-container document-form-container p-md-4'>
-
-                        <div className='d-flex flex-column flex-md-row'>
+                </TaxDescription>
+                <CtaSection className='shadow'>
+                    <H1>Enter Tax Document Details Below</H1>
+                    <Form onSubmit={handleUpload} encType="multipart/form-data" >
+                        <InputFieldsContainer>
                             {initialFormFields.map((field, index) => (
-                                <div className="mb-2 d-flex flex-column m-2" key={index}>
-                                    <div className='d-flex justify-content-between'>
-                                        <label htmlFor={field.name} className="form-label text-dark m-0">
-                                            <strong>{field.label}</strong>
-                                        </label>
-                                    </div>
-                                    <input
+                                <InputFieldsSubContainer className='w-100' key={index}>
+                                    <label htmlFor={field.name} >
+                                        <strong>{field.label}</strong>
+                                    </label>
+                                    <InputField
                                         type={field.type}
-                                        className="p-2 text-dark w-100" style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
+                                        className="text-dark w-100"
                                         id={field.name}
                                         placeholder={field.placeholder}
                                         name={field.name}
@@ -130,63 +144,62 @@ const TaxInterview = () => {
                                         onChange={handleChange}
                                         required
                                     />
-                                </div>
+                                </InputFieldsSubContainer>
                             ))}
-                        </div>
+                        </InputFieldsContainer>
                         <input type="file" onChange={handleFileChange} name='documents' style={{ display: 'none' }} />
-                        <div
-                            className='drag-drop-area'
+                        <DragDropArea
                             onClick={() => document.querySelector('input[type="file"]').click()}
                         >
                             <p>Drag & Drop or Click to Upload</p>
-                            <img src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" className="document-image" />
-                        </div>
+                            <DocumentImage src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" />
+                        </DragDropArea>
                         {errorMsg && <p className='text-danger'>{errorMsg}</p>}
-                        <div className='w-100 text-center'>
-                            <button className='upload-button' type='submit'>
+                        <ButtonContainer>
+                            <UploadButton type='submit'>
                                 Upload Tax Documents
-                            </button>
-                        </div>
-                    </form>
+                            </UploadButton>
+                        </ButtonContainer>
+                    </Form>
 
                     {documents.length > 0 &&
-                        <div className="document-table-container">
-                            <h4 className='text-dark'>Uploaded Documents</h4>
-                            <table className="document-table">
+                        <DocumentTableContainer >
+                            <H1 >Uploaded Documents</H1>
+                            <DocumentTable>
                                 <thead>
                                     <tr>
-                                        <th>Document Name</th>
-                                        <th>Date & Time</th>
-                                        <th>Assigned Status</th>
-                                        <th>Review Status</th>
-                                        <th>Delete</th>
+                                        <Th>Document Name</Th>
+                                        <Th>Date & Time</Th>
+                                        <Th>Assigned Status</Th>
+                                        <Th>Review Status</Th>
+                                        <Th>Delete</Th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {documents.map((document) => (
                                         <tr key={document.document_id}>
-                                            <td>{document.document_path}</td>
-                                            <td>{formatDateTime(document.created_on)}</td>
-                                            <td className={`status-${document.assigned_status.toLowerCase()}`}><strong>{document.assigned_status}</strong></td>
-                                            <td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></td>
-                                            <td>
-                                                <button className='btn btn-light ml-2' title='delete document' onClick={() => onDeleteDocument(document.document_id)}>
+                                            <Td>{document.document_path}</Td>
+                                            <Td>{formatDateTime(document.created_on)}</Td>
+                                            <Td className={`status-${document.assigned_status.toLowerCase()}`}><strong>{document.assigned_status}</strong></Td>
+                                            <Td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></Td>
+                                            <Td>
+                                                <button className='btn btn-light' title='delete document' onClick={() => onDeleteDocument(document.document_id)}>
                                                     {<MdDelete size={25} className='text-danger' />}
                                                 </button>
-                                            </td>
+                                            </Td>
                                         </tr>
                                     ))}
                                 </tbody>
-                            </table>
-                        </div>
+                            </DocumentTable>
+                        </DocumentTableContainer>
                     }
-                </div>
-            </div>
+                </CtaSection>
+            </TaxInterviewContainer>
         </div>
     );
 }
 
-export default TaxInterview;
+export default UploadDocument;
 
 
 

@@ -4,6 +4,9 @@ import axios from 'axios';
 import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import showAlert from '../../SweetAlert/sweetalert';
+import pdf from '../../Assets/PDF_file_icon.svg.png'
+import doc from '../../Assets/doc.png';
+import docx from '../../Assets/docx.png'
 import { ClientDocumentContainer, CtaSection, Description, DocumentTable, DocumentTableContainer, H1, Td, Th } from './styledComponents';
 
 const ClientDocuments = () => {
@@ -61,6 +64,57 @@ const ClientDocuments = () => {
         fetchDocuments();
     }, []);
 
+    const handleDownloadClick = async (document) => {
+        try {
+            const downloadUrl = `http://localhost:8000/customer-tax-document/download/${document.document_id}`;
+            const headers = {
+                Authorization: `Bearer ${accessToken}`,
+            };
+
+            const response = await fetch(downloadUrl, { headers });
+            const blob = await response.blob();
+
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${document.document_id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
+    };
+
+    const renderDocumentThumbnail = (document) => {
+        const fileExtension = document.document_path.split('.').pop().toLowerCase();
+
+        const fileTypeIcons = {
+            pdf: <img src={pdf} alt='pdf' className='img-fluid' />,
+            doc: <img src={doc} alt='pdf' className='img-fluid' />,
+            docx: <img src={docx} alt='pdf' className='img-fluid' />,
+            jpg: '🖼️',
+            jpeg: '🖼️',
+            png: '🖼️',
+        };
+
+        // Check if the file extension is in the supported types
+        if (fileExtension in fileTypeIcons) {
+            return (
+                <div style={{ width: '50px', height: '50px', background: '#eee', textAlign: 'center', lineHeight: '50px' }}>
+                    <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
+                </div>
+            );
+        } else {
+            // For unsupported types, you can display a generic icon or handle it differently
+            return (
+                <div style={{ width: '50px', height: '50px', background: '#eee', textAlign: 'center', lineHeight: '50px' }}>
+                    📁
+                </div>
+            );
+        }
+    };
+
     return (
         <div className="d-flex">
             <Sidebar />
@@ -78,7 +132,7 @@ const ClientDocuments = () => {
                             <DocumentTable className="document-table">
                                 <thead>
                                     <tr>
-                                        <Th>Document Name</Th>
+                                        <Th>Document</Th>
                                         <Th>Date & Time</Th>
                                         <Th>Assigned Status</Th>
                                         <Th>Review Status</Th>
@@ -88,7 +142,17 @@ const ClientDocuments = () => {
                                 <tbody>
                                     {documents.map((document) => (
                                         <tr key={document.document_id}>
-                                            <Td>{document.document_path}</Td>
+                                            <Td>
+                                                <a
+                                                    href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    download
+                                                    onClick={(e) => handleDownloadClick(document)}
+                                                >
+                                                    {renderDocumentThumbnail(document)}
+                                                </a>
+                                            </Td>
                                             <Td>{formatDateTime(document.created_on)}</Td>
                                             <Td pending={document.assigned_status.toLowerCase() === 'pending'} assigned={document.assigned_status.toLowerCase() === 'assigned'}  ><strong>{document.assigned_status}</strong></Td>
                                             <Td pending={document.review_status.toLowerCase() === 'pending'} rejected={document.review_status.toLowerCase() === 'rejected'} reviewed={document.review_status.toLowerCase() === 'reviewed'}>

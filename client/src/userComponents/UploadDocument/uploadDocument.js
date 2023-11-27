@@ -3,6 +3,9 @@ import axios from 'axios';
 import { MdDelete } from 'react-icons/md';
 import Sidebar from '../SideBar/sidebar';
 import domain from '../../domain/domain';
+import pdf from '../../Assets/PDF_file_icon.svg.png'
+import doc from '../../Assets/doc.png';
+import docx from '../../Assets/docx.png'
 import {
     TaxInterviewContainer,
     H1,
@@ -21,10 +24,11 @@ import {
     Th,
     Td
 } from './styledComponents';
+import showAlert from '../../SweetAlert/sweetalert';
 
 const UploadDocument = () => {
     const [selectedFile, setSelectedFile] = useState(null);
-    const [formData, setFormData] = useState({});
+    const [data, setFormData] = useState({});
     const [errorMsg, setErrorMsg] = useState(null);
     const [documents, setDocuments] = useState([]);
     const user = JSON.parse(localStorage.getItem('currentUser'));
@@ -35,7 +39,7 @@ const UploadDocument = () => {
             try {
                 const response = await axios.get(`${domain.domain}/customer-tax-document`, {
                     headers: {
-                        'Authorization': `Bearer ${accessToken}`
+                        'Authorization': `Bearer ${accessToken}`,
                     }
                 });
                 const filteredData = response.data.documents.filter(document => document.customer_id === user.user_id);
@@ -49,7 +53,7 @@ const UploadDocument = () => {
     }, [user.user_id, accessToken]);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({ ...data, [e.target.name]: e.target.value });
     };
 
     const handleFileChange = (e) => {
@@ -67,7 +71,7 @@ const UploadDocument = () => {
         setSelectedFile(file);
     };
 
-    const handleUpload = async (e) => {
+    const handleFileUpload = async (e) => {
         e.preventDefault();
 
         try {
@@ -78,13 +82,26 @@ const UploadDocument = () => {
 
             const formData = new FormData();
             formData.append('file', selectedFile);
+            formData.append('customer_id', user.user_id);
+            formData.append('financial_year', data.financial_year)
+            formData.append('financial_month', data.financial_month)
+            formData.append('financial_quarter', data.financial_quarter)
 
-            await axios.post(`${domain.domain}/customer-tax-document/upload`, { file: selectedFile });
-
+            const res = await axios.post(`${domain.domain}/customer-tax-document/upload`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                data: { customer_id: user.user_id }
+            });
+            if(res.status === 201){
+                showAlert({
+                    title: 'Document Uploaded Successfully!',
+                    text: 'The document has been uploaded successfully. You can now view or download the document.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            }
             setSelectedFile(null);
-
-            const updatedDocuments = await axios.get(`${domain.domain}/customer-tax-document`);
-            setDocuments(updatedDocuments.data.documents);
         } catch (error) {
             console.error('Error uploading file:', error);
         }
@@ -117,6 +134,59 @@ const UploadDocument = () => {
         }
     };
 
+
+    const handleDownloadClick = async (document) => {
+        try {
+            const downloadUrl = `http://localhost:8000/customer-tax-document/download/${document.document_id}`;
+            const headers = {
+                Authorization: `Bearer ${accessToken}`,
+            };
+
+            const response = await fetch(downloadUrl, { headers });
+            const blob = await response.blob();
+
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${document.document_id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
+    };
+
+    // Function to render a document thumbnail based on the document type
+    const renderDocumentThumbnail = (document) => {
+        const fileExtension = document.document_path.split('.').pop().toLowerCase();
+
+        const fileTypeIcons = {
+            pdf: <img src={pdf} alt='pdf' className='img-fluid' />,
+            doc: <img src={doc} alt='pdf' className='img-fluid' />,
+            docx: <img src={docx} alt='pdf' className='img-fluid' />,
+            jpg: '🖼️',
+            jpeg: '🖼️',
+            png: '🖼️',
+        };
+
+        // Check if the file extension is in the supported types
+        if (fileExtension in fileTypeIcons) {
+            return (
+                <div style={{ width: '50px', height: '50px', background: '#eee', textAlign: 'center', lineHeight: '50px' }}>
+                    <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
+                </div>
+            );
+        } else {
+            // For unsupported types, you can display a generic icon or handle it differently
+            return (
+                <div style={{ width: '50px', height: '50px', background: '#eee', textAlign: 'center', lineHeight: '50px' }}>
+                    📁
+                </div>
+            );
+        }
+    };
+
     return (
         <div className='d-flex'>
             <Sidebar />
@@ -127,7 +197,7 @@ const UploadDocument = () => {
                 </TaxDescription>
                 <CtaSection className='shadow'>
                     <H1>Enter Tax Document Details Below</H1>
-                    <Form onSubmit={handleUpload} encType="multipart/form-data" >
+                    <Form onSubmit={handleFileUpload}>
                         <InputFieldsContainer>
                             {initialFormFields.map((field, index) => (
                                 <InputFieldsSubContainer className='w-100' key={index}>
@@ -140,7 +210,7 @@ const UploadDocument = () => {
                                         id={field.name}
                                         placeholder={field.placeholder}
                                         name={field.name}
-                                        value={formData[field.name] || ''}
+                                        value={data[field.name] || ''}
                                         onChange={handleChange}
                                         required
                                     />
@@ -168,7 +238,7 @@ const UploadDocument = () => {
                             <DocumentTable>
                                 <thead>
                                     <tr>
-                                        <Th>Document Name</Th>
+                                        <Th>Document</Th>
                                         <Th>Date & Time</Th>
                                         <Th>Assigned Status</Th>
                                         <Th>Review Status</Th>
@@ -176,12 +246,27 @@ const UploadDocument = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
+
                                     {documents.map((document) => (
                                         <tr key={document.document_id}>
-                                            <Td>{document.document_path}</Td>
+                                            <Td>
+                                                <a
+                                                    href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    download
+                                                    onClick={(e) => handleDownloadClick(document)}
+                                                >
+                                                    {renderDocumentThumbnail(document)}
+                                                </a>
+                                            </Td>
                                             <Td>{formatDateTime(document.created_on)}</Td>
-                                            <Td className={`status-${document.assigned_status.toLowerCase()}`}><strong>{document.assigned_status}</strong></Td>
-                                            <Td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></Td>
+                                            <Td className={`status-${document.assigned_status.toLowerCase()}`}>
+                                                <strong>{document.assigned_status}</strong>
+                                            </Td>
+                                            <Td className={`status-${document.review_status.toLowerCase()}`}>
+                                                <strong>{document.review_status}</strong>
+                                            </Td>
                                             <Td>
                                                 <button className='btn btn-light' title='delete document' onClick={() => onDeleteDocument(document.document_id)}>
                                                     {<MdDelete size={25} className='text-danger' />}
@@ -189,6 +274,7 @@ const UploadDocument = () => {
                                             </Td>
                                         </tr>
                                     ))}
+
                                 </tbody>
                             </DocumentTable>
                         </DocumentTableContainer>
@@ -202,76 +288,3 @@ const UploadDocument = () => {
 export default UploadDocument;
 
 
-
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-
-// const TaxInterview = () => {
-//     const [fileData, setFileData] = useState(null);
-//     const [fileList, setFileList] = useState([]);
-
-//     useEffect(() => {
-//         const fetchFiles = async () => {
-//             try {
-//                 const response = await axios.get('http://localhost:6000/uploads');
-//                 setFileList(response.data.files);
-//             } catch (error) {
-//                 console.error('Error fetching files:', error);
-//             }
-//         };
-
-//         fetchFiles();
-//     }, []);
-
-
-//     const handleFileChange = (e) => {
-//         const file = e.target.files[0];
-//         setFileData(file);
-//     };
-
-//     const uploadFile = (e) => {
-//         e.preventDefault();
-
-//         if (!fileData) {
-//             alert("Please select a file to upload.");
-//             return;
-//         }
-
-//         const data = new FormData();
-//         data.append("file", fileData);
-
-//         axios({
-//             method: "POST",
-//             url: "http://localhost:6000/upload",
-//             data: data,
-//         }).then((res) => {
-//             alert(res.data.message);
-//         });
-//     };
-
-//     console.log(fileList)
-
-//     return (
-//         <div className='mt-5 ml-5' style={{height:'100vh', paddingTop:'200px'}}>
-//             <input type="file" onChange={handleFileChange} />
-//             <img src="uploads/1700215171110-2023-05-15.png" alt="Uploaded"/>
-//             <button onClick={uploadFile}>Upload File</button>
-//             <div>
-//                 <h2>Uploaded Files</h2>
-//                 <ul>
-//                     {fileList.map((file) => (
-//                         <li key={file.filename}>
-//                             <img
-//                                 src={`uploads/${file.path}`}
-//                                 alt={file.originalname}
-//                                 style={{ maxWidth: '200px', maxHeight: '200px' }}
-//                             />{file.path}
-//                         </li>
-//                     ))}
-//                 </ul>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default TaxInterview;

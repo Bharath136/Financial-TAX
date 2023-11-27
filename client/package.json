@@ -4,6 +4,7 @@
   "proxy": "http://localhost:6000",
   "private": true,
   "dependencies": {
+    "@cyntler/react-doc-viewer": "^1.14.1",
     "@mui/icons-material": "^5.14.15",
     "@mui/material": "^5.14.15",
     "@testing-library/jest-dom": "^5.17.0",
@@ -15,6 +16,7 @@
     "js-cookies": "^1.0.4",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
+    "react-doc-viewer": "^0.1.5",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
     "react-loading-overlay": "^1.0.1",

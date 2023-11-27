@@ -10,6 +10,7 @@ const customerTaxDocumentsRouter = require('./routes/customerTaxDocuments');
 const customerTaxInputs = require('./routes/customerTaxInputs');
 const taxInputs = require('./routes/taxInputs');
 const taxDocuments = require('./routes/taxDocuments');
+const client = require('./database/connection');
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -33,24 +34,25 @@ const upload = multer({ storage: storage });
 app.use('/uploads', express.static('uploads'));
 
 //File uploading
-app.post("/upload", upload.single("file"), async (req, res) => {
-    try {
-        if (req.file) {
-            res.send({
-                status: true,
-                message: "File Uploaded!",
-            });
-            console.log(req.file)
-        } else {
-            res.status(400).send({
-                status: false,
-                data: "File Not Found :(",
-            });
-        }
-    } catch (err) {
-        res.status(500).send(err);
-    }
-});
+// app.post("/upload", upload.single("file"), async (req, res) => {
+//     try {
+//         if (req.file) {
+//             res.send({
+//                 status: true,
+//                 message: "File Uploaded!",
+//             });
+//             console.log(req.file)
+//         } else {
+//             res.status(400).send({
+//                 status: false,
+//                 data: "File Not Found :(",
+//             });
+//         }
+//     } catch (err) {
+//         res.status(500).send(err);
+//     }
+// });
+
 
 
 // Error handling middleware with the `err` parameter

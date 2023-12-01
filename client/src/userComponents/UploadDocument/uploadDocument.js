@@ -30,6 +30,7 @@ import {
 } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
 import SweetLoading from '../../SweetLoading/SweetLoading';
+import BreadCrumb from '../../breadCrumb/breadCrumb';
 
 // ... (import statements)
 const apiStatusConstants = {
@@ -332,10 +333,12 @@ const UploadDocument = () => {
         <div className='d-flex'>
             <Sidebar />
             <TaxInterviewContainer onDragOver={handleDragOver} onDrop={handleDrop}>
+                <BreadCrumb />
                 <H1>Upload Tax Document</H1>
                 <TaxDescription>
                     Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
                 </TaxDescription>
+                
                 {renderComponents()}
             </TaxInterviewContainer>
         </div>

@@ -4,7 +4,6 @@ const fs = require('fs');
 
 // Create customer new tax comment
 const createTaxReturnDocument = async (req, res, next) => {
-    console.log(req.body)
     try {
         if (!req.file) {
             return res.status(400).send({
@@ -17,7 +16,6 @@ const createTaxReturnDocument = async (req, res, next) => {
         const fileInfo = {
             filename: req.file.filename,
             path: req.file.path,
-            // Add other relevant information as needed
         };
         const {
             customer_id,

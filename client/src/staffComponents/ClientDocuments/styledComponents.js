@@ -34,6 +34,20 @@ export const CtaSection = styled.div`
     min-height:50vh;
 `;
 
+export const Lable = styled.label`
+    margin-top:10px;
+`
+
+export const Button = styled.button`
+    border-radius: 30px;
+    padding: 8px 16px;
+    background-color: transparent;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+`
+
 export const DocumentsTableContainer = styled.div`
     width:100%;
 `
@@ -80,4 +94,20 @@ export const NoDocumentsContainer = styled.div`
     flex-direction:column;
     align-items:center;
     justify-content:center;
+`
+
+export const ButtonContainer = styled.div`
+    width:100%;
+    display:flex;
+    justify-content:flex-end;
+`
+
+export const ViewButton = styled(Button)`
+    background-color: transparent;
+    border: 1.4px solid var(--accent-background);
+    color: var(--accent-background);
+    &:hover{
+        color: var(--button-text);
+        background-color: var(--accent-background);
+    }
 `

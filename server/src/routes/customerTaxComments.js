@@ -7,9 +7,12 @@ const { createCustomerNewTaxComment,
      updateCustomerComments, 
      getCustomerCommentById, 
      deleteCustomerCommentById,
-     getCommentsByDocId } = require('../controllers/customerTaxComments')
+     getCommentsByDocId,
+    updateCommentStatus } = require('../controllers/customerTaxComments')
 
-router.get('/get-comments/:id', authenticate(['CUSTOMER']), getCommentsByDocId);
+router.get('/get-comments/:id', authenticate(['CUSTOMER','STAFF','ADMIN']), getCommentsByDocId);
+
+router.put('/comment-status/:id', authenticate(['STAFF', 'ADMIN']), updateCommentStatus)
 
 router.post('/create',authenticate(['CUSTOMER']), createCustomerNewTaxComment)
 

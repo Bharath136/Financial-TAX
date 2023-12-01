@@ -3,7 +3,9 @@ import axios from 'axios';
 import EditModal from '../../SweetPopup/sweetPopup';
 import Sidebar from '../SideBar/sidebar';
 import domain from '../../domain/domain';
-import './myTaxDocuments.css';
+import './taxInterview.css';
+import { H1 } from '../CommentDocument/styledComponents';
+import BreadCrumb from '../../breadCrumb/breadCrumb';
 
 const MyTaxDocuments = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -59,11 +61,12 @@ const MyTaxDocuments = () => {
     return (
         <div className='d-flex'>
             <Sidebar />
-            <div className="my-tax-documents-container">
-                <h3>Documents</h3>
+            <div className="tax-interview-container">
+                <BreadCrumb />
+                <H1>Tax Interview</H1>
+                
                 {taxDocuments.map(document => (
                     <div key={document.document_id}>
-                        {/* Render your document data */}
                         <button onClick={() => handleEditClick(document)}>
                             Edit
                         </button>

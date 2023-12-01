@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Sidebar from '../SideBar/sidebar';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import BreadCrumb from '../../breadCrumb/breadCrumb';
 
 const PaymentSectionContainer = styled.div`
   display: flex;
+  flex-direction:column;
   width:100%;
   justify-content: center;
   align-items: center;
@@ -76,6 +78,7 @@ const MakePayment = () => {
         <div className='d-flex'>
             <Sidebar />
             <PaymentSectionContainer>
+            {/* <BreadCrumb/> */}
                 <PaymentForm onSubmit={handlePaymentSubmit}>
                     <h2 style={{ marginBottom: '30px', textAlign: 'center', color: '#333' }}>Payment Details</h2>
                     <FormGroup>

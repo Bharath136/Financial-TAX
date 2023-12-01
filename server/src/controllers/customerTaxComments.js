@@ -11,7 +11,6 @@ const createCustomerNewTaxComment = async (req, res) => {
         financial_quarter,
         financial_month,
     } = req.body;
-    console.log(req.body);
 
     try {
         const commentQuery = `
@@ -58,6 +57,44 @@ const getCustomerAllComments = async (req,res) => {
     }
 
 }
+
+
+const updateCommentStatus = async (req, res) => {
+    const comment_id = req.params.id
+    const {
+        comment_status,
+        staff_id
+    } = req.body;
+    console.log(comment_id)
+    try {
+        const updateStatusQuery = `
+            UPDATE customer_tax_comments
+            SET comment_status = $1, staff_id = $2, updated_on = $3
+            WHERE comment_id = $4
+            RETURNING comment_id;
+        `;
+        const values = [
+            comment_status, // Use the provided new_status for updating comment_status
+            staff_id,
+            new Date(),
+            comment_id,
+        ];
+
+        const result = await client.query(updateStatusQuery, values);
+
+        // Check if any rows were affected by the update
+        if (result.rows.length === 0) {
+            res.status(404).json({ error: 'Comment not found.' });
+        } else {
+            res.status(200).json({ message: 'Comment status updated successfully.', comment_id });
+        }
+    } catch (error) {
+        console.error('Error updating comment status:', error);
+        res.status(500).json({ error: 'Error updating comment status.' });
+    }
+};
+
+// Example usage:
 
 
 const updateCustomerComments = async (req, res) => {
@@ -150,5 +187,6 @@ module.exports = {
     updateCustomerComments,
     getCustomerCommentById,
     deleteCustomerCommentById,
-    getCommentsByDocId
+    getCommentsByDocId,
+    updateCommentStatus
 }

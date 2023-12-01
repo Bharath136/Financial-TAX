@@ -18,15 +18,17 @@ import {
     FaUser,
     FaFileAlt,
     FaCheck,
-    FaCloudUploadAlt,
-    FaComments
+    // FaCloudUploadAlt,
+    FaComments,
+    FaFileUpload
 } from 'react-icons/fa';
 import AuthContext from '../../AuthContext/AuthContext';
 import { IoPersonAddSharp } from "react-icons/io5";
 
 const menuItems = [
     { path: '/user-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
-    { path: '/tax-interview', label: 'Upload Document', icon: <FaCloudUploadAlt size={25} /> },
+    { path: '/tax-interview', label: 'Tax Interview', icon: <FaUser size={25} /> },
+    { path: '/upload-document', label: 'Upload Document', icon: <FaFileUpload size={25} /> },
     { path: '/comment-to-document', label: 'Add Comment', icon: <FaComments size={25} /> },
     { path: '/tax-return-review', label: 'Taxreturn Review', icon: <HiDocumentDuplicate size={25} /> },
     { path: '/make-payment', label: 'Payments', icon: <MdPayments size={25} /> },
@@ -137,7 +139,7 @@ const Sidebar = () => {
                                     Logout
                                 </Link>
                             </button>
-                            <button className='btn d-flex align-items-center w-100' style={{ padding: hideSidebar && '14px ' }} onClick={onChangeMode} title={`${isDarkMode ? 'Light Mode' : 'Dark Mode'}`}>
+                            {/* <button className='btn d-flex align-items-center w-100' style={{ padding: hideSidebar && '14px ' }} onClick={onChangeMode} title={`${isDarkMode ? 'Light Mode' : 'Dark Mode'}`}>
                                 {isDarkMode ? (
                                     <MdOutlineDarkMode className="text-dark" size={25} />
                                 ) : (
@@ -146,7 +148,7 @@ const Sidebar = () => {
                                 <Link className="logout-link" style={{ display: hideSidebar && 'none' }}>
                                     {isDarkMode ? 'Light Mode' : 'Dark Mode'}
                                 </Link>
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 );

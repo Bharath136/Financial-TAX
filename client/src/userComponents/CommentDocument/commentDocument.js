@@ -33,6 +33,7 @@ import {
     DocumentName,
 } from './styledComponents';
 import SweetLoading from '../../SweetLoading/SweetLoading';
+import BreadCrumb from '../../breadCrumb/breadCrumb';
 
 
 const apiStatusConstants = {
@@ -247,7 +248,13 @@ const CommentDocument = () => {
                                                     </div>
                                                 </Td>
                                                 <Td>{formatDateTime(document.created_on)}</Td>
-                                                <Td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></Td>
+                                                <Td style={{
+                                                    color:
+                                                        document.comment_status === 'Pending' ? 'orange' :
+                                                            document.comment_status === 'Rejected' ? 'red' :
+                                                                document.comment_status === 'Reviewed' ? 'green' :
+                                                                    'inherit'
+                                                }}><strong>{document.review_status}</strong></Td>
                                                 <Td>
                                                     <CommentButton type="button" onClick={() => handleToggleCommentInput(document)}>
                                                         Comment
@@ -336,7 +343,13 @@ const CommentDocument = () => {
                                                     </div>
                                                 </Td>
                                                 <Td>{comment.comment}</Td>
-                                                <Td className={`status-${comment.comment_status.toLowerCase()}`}>
+                                                <Td style={{
+                                                    color:
+                                                        comment.comment_status === 'Pending' ? 'orange' :
+                                                            comment.comment_status === 'Rejected' ? 'red' :
+                                                                comment.comment_status === 'Reviewed' ? 'green' :
+                                                                    'inherit'
+                                                }}>
                                                     <strong>{comment.comment_status}</strong>
                                                 </Td>
                                                 <Td>{formatDateTime(comment.created_on)}</Td>
@@ -366,10 +379,12 @@ const CommentDocument = () => {
         <div className="d-flex">
             <Sidebar />
             <CommentDocumentContainer>
+                <BreadCrumb />
                 <H1>Comment on Document</H1>
                 <CommentDescription>
                     Welcome to our Comment Document service! Add comments to the documents for your tax return process.
                 </CommentDescription>
+                
                 {renderComponents()}
             </CommentDocumentContainer>
         </div>

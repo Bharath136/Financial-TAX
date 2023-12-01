@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import axios from 'axios';
 import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
@@ -7,9 +7,10 @@ import showAlert from '../../SweetAlert/sweetalert';
 import pdf from '../../Assets/PDF_file_icon.svg.png'
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
-import { ClientDocumentContainer, CtaSection, Description, DocumentName, DocumentTable, DocumentTableContainer, H1, NoDocumentsContainer, Td, Th } from './styledComponents';
+import { ClientDocumentContainer, CtaSection, Description, DocumentName, DocumentTable, DocumentTableContainer, H1, Lable, NoDocumentsContainer, Td, Th, ViewButton } from './styledComponents';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import noDocuments from '../../Assets/no-documents.jpg'
+import { MdDelete } from 'react-icons/md';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -22,6 +23,9 @@ const ClientDocuments = () => {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
     const [documents, setDocuments] = useState([]);
+    const [comments, setComments] = useState([]);
+    const [showComments, setShowComments] = useState(false);
+    const [selectedDocument, setSelectedDocument] = useState({});
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
     const fetchDocuments = async () => {
@@ -129,6 +133,65 @@ const ClientDocuments = () => {
         }
     };
 
+    const handleGetComments = async (document) => {
+        setApiStatus(apiStatusConstants.inProgress)
+        try {
+            const token = localStorage.getItem('customerJwtToken');
+            const response = await axios.get(`${domain.domain}/customer-tax-comment/get-comments/${document.document_id}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (response.status === 200) {
+                setComments(response.data);
+                setShowComments(!showComments)
+                setSelectedDocument(document)
+                setApiStatus(apiStatusConstants.success)
+            } else {
+                setApiStatus(apiStatusConstants.failure)
+            }
+
+        } catch (error) {
+            console.error('Error getting comments:', error);
+        }
+    };
+
+    const onDeleteDocumentComment = async (id) => {
+        setApiStatus(apiStatusConstants.inProgress)
+        try {
+            await axios.delete(`${domain.domain}/customer-tax-comment/${id}`, {
+                headers: { 'Authorization': `Bearer ${accessToken}` },
+            });
+            setApiStatus(apiStatusConstants.success)
+            handleGetComments(selectedDocument);
+            showAlert({ title: 'Comment Deleted Successfully!', icon: 'success', confirmButtonText: 'Ok' });
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+        }
+    };
+
+    const onChangeCommentStatus = async (id, statusOption) => {
+        setApiStatus(apiStatusConstants.inProgress);
+        try {
+            const response = await axios.put(
+                `${domain.domain}/customer-tax-comment/comment-status/${id}`,
+                { comment_status: statusOption, staff_id: user.user_id }, // Corrected the object structure
+                {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                }
+            );
+            if(response.status === 200){
+                setApiStatus(apiStatusConstants.success);
+                handleGetComments(selectedDocument);
+                showAlert({ title: 'Comment Status Updated Successfully!', icon: 'success', confirmButtonText: 'Ok' });
+            }else{
+                setApiStatus(apiStatusConstants.failure);
+            }
+        } catch (error) {
+            console.error('Error updating comment status:', error);
+            // You might want to handle the error more gracefully, e.g., setApiStatus(apiStatusConstants.error)
+        }
+    };
+
+
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
@@ -145,6 +208,7 @@ const ClientDocuments = () => {
                                     <Th>Date & Time</Th>
                                     <Th>Review Status</Th>
                                     <Th>Change Status</Th>
+                                    <Th>Comments</Th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -191,10 +255,82 @@ const ClientDocuments = () => {
                                                 ))}
                                             </DropdownButton>
                                         </Td>
+                                        <Td><ViewButton type="button" onClick={() => handleGetComments(document)} className="view-button button">
+                                            View
+                                        </ViewButton></Td>
                                     </tr>
                                 ))}
                             </tbody>
                         </DocumentTable>
+                        {showComments && (
+                            <DocumentTableContainer className='mt-4'>
+                                <Lable><strong>Comments for Document:</strong> <strong style={{ color: `var(--accent-background)` }}> {selectedDocument.document_name}</strong> </Lable>
+                                {comments.length > 0 ? <DocumentTable>
+                                    <thead>
+                                        <tr>
+                                            <Th>Document</Th>
+                                            <Th>Comment</Th>
+                                            <Th>Comment Status</Th>
+                                            <Th>Updated On</Th>
+                                            <Th>Change status</Th>
+                                            <Th>Delete</Th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {comments.map((comment) => (
+                                            <tr key={comment.comment_id}>
+                                                <Td>
+                                                    <div className='d-flex flex-column'> <a
+                                                        href={`${domain.domain}/customer-tax-document/download/${selectedDocument.document_id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        download
+                                                        onClick={(e) => handleDownloadClick(selectedDocument)}
+                                                    >
+                                                        {renderDocumentThumbnail(selectedDocument)}
+
+                                                    </a>
+                                                        <DocumentName>{selectedDocument.document_path.split('-')[1]}</DocumentName>
+                                                    </div>
+                                                </Td>
+                                                <Td>{comment.comment}</Td>
+                                                <Td style={{
+                                                    color:
+                                                        comment.comment_status === 'Pending' ? 'orange' :
+                                                            comment.comment_status === 'Rejected' ? 'red' :
+                                                                comment.comment_status === 'Reviewed' ? 'green' :
+                                                                    'inherit'
+                                                }}>
+                                                    <strong>{comment.comment_status}</strong>
+                                                </Td>
+                                                <Td>{formatDateTime(comment.updated_on)}</Td>
+                                                <Td>
+                                                    <DropdownButton
+                                                        id={`dropdown-button-${document.document_id}`}
+                                                        title="Change"
+                                                        variant="warning"
+                                                    >
+                                                        {['Pending', 'Reviewed', 'Rejected'].map((statusOption) => (
+                                                            <Dropdown.Item
+                                                                key={statusOption}
+                                                                onClick={() => onChangeCommentStatus(comment.comment_id, statusOption)}
+                                                            >
+                                                                {statusOption}
+                                                            </Dropdown.Item>
+                                                        ))}
+                                                    </DropdownButton>
+                                                </Td>
+                                                <Td>
+                                                    <Button title="delete document" onClick={() => onDeleteDocumentComment(comment.comment_id)}>
+                                                        <MdDelete size={25} className="text-danger" />
+                                                    </Button>
+                                                </Td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </DocumentTable> : <p className="text-danger">No Comments to this document.</p>}
+                            </DocumentTableContainer>
+                        )}
                     </DocumentTableContainer>
                 </CtaSection>
             case apiStatusConstants.inProgress:

@@ -315,7 +315,8 @@ const TaxReturnDocument = () => {
                                     <tr>
                                         <Th>Document</Th>
                                         <Th>Date & Time</Th>
-                                        <Th>Review Status</Th>
+                                        <Th>Payment Amount</Th>
+                                        <Th>Payment Status</Th>
                                         <Th>Delete</Th>
                                     </tr>
                                 </thead>
@@ -341,9 +342,24 @@ const TaxReturnDocument = () => {
 
                                             </Td>
                                             <Td>{formatDateTime(document.created_on)}</Td>
-                                            <Td className={`status-${document.review_status.toLowerCase()}`}>
+                                            <Td style={{
+                                                color:
+                                                    document.payment_status === 'Pending' ? 'orange' :
+                                                        document.payment_status === 'Rejected' ? 'red' :
+                                                            document.payment_status === 'Reviewed' ? 'green' :
+                                                                'inherit'
+                                            }}><strong>{document.payment_status}</strong></Td>
+                                            <Td>{document.payment_amount}</Td>
+                                            {/* <Td style={{
+                                                color:
+                                                    document.review_status === 'Pending' ? 'orange' :
+                                                        document.review_status === 'Rejected' ? 'red' :
+                                                            document.review_status === 'Reviewed' ? 'green' :
+                                                                'inherit'
+                                            }}>
                                                 <strong>{document.review_status}</strong>
-                                            </Td>
+                                            </Td> */}
+                                            
                                             <Td>
                                                 <DeleteButton title='delete document' onClick={() => onDeleteDocument(document.taxreturn_id)}>
                                                     {<MdDelete size={25} className='text-danger' />}

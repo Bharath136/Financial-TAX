@@ -9,7 +9,7 @@ import Contact from './components/Contact/contact';
 import CommentDocument from './userComponents/CommentDocument/commentDocument';
 import MySummary from './userComponents/TaxreturnReview/taxreturnReview';
 import MakePayment from './userComponents/MakePayment/makePayment';
-import MyTaxDocuments from './userComponents/MyTaxDocuments/myTaxDocuments';
+import TaxInterview from './userComponents/TaxInterview/taxInterview';
 import Landingpage from './components/Landingpage/landingpage';
 import ProtectedRoute from './userComponents/ProtectedRoute/protectedRoute';
 import AuthContext from './AuthContext/AuthContext';
@@ -85,11 +85,12 @@ function App() {
 
     // Register user components
     { path: '/user-dashboard', element: <ProtectedRoute Component={UserDashboard} /> },
-    { path: '/tax-interview', element: <ProtectedRoute Component={UploadDocument} /> },
+    { path: '/tax-interview', element: <ProtectedRoute Component={TaxInterview} /> },
+    { path: '/upload-document', element: <ProtectedRoute Component={UploadDocument} /> },
     { path: '/comment-to-document', element: <ProtectedRoute Component={CommentDocument} /> },
     { path: '/tax-return-review', element: <ProtectedRoute Component={MySummary} /> },
     { path: '/make-payment', element: <ProtectedRoute Component={MakePayment} /> },
-    { path: '/my-tax-documents', element: <ProtectedRoute Component={MyTaxDocuments} /> },
+
 
     //Staff components
     { path: '/staff-dashboard', element: <ProtectedRoute Component={StaffDashboard} /> },

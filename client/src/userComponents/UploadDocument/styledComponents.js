@@ -35,10 +35,12 @@ export const CtaSection = styled.div`
 `;
 
 export const Form = styled.form`
-    width:50%;
+    width:70%;
+    display:flex;
+    flex-direction:column;
     padding:40px;
     box-shadow: 0 4px 8px var(--border);
-    @media screen and (max-width:912px){
+    @media screen and (max-width:1020px){
         padding:20px;
         width:100%;
     }
@@ -56,10 +58,20 @@ export const InputFieldsContainer = styled.div`
 
 
 export const InputFieldsSubContainer = styled.div`
-    margin:4px;
+    gap:10px;
+    margin-bottom:6px;
     @media screen and (max-width:912px){
         margin:0px;
+        width:100%;
     }
+`
+
+export const Select = styled.select`
+    padding:10px;
+`
+
+export const Lable = styled.label`
+    margin-bottom:4px;
 `
 
 export const InputField = styled.input`
@@ -93,6 +105,25 @@ export const UploadButton = styled(Button)`
     }
 `;
 
+export const DeleteButton = styled(Button)`
+    color:red;
+    background-color:transparent;
+    &:hover{
+        background-color:var(--main-background);
+        border-radius:10px;
+    }
+`
+
+export const DocumentName = styled.span`
+    font-size:16px;
+    @media screen and (max-width:912px){
+        font-size:14px;
+    }
+    @media screen and (max-width:768px){
+        font-size:12px;
+    }
+`
+
 export const DragDropArea = styled.div`
     border: 4px dashed var(--border);
     padding: 30px;
@@ -124,7 +155,7 @@ export const DocumentImage = styled.img`
 export const DocumentTableContainer = styled.div`
     margin-top: 20px;
     width: 100%;
-    overflow-x: auto;
+    overflow: auto;
 `;
 
 export const DocumentTable = styled.table`

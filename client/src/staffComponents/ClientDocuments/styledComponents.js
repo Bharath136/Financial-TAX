@@ -49,16 +49,35 @@ export const DocumentTable = styled.table`
     margin-top: 10px;
 `;
 
+
+export const DocumentName = styled.span`
+    font-size:16px;
+    @media screen and (max-width:912px){
+        font-size:14px;
+    }
+    @media screen and (max-width:768px){
+        font-size:12px;
+    }
+`
+
 export const Th = styled.th`
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     padding: 10px;
     text-align: center;
-    background-color: #f2f2f2;
+    background-color: var(--main-background);
 `
 
 export const Td = styled.td`
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     padding: 10px;
     text-align: center;
-    color: ${(props) => (props.reviewed ? 'green' : (props.rejected ? 'red' : (props.pending ? 'orange' : (props.assigned ? 'green' : 'grey'))))};
+`
+
+export const NoDocumentsContainer = styled.div`
+    height:80vh;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
 `

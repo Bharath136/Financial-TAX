@@ -15,11 +15,11 @@ const UserDashboard = () => {
     }, [user]);
 
     const data = {
-        total: { value: 100, description: 'Total documents' },
-        pending: { value: 25, description: 'Pending documents' },
-        reviewed: { value: 45, description: 'Reviewed documents' },
-        payments: { value: 60, description: 'Total payments' },
-        summary: { value: 80, description: 'Summary details' },
+        total: { description: 'Total documents' },
+        pending: { description: 'Pending documents' },
+        reviewed: { description: 'Reviewed documents' },
+        payments: { description: 'Total payments' },
+        summary: { description: 'Summary details' },
     };
 
     return (
@@ -39,7 +39,6 @@ const UserDashboard = () => {
                             </div>
                             <div className="dashboard-text">
                                 <h4>{value.description}</h4>
-                                <p>{value.value}%</p>
                             </div>
                         </div>
                     ))}

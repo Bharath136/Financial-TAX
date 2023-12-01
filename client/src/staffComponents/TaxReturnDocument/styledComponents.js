@@ -24,6 +24,26 @@ export const TaxDescription = styled.p`
     margin-bottom: 20px;
 `;
 
+export const ClientsHeaderContainer = styled.div`
+    display:flex;
+    width:100%;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    @media screen and (max-width:512px){
+        flex-direction:column;
+        align-items:flex-start;
+    }
+`
+
+export const Select = styled.select`
+    padding:10px;
+    width:20%;
+    @media screen and (max-width:768px){
+        width:100%;
+    }
+`
+
 export const CtaSection = styled.div`
     display: flex;
     flex-direction: column;
@@ -35,10 +55,10 @@ export const CtaSection = styled.div`
 `;
 
 export const Form = styled.form`
-    width:50%;
+    width:70%;
     padding:40px;
     box-shadow: 0 4px 8px var(--border);
-    @media screen and (max-width:912px){
+    @media screen and (max-width:992px){
         padding:20px;
         width:100%;
     }
@@ -56,7 +76,7 @@ export const InputFieldsContainer = styled.div`
 
 
 export const InputFieldsSubContainer = styled.div`
-    margin:4px;
+    margin-bottom:6px;
     @media screen and (max-width:912px){
         margin:0px;
     }

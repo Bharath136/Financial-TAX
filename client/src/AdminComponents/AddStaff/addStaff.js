@@ -54,8 +54,8 @@ const AddStaff = () => {
                     <form onSubmit={handleSubmit} className='form-container'>
                         <div className='row'>
                             {initialFormFields.map((field, index) => (
-                                <div className='col-12 col-md-6' >
-                                    <div className="mb-2 d-flex flex-column" key={index}>
+                                <div className='col-12 col-md-6' key={index}>
+                                    <div className="mb-2 d-flex flex-column" >
                                         <label htmlFor={field.name} className="form-label text-dark m-0">
                                             {field.label}
                                         </label>

@@ -4,10 +4,18 @@ import Select from 'react-select';
 import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
-import { SearchButton, ClientsHeaderContainer,Container, ExecuteButton, FilterSelect, H1, SearchBar, SearchBarContainer, StaffListContainer, Table, TableContainer, Td, Th } from './styledComponents';
+import { SearchButton, ClientsHeaderContainer,Container, ExecuteButton, H1, SearchBar, SearchBarContainer, StaffListContainer, Table, TableContainer, Td, Th, NoClientContainer } from './styledComponents';
 import { BiSearch } from 'react-icons/bi';
-import { MdFilterList } from 'react-icons/md';
 import showAlert from '../../SweetAlert/sweetalert';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+import noClient from '../../Assets/no-customers.jpg'
+
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
 
 const Staff = () => {
     const [staffList, setStaff] = useState([]);
@@ -19,19 +27,16 @@ const Staff = () => {
     const [viewAssignedClients, setViewAssignedClients] = useState(false);
     const [selectedStaff, setSelectedStaff] = useState({})
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedFilter, setFilterType] = useState('');
     const [unassignedClients, setUnassignedClients] = useState([]);
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const token = localStorage.getItem('customerJwtToken');
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    const handleFilterChange = (filterType) => {
-        setFilterType(filterType);
-    };
-
     const fetchData = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             const staffResponse = axios.get(`${domain.domain}/user`, {
                 headers: {
@@ -56,7 +61,7 @@ const Staff = () => {
             const unassignedClients = filteredClients.filter((client) => {
                 return !assignedClients.some((assignedClient) => assignedClient.client_id === client.user_id);
             });
-
+            setApiStatus(apiStatusConstants.success)
             setUnassignedClients(unassignedClients);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -78,12 +83,14 @@ const Staff = () => {
     };
 
     const onDeleteStaff = async (id) => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             await axios.delete(`${domain.domain}/user/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            setApiStatus(apiStatusConstants.success)
             fetchData();
         } catch (error) {
             console.error('Error Deleting staff:', error);
@@ -125,6 +132,7 @@ const Staff = () => {
     };
 
     const getAssignedClients = async (id) => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             // Fetch assignments for the staff
             const assignmentsResponse = await axios.get(`${domain.domain}/staff-customer-assignments/staff/${id}`, {
@@ -141,7 +149,7 @@ const Staff = () => {
 
             // Filter clients based on assignedClientIds
             const assignedClients = clients.filter((client) => assignedClientIds.includes(client.user_id));
-
+            setApiStatus(apiStatusConstants.success)
             setAssignedClients(assignedClients);
             setViewAssignedClients(!viewAssignedClients);
         } catch (error) {
@@ -151,7 +159,7 @@ const Staff = () => {
 
     const handleAssign = async (staffId) => {
         const assignData = { client_id: selectedAction.data.user_id, staff_id:staffId}
-        
+        setApiStatus(apiStatusConstants.inProgress)
         try{
             const response = await axios.post(`${domain.domain}/staff-customer-assignments/assign`, assignData, {
                 headers: {
@@ -159,6 +167,7 @@ const Staff = () => {
                 },
             });
             if(response.status === 200){
+                setApiStatus(apiStatusConstants.success)
                 showAlert({
                     title: 'Client Assigned Successfully!',
                     text: 'The selected client has been successfully assigned.',
@@ -172,13 +181,14 @@ const Staff = () => {
         }
     }
 
-
-    return (
-        <div className="d-flex">
-            <Sidebar />
-            <StaffListContainer>
-                <H1>Staff</H1>
-                <TableContainer className='shadow'>
+    const renderComponents = () => {
+        switch(apiStatus){
+            case apiStatusConstants.failure:
+                return <div>failure</div>
+            case apiStatusConstants.inProgress:
+                return <SweetLoading/>
+            case apiStatusConstants.success:
+                return <TableContainer className='shadow'>
                     <ClientsHeaderContainer>
                         <SearchBarContainer>
                             <SearchBar
@@ -189,18 +199,6 @@ const Staff = () => {
                             />
                             <SearchButton><BiSearch size={25} /></SearchButton>
                         </SearchBarContainer>
-                        <div>
-                            <label htmlFor="filterDropdown"><MdFilterList size={20} /></label>
-                            <FilterSelect
-                                id="filterDropdown"
-                                value={selectedFilter}
-                                onChange={(e) => handleFilterChange(e.target.value)}
-                            >
-                                <option value="">All Clients</option>
-                                <option value="assigned">Assigned Clients</option>
-                                <option value="unassigned">Unassigned Clients</option>
-                            </FilterSelect>
-                        </div>
                     </ClientsHeaderContainer>
                     <Container>
                         <Table>
@@ -210,9 +208,9 @@ const Staff = () => {
                                     <Th>Name</Th>
                                     <Th>Email</Th>
                                     <Th>Phone</Th>
-                                    <Th>Actions</Th>
                                     <Th>Assign Clients</Th>
                                     <Th>Assigned Clients</Th>
+                                    <Th>Actions</Th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -222,20 +220,6 @@ const Staff = () => {
                                         <Td>{staff.first_name}</Td>
                                         <Td>{staff.email_address}</Td>
                                         <Td>{staff.contact_number}</Td>
-                                        <Td>
-                                            <div className='d-flex'>
-                                                <Select
-                                                    options={actionOptions}
-                                                    onChange={handleActionChange}
-                                                    placeholder="Select Action"
-                                                />
-                                                <ExecuteButton
-                                                    onClick={() => handleExecuteAction(staff.user_id)}
-                                                >
-                                                    Execute
-                                                </ExecuteButton>
-                                            </div>
-                                        </Td>
                                         <Td>
                                             <div className='d-flex'>
                                                 <Select
@@ -260,6 +244,20 @@ const Staff = () => {
                                             >
                                                 View
                                             </ExecuteButton>
+                                        </Td>
+                                        <Td>
+                                            <div className='d-flex'>
+                                                <Select
+                                                    options={actionOptions}
+                                                    onChange={handleActionChange}
+                                                    placeholder="Select Action"
+                                                />
+                                                <ExecuteButton
+                                                    onClick={() => handleExecuteAction(staff.user_id)}
+                                                >
+                                                    Execute
+                                                </ExecuteButton>
+                                            </div>
                                         </Td>
                                     </tr>
                                 ))}
@@ -291,6 +289,23 @@ const Staff = () => {
                     </Table>}
                     {viewAssignedClients && assignedClients.length === 0 && <p>No Clients Assigned</p>}
                 </TableContainer>
+            default :
+            return null
+        }
+    }
+
+    return (
+        <div className="d-flex">
+            <Sidebar />
+            <StaffListContainer>
+                <H1>Staff</H1>
+                {staffList.length > 0 ? renderComponents() :
+                    <NoClientContainer>
+                        <img src={noClient} alt='img' className='img-fluid' />
+                        <H1>No Staff Added</H1>
+                        <p>Oops! It seems there are no staff Added here.</p>
+                    </NoClientContainer>
+                }
             </StaffListContainer>
 
             <EditModal

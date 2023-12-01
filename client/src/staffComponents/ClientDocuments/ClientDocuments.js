@@ -7,22 +7,37 @@ import showAlert from '../../SweetAlert/sweetalert';
 import pdf from '../../Assets/PDF_file_icon.svg.png'
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
-import { ClientDocumentContainer, CtaSection, Description, DocumentTable, DocumentTableContainer, H1, Td, Th } from './styledComponents';
+import { ClientDocumentContainer, CtaSection, Description, DocumentName, DocumentTable, DocumentTableContainer, H1, NoDocumentsContainer, Td, Th } from './styledComponents';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+import noDocuments from '../../Assets/no-documents.jpg'
+
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
 
 const ClientDocuments = () => {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
     const [documents, setDocuments] = useState([]);
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
     const fetchDocuments = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
-            const response = await axios.get(`${domain.domain}/customer-tax-document`, {
+            const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-            const filteredData = response.data.documents.filter(
-                (document) => document.assigned_staff === user.user_id
-            );
-            setDocuments(filteredData);
+            if (response.status === 200) {
+                const filteredData = response.data.filter(
+                    (document) => document.staff_id === user.user_id
+                );
+                setApiStatus(apiStatusConstants.success)
+                setDocuments(filteredData);
+            }
+
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
@@ -42,12 +57,14 @@ const ClientDocuments = () => {
     };
 
     const onChangeDocumentStatus = async (id, status) => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             await axios.put(
                 `${domain.domain}/customer-tax-document/review-status/${id}`,
                 { user_id: user.user_id, review_status: status },
                 { headers: { Authorization: `Bearer ${accessToken}` } }
             );
+            setApiStatus(apiStatusConstants.success)
             showAlert({
                 title: 'Status Updated Successfully!',
                 text: '',
@@ -90,9 +107,9 @@ const ClientDocuments = () => {
         const fileExtension = document.document_path.split('.').pop().toLowerCase();
 
         const fileTypeIcons = {
-            pdf: <img src={pdf} alt='pdf' className='img-fluid' />,
-            doc: <img src={doc} alt='pdf' className='img-fluid' />,
-            docx: <img src={docx} alt='pdf' className='img-fluid' />,
+            pdf: <img src={pdf} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
+            doc: <img src={doc} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
+            docx: <img src={docx} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
             jpg: '🖼️',
             jpeg: '🖼️',
             png: '🖼️',
@@ -101,20 +118,91 @@ const ClientDocuments = () => {
         // Check if the file extension is in the supported types
         if (fileExtension in fileTypeIcons) {
             return (
-                <div style={{ width: '50px', height: '50px', background: '#eee', textAlign: 'center', lineHeight: '50px' }}>
-                    <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
-                </div>
+                <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
             );
         } else {
-            // For unsupported types, you can display a generic icon or handle it differently
             return (
-                <div style={{ width: '50px', height: '50px', background: '#eee', textAlign: 'center', lineHeight: '50px' }}>
+                <span>
                     📁
-                </div>
+                </span>
             );
         }
     };
 
+    const renderComponents = () => {
+        switch (apiStatus) {
+            case apiStatusConstants.failure:
+                return <div>failure</div>
+            case apiStatusConstants.success:
+                return <CtaSection className="shadow">
+
+                    <DocumentTableContainer className="document-table-container">
+                        <H1>Uploaded Documents</H1>
+                        <DocumentTable className="document-table">
+                            <thead>
+                                <tr>
+                                    <Th>Document</Th>
+                                    <Th>Date & Time</Th>
+                                    <Th>Review Status</Th>
+                                    <Th>Change Status</Th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {documents.map((document) => (
+                                    <tr key={document.document_id}>
+                                        <Td>
+                                            <div className='d-flex flex-column'> <a
+                                                href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                download
+                                                onClick={(e) => handleDownloadClick(document)}
+                                            >
+                                                {renderDocumentThumbnail(document)}
+
+                                            </a>
+                                                <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
+                                            </div>
+                                        </Td>
+                                        <Td>{formatDateTime(document.created_on)}</Td>
+                                        <Td style={{
+                                            color:
+                                                document.review_status === 'Pending' ? 'orange' :
+                                                    document.review_status === 'Rejected' ? 'red' :
+                                                        document.review_status === 'Reviewed' ? 'green' :
+                                                            'inherit'
+                                        }}>
+
+                                            <strong>{document.review_status}</strong>
+                                        </Td>
+                                        <Td>
+                                            <DropdownButton
+                                                id={`dropdown-button-${document.document_id}`}
+                                                title="Change"
+                                                variant="warning"
+                                            >
+                                                {['Pending', 'Reviewed', 'Rejected'].map((statusOption) => (
+                                                    <Dropdown.Item
+                                                        key={statusOption}
+                                                        onClick={() => onChangeDocumentStatus(document.document_id, statusOption)}
+                                                    >
+                                                        {statusOption}
+                                                    </Dropdown.Item>
+                                                ))}
+                                            </DropdownButton>
+                                        </Td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </DocumentTable>
+                    </DocumentTableContainer>
+                </CtaSection>
+            case apiStatusConstants.inProgress:
+                return <SweetLoading />
+            default:
+                return null
+        }
+    }
     return (
         <div className="d-flex">
             <Sidebar />
@@ -125,62 +213,13 @@ const ClientDocuments = () => {
                     the required information, and upload the necessary tax documents to get
                     started on your tax return process.
                 </Description>
-                <CtaSection className="shadow">
-                    {documents.length > 0 && (
-                        <DocumentTableContainer className="document-table-container">
-                            <H1>Uploaded Documents</H1>
-                            <DocumentTable className="document-table">
-                                <thead>
-                                    <tr>
-                                        <Th>Document</Th>
-                                        <Th>Date & Time</Th>
-                                        <Th>Assigned Status</Th>
-                                        <Th>Review Status</Th>
-                                        <Th>Change Status</Th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {documents.map((document) => (
-                                        <tr key={document.document_id}>
-                                            <Td>
-                                                <a
-                                                    href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    download
-                                                    onClick={(e) => handleDownloadClick(document)}
-                                                >
-                                                    {renderDocumentThumbnail(document)}
-                                                </a>
-                                            </Td>
-                                            <Td>{formatDateTime(document.created_on)}</Td>
-                                            <Td pending={document.assigned_status.toLowerCase() === 'pending'} assigned={document.assigned_status.toLowerCase() === 'assigned'}  ><strong>{document.assigned_status}</strong></Td>
-                                            <Td pending={document.review_status.toLowerCase() === 'pending'} rejected={document.review_status.toLowerCase() === 'rejected'} reviewed={document.review_status.toLowerCase() === 'reviewed'}>
-                                                <strong>{document.review_status}</strong>
-                                            </Td>
-                                            <Td>
-                                                <DropdownButton
-                                                    id={`dropdown-button-${document.document_id}`}
-                                                    title="Change"
-                                                    variant="warning"
-                                                >
-                                                    {['Pending', 'Reviewed', 'Rejected'].map((statusOption) => (
-                                                        <Dropdown.Item
-                                                            key={statusOption}
-                                                            onClick={() => onChangeDocumentStatus(document.document_id, statusOption)}
-                                                        >
-                                                            {statusOption}
-                                                        </Dropdown.Item>
-                                                    ))}
-                                                </DropdownButton>
-                                            </Td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </DocumentTable>
-                        </DocumentTableContainer>
-                    )}
-                </CtaSection>
+                {documents.length > 0 ? renderComponents() : 
+                    <NoDocumentsContainer>
+                        <img src={noDocuments} alt='img' className='img-fluid' />
+                        <H1>No Clients Assigned</H1>
+                        <p>Oops! It seems there are no clients assigned to you.</p>
+                    </NoDocumentsContainer>
+                }
             </ClientDocumentContainer>
         </div>
     );

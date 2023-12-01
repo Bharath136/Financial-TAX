@@ -197,7 +197,7 @@ const updateUserById = async (req, res) => {
         email_address,
         contact_number,
     } = req.body;
-    const updatedOn = new Date().toISOString(); 
+    const updatedOn = new Date().toISOString();
 
     try {
         // Check if the user already exists (excluding the current user's ID)
@@ -245,23 +245,40 @@ const updateUserById = async (req, res) => {
 const deleteUserById = async (req, res) => {
     const id = req.params.id
 
-    try{
+    try {
         const userQuery = 'SELECT * FROM user_logins WHERE user_id = $1';
         const userResult = await client.query(userQuery, [id])
 
-        if (userResult.rows.length === 0){
-            return res.status(404).json({error:'User not found'})
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' })
         }
 
         const deleteQuery = 'DELETE FROM user_logins WHERE user_id = $1';
         await client.query(deleteQuery, [id])
-        res.status(204).json({message:'User deleted successfully'})
-        
-    }catch(error){
+        res.status(204).json({ message: 'User deleted successfully' })
+
+    } catch (error) {
         console.log('Error', error)
-        res.status(500).json({error:'Internal Server Error'})
+        res.status(500).json({ error: 'Internal Server Error' })
     }
 }
+
+
+const getAllStaffAssignedClients = async (req, res) => {
+    try {
+        const result = await client.query(`
+      SELECT *
+      FROM user_logins ul
+      JOIN staff_customer_assignments sca ON ul.user_id = sca.client_id
+    `);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error executing SQL query:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 
 function validatePassword(password) {
     // password validation logic here
@@ -275,5 +292,6 @@ module.exports = {
     deleteUserById,
     userRegistration,
     userLogin,
-    addStaff
+    addStaff,
+    getAllStaffAssignedClients
 };

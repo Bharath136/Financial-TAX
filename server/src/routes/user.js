@@ -9,7 +9,8 @@ const {
     updateUserById, 
     deleteUserById, 
     userLogin,
-    addStaff
+    addStaff,
+    getAllStaffAssignedClients
 } = require('../controllers/user');
 
 // Register a new user api
@@ -23,6 +24,9 @@ router.post('/add-staff',authenticate(['ADMIN']), addStaff)
 
 // Authorized user api
 router.get('/',authenticate(['STAFF', 'ADMIN']), getAllUsers);
+
+// Get staff assigned clients
+router.get('/staff-clients', authenticate(['STAFF', 'ADMIN']), getAllStaffAssignedClients)
 
 // Authorized user api
 router.route("/:id")

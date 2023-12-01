@@ -7,21 +7,40 @@ import showAlert from '../../SweetAlert/sweetalert';
 import pdf from '../../Assets/PDF_file_icon.svg.png'
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
-import { ClientDocumentContainer, CtaSection, Description, DocumentTable, DocumentTableContainer, H1, Td, Th } from './styledComponents';
+import noDoc from '../../Assets/no-documents.jpg'
+import { ClientDocumentContainer, ClientsHeaderContainer, CtaSection, Description, DocumentName, DocumentTable, DocumentTableContainer, H1, NoDocuments, Select, Td, Th } from './styledComponents';
 
 const ClientTaxDocuments = () => {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
     const [documents, setDocuments] = useState([]);
+    const [filteredDocuments, setFilteredDocuments] = useState([]);
+    const [clients, setClients] = useState([]);
+    const [selectedClient, setSelectedClient] = useState('');
 
     const fetchDocuments = async () => {
         try {
-            const response = await axios.get(`${domain.domain}/customer-tax-document`, { headers: { Authorization: `Bearer ${accessToken}` } });
-            setDocuments(response.data.documents);
+            const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents`, { 
+                headers: { Authorization: `Bearer ${accessToken}` } 
+            });
+            setDocuments(response.data);
+            setFilteredDocuments(response.data)
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
     };
+
+    const fetchClients = async () => {
+        const response = await axios.get(`${domain.domain}/user`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
+        const filteredClients = response.data.filter((client) => {
+            return client.role === 'CUSTOMER'
+        })
+        setClients(filteredClients)
+    }
 
     const formatDateTime = (dateTimeString) => new Date(dateTimeString).toLocaleString('en-US', {
         year: 'numeric',
@@ -35,7 +54,9 @@ const ClientTaxDocuments = () => {
 
     const onChangeDocumentStatus = async (id, status) => {
         try {
-            await axios.put(`${domain.domain}/customer-tax-document/review-status/${id}`, { user_id: user.user_id, review_status: status }, { headers: { Authorization: `Bearer ${accessToken}` } });
+            await axios.put(`${domain.domain}/customer-tax-document/review-status/${id}`, { user_id: user.user_id, review_status: status }, { 
+                headers: { Authorization: `Bearer ${accessToken}` } 
+            });
             showAlert({
                 title: 'Status Updated Successfully!',
                 text: '',
@@ -48,8 +69,11 @@ const ClientTaxDocuments = () => {
         }
     };
 
+
     useEffect(() => {
         fetchDocuments();
+        fetchClients();
+        
     }, []);
 
     const handleDownloadClick = async (document) => {
@@ -74,29 +98,50 @@ const ClientTaxDocuments = () => {
     const renderDocumentThumbnail = (document) => {
         const fileExtension = document.document_path.split('.').pop().toLowerCase();
         const fileTypeIcons = {
-            pdf: <img src={pdf} alt='pdf' className='img-fluid' />,
-            doc: <img src={doc} alt='pdf' className='img-fluid' />,
-            docx: <img src={docx} alt='pdf' className='img-fluid' />,
+            pdf: <img src={pdf} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
+            doc: <img src={doc} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
+            docx: <img src={docx} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
             jpg: '🖼️',
             jpeg: '🖼️',
             png: '🖼️',
         };
 
+        // Check if the file extension is in the supported types
         if (fileExtension in fileTypeIcons) {
             return (
-                <div style={{ width: '50px', height: '50px', background: '#eee', textAlign: 'center', lineHeight: '50px' }}>
-                    <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
-                </div>
+                <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
             );
         } else {
-            // For unsupported types, you can display a generic icon or handle it differently
             return (
-                <div style={{ width: '50px', height: '50px', background: '#eee', textAlign: 'center', lineHeight: '50px' }}>
+                <span style={{ height: '60px' }}>
                     📁
-                </div>
+                </span>
             );
         }
     };
+
+
+    const handleClientChange = async (e) => {
+        const id = e.target.value;
+        setSelectedClient(id);
+        try {
+            const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents/${id}`, { 
+                headers: { Authorization: `Bearer ${accessToken}` } 
+            });
+            if(response.status === 200){
+                setFilteredDocuments(response.data)
+            }else{
+                setFilteredDocuments(documents);
+            }
+            
+        } catch (error) {
+            console.error('Error fetching documents:', error);
+        }
+    };
+
+
+
+
 
     return (
         <div className="d-flex">
@@ -106,49 +151,81 @@ const ClientTaxDocuments = () => {
                 <Description >
                     Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
                 </Description>
-                <CtaSection className="shadow">
-                    {documents.length > 0 && (
-                        <DocumentTableContainer >
-                            <H1>Uploaded Documents</H1>
-                            <DocumentTable >
-                                <thead>
-                                    <tr>
-                                        <Th>Document</Th>
-                                        <Th>Date & Time</Th>
-                                        <Th>Assigned Status</Th>
-                                        <Th>Review Status</Th>
-                                        <Th>Change Status</Th>
+                {documents.length > 0 ? <CtaSection className="shadow">
+                    
+                    <DocumentTableContainer >
+                        <H1>Uploaded Documents</H1>
+                        <ClientsHeaderContainer>
+                            <label><strong>Filter by client</strong></label>
+                            <Select
+                                id="clientSelect"
+                                name="clientSelect"
+                                value={selectedClient}
+                                onChange={handleClientChange}
+                                required
+                            >
+                                <option value="">All clients</option>
+                                {clients.map(client => (
+                                    <option key={client.user_id} value={client.user_id}>
+                                        {client.first_name}
+                                    </option>
+                                ))}
+                            </Select>
+                        </ClientsHeaderContainer>
+                        {filteredDocuments.length > 0 ? <DocumentTable >
+                            <thead>
+                                <tr>
+                                    <Th>Document</Th>
+                                    <Th>Date & Time</Th>
+                                    <Th>Review Status</Th>
+                                    <Th>Change Status</Th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredDocuments.map((document) => (
+                                    <tr key={document.document_id}>
+                                        <Td>
+                                            <div className='d-flex flex-column'> <a
+                                                href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                download
+                                                onClick={(e) => handleDownloadClick(document)}
+                                            >
+                                                {renderDocumentThumbnail(document)}
+                                            </a>
+                                                <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
+                                            </div>
+                                        </Td>
+                                        <Td>{formatDateTime(document.created_on)}</Td>
+                                        <Td style={{
+                                                color:
+                                                    document.review_status === 'Pending' ? 'orange' :
+                                                        document.review_status === 'Rejected' ? 'red' :
+                                                            document.review_status === 'Reviewed' ? 'green' :
+                                                                'inherit'  
+                                            }}><strong>{document.review_status}</strong>
+                                        </Td>
+                                        <Td>
+                                            <DropdownButton id={`dropdown-button-${document.document_id}`} title="Change" variant="warning">
+                                                {['Pending', 'Reviewed', 'Rejected'].map((statusOption) => (
+                                                    <Dropdown.Item key={statusOption} onClick={() => onChangeDocumentStatus(document.document_id, statusOption)}>
+                                                        {statusOption}
+                                                    </Dropdown.Item>
+                                                ))}
+                                            </DropdownButton>
+                                        </Td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {documents.map((document) => (
-                                        <tr key={document.document_id}>
-                                            <Td>
-                                                <a href={`${domain.domain}/customer-tax-document/download/${document.document_id}`} target="_blank" rel="noopener noreferrer" download onClick={(e) => handleDownloadClick(document)}>
-                                                    {renderDocumentThumbnail(document)}
-                                                </a>
-                                            </Td>
-                                            <Td>{formatDateTime(document.created_on)}</Td>
-                                            <Td pending={document.assigned_status.toLowerCase() === 'pending'} assigned={document.assigned_status.toLowerCase() === 'assigned'} ><strong>{document.assigned_status}</strong></Td>
-                                            <Td pending={document.review_status.toLowerCase() === 'pending'} rejected={document.review_status.toLowerCase() === 'rejected'} reviewed={document.review_status.toLowerCase() === 'reviewed'}>
-                                                <strong>{document.review_status}</strong>
-                                            </Td>
-                                            <Td>
-                                                <DropdownButton id={`dropdown-button-${document.document_id}`} title="Change" variant="warning">
-                                                    {['Pending', 'Reviewed', 'Rejected'].map((statusOption) => (
-                                                        <Dropdown.Item key={statusOption} onClick={() => onChangeDocumentStatus(document.document_id, statusOption)}>
-                                                            {statusOption}
-                                                        </Dropdown.Item>
-                                                    ))}
-                                                </DropdownButton>
-                                            </Td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </DocumentTable>
-                        </DocumentTableContainer>
-                    )}
-                </CtaSection>
+                                ))}
+                            </tbody>
+                        </DocumentTable> : <div>No Documents uploaded by this client</div>}
+                    </DocumentTableContainer>
+                </CtaSection> :
+                    <NoDocuments>
+                        <img src={noDoc} alt='no-doc' className='img-fluid' />
+                        <H1>No Documents!</H1>
+                        <label>No documents have been uploaded by the client. Please upload relevant documents to proceed.</label>
+                    </NoDocuments>}
             </ClientDocumentContainer>
         </div>
     );

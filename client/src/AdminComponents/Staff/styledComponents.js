@@ -118,3 +118,12 @@ export const ExecuteButton = styled(Button)`
         border: 1.4px solid var(--accent-background);
     }
 `
+
+export const NoClientContainer = styled.div`
+    height:70vh;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+`

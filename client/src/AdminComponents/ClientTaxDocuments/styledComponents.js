@@ -19,6 +19,26 @@ export const H1 = styled.h1`
     font-family:Arial, Helvetica, sans-serif
 `;
 
+export const ClientsHeaderContainer = styled.div`
+    display:flex;
+    width:100%;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    @media screen and (max-width:512px){
+        flex-direction:column;
+        align-items:flex-start;
+    }
+`
+
+export const Select = styled.select`
+    padding:10px;
+    width:20%;
+    @media screen and (max-width:768px){
+        width:100%;
+    }
+`
+
 export const Description = styled.p`
     font-size: 16px;
     margin-bottom: 20px;
@@ -49,6 +69,16 @@ export const DocumentTable = styled.table`
     margin-top: 10px;
 `;
 
+export const DocumentName = styled.span`
+    font-size:16px;
+    @media screen and (max-width:912px){
+        font-size:14px;
+    }
+    @media screen and (max-width:768px){
+        font-size:12px;
+    }
+`
+
 export const Th = styled.th`
     border: 1px solid var(--border);
     padding: 10px;
@@ -62,4 +92,12 @@ export const Td = styled.td`
     text-align: center;
     color: ${(props) => (props.reviewed ? 'green' : (props.rejected ? 'red' : (props.pending ? 'orange' : (props.assigned ? 'green' : 'grey'))))};
 
+`
+
+export const NoDocuments = styled.div`
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:60vh;
 `

@@ -1,10 +1,9 @@
-import './staffDashboard.css'
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import { useEffect, useState } from 'react'
 import { FaFileAlt, FaClock, FaCheck, FaMoneyBillAlt, FaClipboardList } from 'react-icons/fa';
 
 
-const StaffDashboard = () => {
+const AdminDashboard = () => {
 
     const [currentUser, setCurrentUser] = useState('');
 
@@ -50,4 +49,4 @@ const StaffDashboard = () => {
     )
 }
 
-export default StaffDashboard
+export default AdminDashboard

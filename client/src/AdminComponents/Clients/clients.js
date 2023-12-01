@@ -6,11 +6,13 @@ import EditModal from '../../SweetPopup/sweetPopup';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import { BiSearch } from 'react-icons/bi';
 import { MdFilterList } from 'react-icons/md';
+import noClient from '../../Assets/no-customers.jpg'
 import {
     ClientListContainer,
     ClientsHeaderContainer,
     FilterSelect,
     H1,
+    NoClientContainer,
     SearchBar,
     SearchBarContainer,
     SearchButton,
@@ -21,15 +23,22 @@ import {
     ViewButton,
 } from './styledComponents';
 
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
+
 const Clients = () => {
     const [clients, setClients] = useState([]);
     const [filteredClients, setFilteredClients] = useState([]);
     const [assignmentClients, setAssignedClients] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [profileId, setProfileId] = useState(19);
-    const [loading, setLoading] = useState(false);
+    const [profileId, setProfileId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFilter, setFilterType] = useState('');
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const token = localStorage.getItem('customerJwtToken');
 
     const handleSearchChange = (e) => {
@@ -56,25 +65,28 @@ const Clients = () => {
     };
 
     const getAllAssignedClients = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             const assignedClientsResponse = await axios.get(`${domain.domain}/staff-customer-assignments`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const assignedClients = assignedClientsResponse.data;
-            setAssignedClients(assignedClients);
+            if(assignedClientsResponse.status === 200){
+                setApiStatus(apiStatusConstants.success)
+                const assignedClients = assignedClientsResponse.data;
+                setAssignedClients(assignedClients);
+            }
+            
         } catch (error) {
             console.error('Error fetching assigned clients:', error);
         }
     };
 
     useEffect(() => {
-        setLoading(true);
-
         getAllAssignedClients();
-
         const fetchClients = async () => {
+            setApiStatus(apiStatusConstants.initial)
             try {
                 const response = await axios.get(`${domain.domain}/user`, {
                     headers: {
@@ -83,26 +95,19 @@ const Clients = () => {
                 });
 
                 const data = response.data;
-
-                // Filter users with role 'CUSTOMER'
-                const filteredData = data.filter((user) => user.role === 'CUSTOMER');
-
-                // Filter users by name
-                const filteredDataByName = filteredData.filter((user) =>
-                    user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
-                );
-
-                setClients(filteredDataByName); // Set the filtered data by name
-                setFilteredClients(filteredDataByName)
-                setLoading(false);
+                if(response.status === 200){
+                    setApiStatus(apiStatusConstants.success)
+                    const filteredData = data.filter((user) => user.role === 'CUSTOMER');
+                    setClients(filteredData); // Set the filtered data by name
+                    setFilteredClients(filteredData)
+                }
             } catch (error) {
                 console.error('Error fetching clients:', error);
-                setLoading(false);
             }
         };
 
         fetchClients();
-    }, [token, searchTerm]);
+    }, [token]);
 
     const handleEditClick = () => {
         setIsEditModalOpen(!isEditModalOpen);
@@ -112,76 +117,98 @@ const Clients = () => {
         setIsEditModalOpen(false);
     };
 
+    const onSearch = () => {
+        // Filter users by name
+        const filteredDataByName = filteredClients.filter((user) =>
+            user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredClients(filteredDataByName)
+    }
+
+    const renderComponents = () => {
+        switch(apiStatus){
+            case apiStatusConstants.failure:
+                return <div>failure</div>
+            case apiStatusConstants.inProgress:
+                return <SweetLoading/>
+            case apiStatusConstants.success:
+                return <TableContainer className="shadow">
+                    <ClientsHeaderContainer>
+                        <SearchBarContainer>
+                            <SearchBar
+                                type="text"
+                                placeholder="Search client by name"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
+                            <SearchButton onClick={onSearch} type='button'><BiSearch size={25} /></SearchButton>
+                        </SearchBarContainer>
+                        <div>
+                            <label htmlFor="filterDropdown">
+                                <MdFilterList size={20} />
+                            </label>
+                            <FilterSelect
+                                id="filterDropdown"
+                                value={selectedFilter}
+                                onChange={(e) => handleFilterChange(e.target.value)}
+                            >
+                                <option value="">All Clients</option>
+                                <option value="assigned">Assigned Clients</option>
+                                <option value="unassigned">Unassigned Clients</option>
+                            </FilterSelect>
+                        </div>
+                    </ClientsHeaderContainer>
+                    <Table>
+                        <thead>
+                            <tr>
+                                <Th>ID</Th>
+                                <Th>Name</Th>
+                                <Th>Email</Th>
+                                <Th>Phone</Th>
+                                <Th>Actions</Th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredClients.map((client) => (
+                                <tr key={client.user_id}>
+                                    <Td>{client.user_id}</Td>
+                                    <Td>{client.first_name}</Td>
+                                    <Td>{client.email_address}</Td>
+                                    <Td>{client.contact_number}</Td>
+                                    <Td>
+                                        <ViewButton
+                                            onClick={() => {
+                                                handleEditClick();
+                                                setProfileId(client.user_id);
+                                            }}
+                                        >
+                                            View
+                                        </ViewButton>
+                                    </Td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </TableContainer>
+            default:
+                return null
+        }
+    }
+
     return (
         <div className="d-flex">
             <Sidebar />
             <ClientListContainer>
                 <H1>Clients</H1>
-                {loading ? (
-                    <SweetLoading loading={loading} setLoading={setLoading} />
-                ) : (
-                    <TableContainer className="shadow">
-                        <ClientsHeaderContainer>
-                            <SearchBarContainer>
-                                <SearchBar
-                                    type="text"
-                                    placeholder="Search client by name"
-                                    value={searchTerm}
-                                    onChange={handleSearchChange}
-                                    className="p-2 search-input"
-                                />
-                                <SearchButton>
-                                    <BiSearch size={25} />
-                                </SearchButton>
-                            </SearchBarContainer>
-                            <div>
-                                <label htmlFor="filterDropdown">
-                                    <MdFilterList size={20} />
-                                </label>
-                                <FilterSelect
-                                    id="filterDropdown"
-                                    value={selectedFilter}
-                                    onChange={(e) => handleFilterChange(e.target.value)}
-                                >
-                                    <option value="">All Clients</option>
-                                    <option value="assigned">Assigned Clients</option>
-                                    <option value="unassigned">Unassigned Clients</option>
-                                </FilterSelect>
-                            </div>
-                        </ClientsHeaderContainer>
-                        <Table>
-                            <thead>
-                                <tr>
-                                    <Th>ID</Th>
-                                    <Th>Name</Th>
-                                    <Th>Email</Th>
-                                    <Th>Phone</Th>
-                                    <Th>Actions</Th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredClients.map((client) => (
-                                    <tr key={client.user_id}>
-                                        <Td>{client.user_id}</Td>
-                                        <Td>{client.first_name}</Td>
-                                        <Td>{client.email_address}</Td>
-                                        <Td>{client.contact_number}</Td>
-                                        <Td>
-                                            <ViewButton
-                                                onClick={() => {
-                                                    handleEditClick();
-                                                    setProfileId(client.user_id);
-                                                }}
-                                            >
-                                                View
-                                            </ViewButton>
-                                        </Td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </TableContainer>
-                )}
+                
+                    {clients.length > 0 ? renderComponents() : 
+                    <NoClientContainer>
+                        <img src={noClient} alt='img' className='img-fluid' />
+                        <H1>No Clients Registered</H1>
+                        <p>Oops! It seems there are no clients registered here.</p>
+                    </NoClientContainer>
+                    }
+                
             </ClientListContainer>
 
             <EditModal

@@ -10,6 +10,7 @@ const customerTaxDocumentsRouter = require('./routes/customerTaxDocuments');
 const customerTaxInputs = require('./routes/customerTaxInputs');
 const taxInputs = require('./routes/taxInputs');
 const taxDocuments = require('./routes/taxDocuments');
+const taxReturnDocuments = require('./routes/taxReturnDocuments')
 const client = require('./database/connection');
 
 app.use(express.urlencoded({ extended: true }));
@@ -33,27 +34,6 @@ const upload = multer({ storage: storage });
 
 app.use('/uploads', express.static('uploads'));
 
-//File uploading
-// app.post("/upload", upload.single("file"), async (req, res) => {
-//     try {
-//         if (req.file) {
-//             res.send({
-//                 status: true,
-//                 message: "File Uploaded!",
-//             });
-//             console.log(req.file)
-//         } else {
-//             res.status(400).send({
-//                 status: false,
-//                 data: "File Not Found :(",
-//             });
-//         }
-//     } catch (err) {
-//         res.status(500).send(err);
-//     }
-// });
-
-
 
 // Error handling middleware with the `err` parameter
 app.use((err, req, res, next) => {
@@ -71,17 +51,20 @@ app.use('/customer-tax-comment', customerTaxCommentsRouter);
 // Mount the customer tax comment router
 app.use('/customer-tax-document', customerTaxDocumentsRouter);
 
-// Mount the customer tax inputs
+// Mount the customer tax inputs router
 app.use('/customer-tax-inputs', customerTaxInputs);
 
-// Mount the tax inputs
+// Mount the tax inputs router
 app.use('/tax-inputs', taxInputs);
 
-// Mount the tax documents
+// Mount the tax documents router
 app.use('/tax-documents', taxDocuments);
 
-// Mount the staff customer assignments
+// Mount the staff customer assignments router
 app.use('/staff-customer-assignments', staffCustomerAssignmentsRouter)
+
+// Mount the tax return documents router
+app.use('/tax-return-document', taxReturnDocuments)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

@@ -4,6 +4,10 @@ import axios from 'axios';
 import domain from '../../domain/domain';
 import showAlert from '../../SweetAlert/sweetalert';
 import { MdDelete } from 'react-icons/md';
+import pdf from '../../Assets/PDF_file_icon.svg.png'
+import doc from '../../Assets/doc.png';
+import docx from '../../Assets/docx.png'
+// import SweetLoading from '../../SweetLoading/SweetLoading';
 
 import {
     CommentDescription,
@@ -24,7 +28,19 @@ import {
     ButtonContainer,
     TextArea,
     Button,
+    Th,
+    Td,
+    DocumentName,
 } from './styledComponents';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+
+
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+}
 
 const CommentDocument = () => {
     const [documents, setDocuments] = useState([]);
@@ -33,23 +49,34 @@ const CommentDocument = () => {
     const [showComments, setShowComments] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState({});
     const [comments, setComments] = useState([]);
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+
+    // const [loading, setLoading] = useState(false);
+
     const user = JSON.parse(localStorage.getItem('currentUser'));
+    const accessToken = localStorage.getItem('customerJwtToken');
 
     useEffect(() => {
+        setApiStatus(apiStatusConstants.inProgress)
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('customerJwtToken');
                 const response = await axios.get(`${domain.domain}/customer-tax-document`, {
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: { 'Authorization': `Bearer ${accessToken}` },
                 });
                 const filteredData = response.data.documents.filter((doc) => doc.customer_id === user.user_id);
-                setDocuments(filteredData);
+                if(response.status === 200){
+                    setDocuments(filteredData);
+                    setApiStatus(apiStatusConstants.success)
+                }else{
+                    setApiStatus(apiStatusConstants.failure)
+                }
+                
             } catch (error) {
                 console.error('Error fetching documents:', error);
             }
         };
         fetchData();
-    }, [user]);
+    }, [accessToken]);
 
     const handleToggleCommentInput = (document) => {
         setShowCommentInput(!showCommentInput);
@@ -57,6 +84,7 @@ const CommentDocument = () => {
     };
 
     const handleCommentSubmit = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             const token = localStorage.getItem('customerJwtToken');
             const newComment = {
@@ -71,7 +99,8 @@ const CommentDocument = () => {
             await axios.post(`${domain.domain}/customer-tax-comment/create`, newComment, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-            showAlert({ title: 'Comment Submitted Successfully!', icon: 'success' });
+            setApiStatus(apiStatusConstants.success)
+            showAlert({ title: 'Comment Submitted Successfully!', icon: 'success', confirmButtonText: 'Ok' });
         } catch (error) {
             console.error('Error submitting comment:', error);
         }
@@ -79,28 +108,36 @@ const CommentDocument = () => {
     };
 
     const handleGetComments = async (document) => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             const token = localStorage.getItem('customerJwtToken');
-            const response = await axios.get(`${domain.domain}/customer-tax-comment/`, {
+            const response = await axios.get(`${domain.domain}/customer-tax-comment/get-comments/${document.document_id}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-            const filteredData = response.data.filter((comment) => comment.document_id === document.document_id);
-            setComments(filteredData);
-            setShowComments(!showComments)
-            setSelectedDocument(document)
+            if(response.status === 200){
+                setComments(response.data);
+                setShowComments(!showComments)
+                setSelectedDocument(document)
+                setApiStatus(apiStatusConstants.success)
+            }else{
+                setApiStatus(apiStatusConstants.failure)
+            }
+            
         } catch (error) {
             console.error('Error getting comments:', error);
         }
     };
 
     const onDeleteDocumentComment = async (id) => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             const token = localStorage.getItem('customerJwtToken');
             await axios.delete(`${domain.domain}/customer-tax-comment/${id}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
+            setApiStatus(apiStatusConstants.success)
             handleGetComments(selectedDocument);
-            showAlert({ title: 'Comment Deleted Successfully!', icon: 'success' });
+            showAlert({ title: 'Comment Deleted Successfully!', icon: 'success',confirmButtonText:'Ok' });
         } catch (error) {
             console.error('Error deleting comment:', error);
         }
@@ -121,47 +158,106 @@ const CommentDocument = () => {
         { label: 'Quarter', name: 'financial_quarter', type: 'number', placeholder: 'Ex:- 1' }
     ];
 
-    return (
-        <div className="d-flex">
-            <Sidebar />
-            <CommentDocumentContainer>
-                <H1>Comment on Document</H1>
-                <CommentDescription>
-                    Welcome to our Comment Document service! Add comments to the documents for your tax return process.
-                </CommentDescription>
-                <CtaSection className="shadow">
+    const handleDownloadClick = async (document) => {
+        setApiStatus(apiStatusConstants.inProgress)
+        try {
+            const downloadUrl = `http://localhost:8000/customer-tax-document/download/${document.document_id}`;
+            const headers = {
+                Authorization: `Bearer ${accessToken}`,
+            };
+
+            const response = await fetch(downloadUrl, { headers });
+            const blob = await response.blob();
+
+            setApiStatus(apiStatusConstants.success)
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${document.document_id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
+    };
+
+    const renderDocumentThumbnail = (document) => {
+        const fileExtension = document.document_path.split('.').pop().toLowerCase();
+
+        const fileTypeIcons = {
+            pdf: <img src={pdf} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
+            doc: <img src={doc} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
+            docx: <img src={docx} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
+            jpg: '🖼️',
+            jpeg: '🖼️',
+            png: '🖼️',
+        };
+
+        // Check if the file extension is in the supported types
+        if (fileExtension in fileTypeIcons) {
+            return (
+                <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
+            );
+        } else {
+            return (
+                <span>
+                    📁
+                </span>
+            );
+        }
+    };
+
+
+    const renderComponents = () => {
+        switch(apiStatus){
+            case apiStatusConstants.failure :
+                return <div>failure</div>
+            case apiStatusConstants.success :
+                return <CtaSection className="shadow">
                     <DocumentsTableContainer >
                         {documents.length > 0 && (
-                            <DocumentTableContainer className="document-table-container">
+                            <DocumentTableContainer>
                                 <H1>Documents with Comments</H1>
-                                <DocumentTable className="document-table">
+                                <DocumentTable>
                                     <thead>
                                         <tr>
-                                            <th>Document Name</th>
-                                            <th>Date & Time</th>
-                                            <th>Assigned Status</th>
-                                            <th>Review Status</th>
-                                            <th>Add Comment</th>
-                                            <th>Comments</th>
+                                            <Th>Document</Th>
+                                            <Th>Date & Time</Th>
+                                            <Th>Review Status</Th>
+                                            <Th>Add Comment</Th>
+                                            <Th>Comments</Th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {documents.map((document) => (
                                             <tr key={document.document_id}>
-                                                <td>{document.document_path}</td>
-                                                <td>{formatDateTime(document.created_on)}</td>
-                                                <td>{document.assigned_status}</td>
-                                                <td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></td>
-                                                <td>
-                                                    <CommentButton type="button" className='commit-button button' onClick={() => handleToggleCommentInput(document)}>
+                                                <Td>
+                                                    <div className='d-flex flex-column'> <a
+                                                        href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        download
+                                                        onClick={(e) => handleDownloadClick(document)}
+                                                    >
+                                                        {renderDocumentThumbnail(document)}
+
+                                                    </a>
+                                                        <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
+                                                    </div>
+                                                </Td>
+                                                <Td>{formatDateTime(document.created_on)}</Td>
+                                                <Td className={`status-${document.review_status.toLowerCase()}`}><strong>{document.review_status}</strong></Td>
+                                                <Td>
+                                                    <CommentButton type="button" onClick={() => handleToggleCommentInput(document)}>
                                                         Comment
                                                     </CommentButton>
-                                                </td>
-                                                <td>
+                                                </Td>
+                                                <Td>
                                                     <ViewButton type="button" onClick={() => handleGetComments(document)} className="view-button button">
                                                         View
                                                     </ViewButton>
-                                                </td>
+                                                </Td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -171,7 +267,7 @@ const CommentDocument = () => {
 
                         {showCommentInput && selectedDocument && (
                             <CommentSectionContainer>
-                                <Lable><strong>Comment for Document:</strong> {documents.find((doc) => doc.document_id === selectedDocument.document_id)?.document_path}</Lable>
+                                <Lable><strong>Comment for Document:</strong>  <strong style={{ color: `var(--accent-background)` }}>{documents.find((doc) => doc.document_id === selectedDocument.document_id)?.document_name}</strong></Lable>
                                 <CommentSection>
                                     {initialFormFields.map((field, index) => (
                                         <CommentInputFieldsContainer key={index}>
@@ -208,49 +304,73 @@ const CommentDocument = () => {
                             </CommentSectionContainer>
                         )}
 
-                        {showComments && comments.length >= 0 && (
-                            <DocumentTableContainer>
-                                <Lable><strong>Comments for Document:</strong> {selectedDocument.document_path}</Lable>
-                                <DocumentTable className="document-table">
+                        {showComments && (
+                            <DocumentTableContainer className='mt-4'>
+                                <Lable><strong>Comments for Document:</strong> <strong style={{ color: `var(--accent-background)` }}> {selectedDocument.document_name}</strong> </Lable>
+                                {comments.length > 0 ? <DocumentTable>
                                     <thead>
                                         <tr>
-                                            <th>Comment ID</th>
-                                            <th>Customer ID</th>
-                                            <th>Staff ID</th>
-                                            <th>Document ID</th>
-                                            <th>Comment</th>
-                                            <th>Comment Status</th>
-                                            <th>Created On</th>
-                                            <th>Updated On</th>
-                                            <th>Delete</th>
+                                            <Th>Document</Th>
+                                            <Th>Comment</Th>
+                                            <Th>Comment Status</Th>
+                                            <Th>Created On</Th>
+                                            <Th>Updated On</Th>
+                                            <Th>Delete</Th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {comments.map((comment) => (
                                             <tr key={comment.comment_id}>
-                                                <td>{comment.comment_id}</td>
-                                                <td>{comment.customer_id}</td>
-                                                <td>{comment.staff_id}</td>
-                                                <td>{comment.document_id}</td>
-                                                <td>{comment.comment}</td>
-                                                <td className={`status-${comment.comment_status.toLowerCase()}`}>
+                                                <Td>
+                                                    <div className='d-flex flex-column'> <a
+                                                        href={`${domain.domain}/customer-tax-document/download/${selectedDocument.document_id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        download
+                                                        onClick={(e) => handleDownloadClick(selectedDocument)}
+                                                    >
+                                                        {renderDocumentThumbnail(selectedDocument)}
+
+                                                    </a>
+                                                        <DocumentName>{selectedDocument.document_path.split('-')[1]}</DocumentName>
+                                                    </div>
+                                                </Td>
+                                                <Td>{comment.comment}</Td>
+                                                <Td className={`status-${comment.comment_status.toLowerCase()}`}>
                                                     <strong>{comment.comment_status}</strong>
-                                                </td>
-                                                <td>{formatDateTime(comment.created_on)}</td>
-                                                <td>{formatDateTime(comment.updated_on)}</td>
-                                                <td>
-                                                    <Button className="btn btn-light ml-2" title="delete document" onClick={() => onDeleteDocumentComment(comment.comment_id)}>
+                                                </Td>
+                                                <Td>{formatDateTime(comment.created_on)}</Td>
+                                                <Td>{formatDateTime(comment.updated_on)}</Td>
+                                                <Td>
+                                                    <Button title="delete document" onClick={() => onDeleteDocumentComment(comment.comment_id)}>
                                                         <MdDelete size={25} className="text-danger" />
                                                     </Button>
-                                                </td>
+                                                </Td>
                                             </tr>
                                         ))}
                                     </tbody>
-                                </DocumentTable>
+                                </DocumentTable> : <p className="text-danger">No Comments to this document.</p>}
                             </DocumentTableContainer>
                         )}
                     </DocumentsTableContainer>
                 </CtaSection>
+            case apiStatusConstants.inProgress:
+                return <SweetLoading/>
+            default:
+                return null
+        }
+    }
+
+
+    return (
+        <div className="d-flex">
+            <Sidebar />
+            <CommentDocumentContainer>
+                <H1>Comment on Document</H1>
+                <CommentDescription>
+                    Welcome to our Comment Document service! Add comments to the documents for your tax return process.
+                </CommentDescription>
+                {renderComponents()}
             </CommentDocumentContainer>
         </div>
     );

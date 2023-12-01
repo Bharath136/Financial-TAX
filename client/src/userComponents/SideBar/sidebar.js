@@ -18,8 +18,6 @@ import {
     FaUser,
     FaFileAlt,
     FaCheck,
-    FaCalculator,
-    FaCog,
     FaCloudUploadAlt,
     FaComments
 } from 'react-icons/fa';
@@ -32,16 +30,14 @@ const menuItems = [
     { path: '/comment-to-document', label: 'Add Comment', icon: <FaComments size={25} /> },
     { path: '/tax-return-review', label: 'Taxreturn Review', icon: <HiDocumentDuplicate size={25} /> },
     { path: '/make-payment', label: 'Payments', icon: <MdPayments size={25} /> },
-    { path: '/my-tax-documents', label: 'Documents', icon: <FaFileAlt size={25} /> },
+    // { path: '/my-tax-documents', label: 'Documents', icon: <FaFileAlt size={25} /> },
 ];
 
 const staffMenuItems = [
     { path: '/staff-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
     { path: '/staff-assigned-clients', label: 'Clients', icon: <FaUser size={25} /> },
     { path: '/staff-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/staff-customer-tax-return', label: 'Tax Return', icon: <FaCheck size={25} /> },
-    { path: '/staff-calculator', label: 'Calculator', icon: <FaCalculator size={25} /> },
-    { path: '/staff-settings', label: 'Settings', icon: <FaCog size={25} /> },
+    { path: '/staff-customer-tax-return', label: 'Tax Return', icon: <FaCheck size={25} /> }
 ];
 
 const adminMenuItems = [
@@ -49,8 +45,7 @@ const adminMenuItems = [
     { path: '/admin-clients', label: 'Clients', icon: <FaUser size={25} /> },
     { path: '/admin-staff', label: 'Staff', icon: <FaUser size={25} /> },
     { path: '/admin-client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/admin-add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> },
-    { path: '/admin-settings', label: 'Settings', icon: <FaCog size={25} /> },
+    { path: '/admin-add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> }
 ];
 
 const Sidebar = () => {

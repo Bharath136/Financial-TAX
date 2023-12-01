@@ -2,98 +2,6 @@ const client = require('../database/connection');
 const path = require('path');
 const fs = require('fs');
 
-//File uploading
-// const createCustomerNewTaxDocument = async (req, res) => {
-//     console.log("Helo")
-//     // try {
-//     //     if (!req.file) {
-//     //         return res.status(400).send({
-//     //             status: false,
-//     //             data: "File Not Found :(",
-//     //         });
-//     //     }
-
-//     //     // Store additional information about the uploaded file
-//     //     const fileInfo = {
-//     //         filename: req.file.filename,
-//     //         path: req.file.path,
-//     //         // Add other relevant information as needed
-//     //     };
-//     //     console.log('File Uploaded Successfully:', fileInfo);
-
-//     //     // Extract fields from the request body
-//     // //     const {
-//     // //         customer_id,
-//     // //         financial_year,
-//     // //         financial_quarter,
-//     // //         financial_month
-//     // //     } = req.body;
-//     // //     console.log(customer_id)
-
-//     // //     try {
-//     // //         // Retrieve user information
-//     // //         const updatedUserQuery = 'SELECT * FROM user_logins WHERE user_id = $1';
-//     // //         const resultUser = await client.query(updatedUserQuery, [customer_id]);
-
-//     // //         if (resultUser.rows.length === 0) {
-//     // //             return res.status(404).json({ error: 'User not found.' });
-//     // //         }
-
-//     // //         const updated_by = `${resultUser.rows[0].first_name} ${resultUser.rows[0].last_name}`;
-
-//     // //         // Create a new tax document using the uploaded file's information
-//     // //         const documentQuery = `
-//     // //       INSERT INTO customer_tax_documents(
-//     // //           customer_id,
-//     // //           document_path,
-//     // //           financial_year,
-//     // //           financial_quarter,
-//     // //           financial_month,
-//     // //           assigned_status,
-//     // //           review_status,
-//     // //           assigned_staff,
-//     // //           created_by,
-//     // //           updated_by,
-//     // //           created_on,
-//     // //           updated_on
-//     // //       )
-//     // //       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-//     // //       RETURNING document_id
-//     // //   `;
-
-//     // //         const assigned_status = 'Pending';
-//     // //         const review_status = 'Pending';
-
-//     // //         const values = [
-//     // //             customer_id,
-//     // //             fileInfo.path, // Use the stored path from the file upload
-//     // //             financial_year,
-//     // //             financial_quarter,
-//     // //             financial_month,
-//     // //             assigned_status,
-//     // //             review_status,
-//     // //             21,  // You may want to set the default value for assigned_staff
-//     // //             updated_by,
-//     // //             updated_by,
-//     // //             new Date(),
-//     // //             new Date(),
-//     // //         ];
-
-//     // //         const result = await client.query(documentQuery, values);
-
-//     // //         res.status(201).json({ message: 'File Uploaded and Document Created Successfully.', document_id: result.rows[0].document_id });
-//     // //     } catch (error) {
-//     // //         console.error(error);
-//     // //         res.status(500).json({ error: 'Error adding document.' });
-//     // //     }
-//     // } catch (err) {
-//     //     res.status(500).send(err);
-//     // }
-
-//     // Move this outside the catch block
-
-// };
-
 
 // Create customer new tax comment
 const createCustomerNewTaxDocument = async (req, res, next) => {
@@ -115,7 +23,9 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
             customer_id,
             financial_year,
             financial_quarter,
-            financial_month
+            financial_month,
+            document_name,
+            document_type
         } = req.body;
         try {
             const updatedUserQuery = 'SELECT * FROM user_logins WHERE user_id = $1';
@@ -124,7 +34,7 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
             if (resultUser.rows.length === 0) {
                 return res.status(404).json({ error: 'User not found.' });
             }
-               const document_path = fileInfo.path
+            const document_path = fileInfo.path
             const updated_by = `${resultUser.rows[0].first_name} ${resultUser.rows[0].last_name}`;
 
             const documentQuery = `
@@ -134,9 +44,9 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
                 financial_year,
                 financial_quarter,
                 financial_month,
-                assigned_status,
+                document_name,
+                document_type,
                 review_status,
-                assigned_staff,
                 created_by,
                 updated_by,
                 created_on,
@@ -146,7 +56,6 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
             RETURNING document_id
         `;
 
-            const assigned_status = 'Pending';
             const review_status = 'Pending';
 
             const values = [
@@ -155,9 +64,9 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
                 financial_year,
                 financial_quarter,
                 financial_month,
-                assigned_status,
+                document_name,
+                document_type,
                 review_status,
-                null,
                 updated_by,
                 updated_by,  // Updated_by was missing a closing quote
                 new Date(),
@@ -398,6 +307,48 @@ const deleteCustomerDocumentById = async (req, res) => {
 }
 
 
+
+// API endpoint to execute the SQL query
+const getStaffClientAssignedDocuments = async (req, res) => {
+    try {
+        const result = await client.query(`
+        SELECT *
+        FROM customer_tax_documents ctd
+        JOIN user_logins ul ON ctd.customer_id = ul.user_id
+        JOIN staff_customer_assignments sca ON ul.user_id = sca.client_id;
+    `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error executing SQL query:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+const getStaffClientAssignedDocumentsByUserID = async (req, res) => {
+    try {
+        const id = req.params.id; 
+        const result = await client.query(
+            `
+        SELECT *
+        FROM customer_tax_documents ctd
+        JOIN user_logins ul ON ctd.customer_id = ul.user_id
+        JOIN staff_customer_assignments sca ON ul.user_id = sca.client_id
+        WHERE ul.user_id = $1;
+      `,
+            [id]
+        );
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error executing SQL query:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+
+
 module.exports = {
     createCustomerNewTaxDocument,
     getCustomerAllDocuments,
@@ -407,5 +358,7 @@ module.exports = {
     deleteCustomerDocumentById,
     updateDocumentAssignedStatus,
     updateDocumentReviewStatus,
-    downloadDocument
+    downloadDocument,
+    getStaffClientAssignedDocuments,
+    getStaffClientAssignedDocumentsByUserID
 }

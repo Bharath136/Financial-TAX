@@ -65,3 +65,12 @@ export const ViewButton = styled(Button)`
         background-color: var(--accent-background);
     }
 `
+
+export const NoClientContainer = styled.div`
+    height:80vh;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+`

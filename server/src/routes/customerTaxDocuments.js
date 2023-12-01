@@ -23,7 +23,9 @@ const {
     updateDocumentAssignedStatus,
     deleteCustomerDocumentById,
     updateDocumentReviewStatus,
-    downloadDocument
+    downloadDocument,
+    getStaffClientAssignedDocuments,
+    getStaffClientAssignedDocumentsByUserID
 } = require('../controllers/customerTaxDocuments');
 
 
@@ -34,6 +36,10 @@ router.get('/download/:id', downloadDocument)
 router.post('/upload', upload.single('file'), authenticate(['CUSTOMER']), createCustomerNewTaxDocument);
 
 router.get('/', authenticate(['CUSTOMER', 'STAFF', 'ADMIN']), getCustomerAllDocuments);
+
+router.get('/get-assigned-client-documents', authenticate(['STAFF','ADMIN']), getStaffClientAssignedDocuments)
+
+router.get('/get-assigned-client-documents/:id', authenticate(['STAFF', 'ADMIN']), getStaffClientAssignedDocumentsByUserID)
 
 router.get('/customer/:id', authenticate(['CUSTOMER', 'STAFF', 'ADMIN']), getCustomerDocumentByUserId);
 

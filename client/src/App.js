@@ -25,6 +25,7 @@ import ClientTaxDocuments from './AdminComponents/ClientTaxDocuments/clientTaxDo
 import NotFound from './NotFound/notFound';
 import AddStaff from './AdminComponents/AddStaff/addStaff';
 import UploadDocument from './userComponents/UploadDocument/uploadDocument';
+import AdminDashboard from './AdminComponents/AdminDashboard/adminDashboard';
 
 // const routes = [
 //   { path: '/', element: <Landingpage /> },
@@ -97,7 +98,7 @@ function App() {
     { path: '/staff-customer-tax-return', element: <ProtectedRoute Component={TaxReturnDocument}/>},
 
      //admin components
-    { path: '/admin-dashboard', element: <ProtectedRoute Component={StaffDashboard} /> },
+    { path: '/admin-dashboard', element: <ProtectedRoute Component={AdminDashboard} /> },
     { path: '/admin-clients', element: <ProtectedRoute Component={Clients} /> },
     { path: '/admin-staff', element: <ProtectedRoute Component={Staff} /> },
     { path: '/admin-client-tax-documents', element: <ProtectedRoute Component={ClientTaxDocuments} /> },

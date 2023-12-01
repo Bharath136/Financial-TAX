@@ -129,10 +129,26 @@ const deleteCustomerCommentById = async(req, res) =>{
 }
 
 
+const getCommentsByDocId = async (req,res) => {
+    const id = req.params.id 
+    try{
+        const getQuery = `SELECT * FROM customer_tax_documents JOIN customer_tax_comments 
+        ON customer_tax_documents.document_id =  customer_tax_comments.document_id
+        WHERE customer_tax_comments.document_id = $1
+        `
+        const response = await client.query(getQuery, [id])
+        res.status(200).json(response.rows)
+    }catch(error){
+        console.log(error)
+    }
+}
+
+
 module.exports = {
     createCustomerNewTaxComment,
     getCustomerAllComments,
     updateCustomerComments,
     getCustomerCommentById,
-    deleteCustomerCommentById
+    deleteCustomerCommentById,
+    getCommentsByDocId
 }

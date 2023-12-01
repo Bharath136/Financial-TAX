@@ -41,7 +41,6 @@ export const DocumentsTableContainer = styled.div`
 export const DocumentTableContainer = styled.div`
     width: 100%;
     overflow-x: auto;
-    
 `;
 
 export const DocumentTable = styled.table`
@@ -49,6 +48,17 @@ export const DocumentTable = styled.table`
     margin-top: 10px;
     border:1px solid var(--border)
 `;
+
+export const DocumentName = styled.span`
+    font-size:16px;
+    @media screen and (max-width:912px){
+        font-size:14px;
+    }
+    @media screen and (max-width:768px){
+        font-size:12px;
+    }
+`
+
 
 export const Button = styled.button`
     border-radius: 30px;
@@ -130,4 +140,18 @@ export const SendButton = styled(Button)`
     border: 1px solid var(--accent-background);
     background-color: transparent;
     }
+`
+
+
+export const Th = styled.th`
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: center;
+    background-color: var(--main-background);
+`
+
+export const Td = styled.td`
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: center;
 `

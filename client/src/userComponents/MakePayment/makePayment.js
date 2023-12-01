@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Sidebar from '../SideBar/sidebar';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 const PaymentSectionContainer = styled.div`
   display: flex;

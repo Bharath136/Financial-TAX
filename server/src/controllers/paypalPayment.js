@@ -1,16 +1,20 @@
 const paypal = require('paypal-rest-sdk');
+const dotenv = require('dotenv');
+dotenv.config();
 
-
+const paypal_client_id = process.env.PAYPAL_CLIENT_ID;
+const paypal_client_secret = process.env.PAYPAL_CLIENT_SECRET;
 
 // Configure PayPal with your credentials
 paypal.configure({
     mode: 'sandbox', // Set to 'live' for production
-    client_id: 'YOUR_CLIENT_ID',
-    client_secret: 'YOUR_CLIENT_SECRET',
+    client_id: paypal_client_id,
+    client_secret: paypal_client_secret,
 });
 
 // Create a payment
 const createPayment = async (req, res) => {
+    const { user, amount } = req.body;
     try {
         const paymentData = {
             intent: 'sale',
@@ -18,30 +22,30 @@ const createPayment = async (req, res) => {
                 payment_method: 'paypal',
             },
             redirect_urls: {
-                return_url: 'http://localhost:3000/api/success', // Replace with your success URL
-                cancel_url: 'http://localhost:3000/api/cancel', // Replace with your cancel URL
+                return_url: 'http://localhost:3000/success', // Replace with your success URL
+                cancel_url: 'http://localhost:3000/cancel', // Replace with your cancel URL
             },
             transactions: [{
                 item_list: {
                     items: [{
-                        name: 'Sample Item',
+                        name: `Payment for ${user.first_name}'s item`, // Dynamic item name based on user
                         sku: 'item001',
-                        price: '10.00',
+                        price: amount, // Use the dynamic amount from the user
                         currency: 'USD',
                         quantity: 1,
                     }],
                 },
                 amount: {
-                    total: '10.00',
+                    total: amount, // Use the dynamic amount from the user
                     currency: 'USD',
                 },
-                description: 'Payment for a sample item',
+                description: `Payment for ${user.first_name}'s item`, // Dynamic description based on user
             }],
         };
 
         paypal.payment.create(paymentData, (error, payment) => {
             if (error) {
-                res.status(500).json({ error: 'Failed to create payment' });
+                res.status(500).json({ error: `Failed to create payment: ${error.message}` });
             } else {
                 const approvalUrl = payment.links.find(link => link.rel === 'approval_url').href;
                 res.json({ approvalUrl });
@@ -64,7 +68,7 @@ const executePayment = async (req, res) => {
 
         paypal.payment.execute(paymentId, executeData, (error, payment) => {
             if (error) {
-                res.status(500).json({ error: 'Failed to execute payment' });
+                res.status(500).json({ error: `Failed to execute payment: ${error.message}` });
             } else {
                 res.json({ payment });
             }
@@ -78,4 +82,4 @@ const executePayment = async (req, res) => {
 module.exports = {
     createPayment,
     executePayment
-}
+};

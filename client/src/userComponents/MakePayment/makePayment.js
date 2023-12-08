@@ -1,154 +1,196 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Sidebar from '../SideBar/sidebar';
-import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import domain from '../../domain/domain';
+
+// Import the PayPal logo SVG
+import PayPalLogo from '../../Assets/PayPal.svg.png';
 
 const PaymentSectionContainer = styled.div`
   display: flex;
-  flex-direction:column;
-  width:100%;
+  flex-direction: column;
+  width: 100%;
   justify-content: center;
   align-items: center;
   height: 100vh;
 `;
 
-const PaymentForm = styled.form`
-  background-color: #ffffff;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  padding: 40px;
-  border-radius: 10px;
-  width: 400px;
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 20px;
-`;
-
-const Label = styled.label`
-  display: block;
-  font-size: 16px;
-  margin-bottom: 10px;
-  color: #333;
-`;
-
-const Input = styled.input`
+const PaymentForm = styled.div`
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  max-width: 400px;
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
 
-  &:focus {
-    outline: none;
-    border-color: #007bff;
+  h2 {
+    margin-bottom: 20px;
+    color: #003087; /* Updated text color to white */
   }
-`;
 
-const Button = styled.button`
-  background-color: #007bff;
-  color: #fff;
-  padding: 15px;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s;
+  label {
+    display: block;
+    margin-bottom: 10px;
+    color: #003087; /* Updated text color to white */
+  }
 
-  &:hover {
-    background-color: #0056b3;
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #003087; /* Updated border color to white */
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  button {
+    background-color: #ffc439; /* PayPal yellow */
+    color: #003087; /* PayPal blue */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+  }
+
+  .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  p {
+    margin-top: 20px;
+    color: #28a745;
+  }
+
+  a {
+    color: #003087; /* Updated text color to white */
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  img {
+    width: 50px; /* Adjust the width of the PayPal logo */
+    margin-bottom: 20px;
   }
 `;
 
 const MakePayment = () => {
-  const user = JSON.parse(localStorage.getItem('currentUser'))
+  const user = JSON.parse(localStorage.getItem('currentUser'));
+  const [approvalUrl, setApprovalUrl] = useState('');
+  const [paymentId, setPaymentId] = useState('');
+  const [amount, setAmount] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); // New state for error handling
 
-  const navigate = useNavigate()
+  const handleCreatePayment = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post(`${domain.domain}/paypal/create-payment`, {
+        user: user,
+        amount: parseFloat(amount),
+      });
+
+      const { approvalUrl, paymentId } = response.data;
+      setApprovalUrl(approvalUrl);
+      setPaymentId(paymentId);
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      setError('Failed to create payment. Please try again.'); // Set error message
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExecutePayment = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post(`${domain.domain}/paypal/execute-payment`, {
+        paymentId,
+        payerId: user.user_id,
+      });
+
+      console.log('Payment executed successfully:', response.data.payment);
+      // Optionally provide feedback to the user on successful payment execution
+      // You can display a success message or navigate to a success page.
+    } catch (error) {
+      console.error('Error executing payment:', error);
+      setError('Failed to execute payment. Please try again.'); // Set error message
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user.role === 'ADMIN') {
-      navigate('/admin-dashboard')
+      navigate('/admin-dashboard');
     } else if (user.role === 'STAFF') {
-      navigate('/staff-dashboard')
+      navigate('/staff-dashboard');
     }
-  })
+  }, [navigate, user.role]);
+
+  const onChangeAmount = (event) => {
+    setAmount(event.target.value);
+  };
 
   return (
     <div className='d-flex'>
-      <Sidebar />
+    <Sidebar/>
       <PaymentSectionContainer>
-        <div>
-          <h2>Pay Tax with PayPal</h2>
-          <PayPalScriptProvider options={{ 'client-id': 'YOUR_PAYPAL_CLIENT_ID' }}>
-            <PayPalButtons
-              style={{ layout: 'horizontal' }}
-              createOrder={(data, actions) => {
-                // Implement logic to create tax payment order on the server
-                return actions.order.create({
-                  purchase_units: [
-                    {
-                      description: 'Tax Payment',
-                      amount: {
-                        currency_code: 'USD',
-                        value: '100.00', // Set your tax payment amount
-                      },
-                    },
-                  ],
-                });
-              }}
-              onApprove={(data, actions) => {
-                // Implement logic to capture the tax payment on the server
-                return actions.order.capture().then(details => {
-                  console.log('Tax Payment completed by ' + details.payer.name.given_name);
-                  // Call your backend to save the tax payment details
-                });
-              }}
+        <PaymentForm>
+          <img src={PayPalLogo} alt="PayPal Logo" style={{ width: '200px' }} />
+          <label>
+            Enter Amount:
+            <input
+              type="number"
+              placeholder='Enter your tax amount'
+              value={amount}
+              onChange={onChangeAmount}
             />
-          </PayPalScriptProvider>
-        </div>
+          </label>
+          {approvalUrl ? (
+            <>
+              <p>Payment created successfully!</p>
+              <a href={approvalUrl} target="_blank" rel="noopener noreferrer">
+                Click here to approve the payment
+              </a>
+              <button onClick={handleExecutePayment} disabled={loading} className='w-100'>
+                {loading ? (
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only"></span>
+                  </div>
+                ) : (
+                  'Execute Payment'
+                )}
+              </button>
+            </>
+          ) : (
+            <button onClick={handleCreatePayment} disabled={loading} className='w-100'>
+              {loading ? (
+                <div className="spinner-border text-primary" role="status">
+                  <span className="sr-only"></span>
+                </div>
+              ) : (
+                'Create Payment'
+              )}
+            </button>
+          )}
+          {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message if there is an error */}
+        </PaymentForm>
       </PaymentSectionContainer>
     </div>
   );
 };
 
 export default MakePayment;
-
-
-
-// {/* <PaymentSectionContainer>
-//                 <PaymentForm onSubmit={handlePaymentSubmit}>
-//                     <h2 style={{ marginBottom: '30px', textAlign: 'center', color: '#333' }}>Payment Details</h2>
-//                     <FormGroup>
-//                         <Label>Card Number</Label>
-//                         <Input
-//                             type="text"
-//                             placeholder="Enter card number"
-//                             value={cardNumber}
-//                             onChange={(e) => setCardNumber(e.target.value)}
-//                         />
-//                     </FormGroup>
-//                     <FormGroup>
-//                         <Label>Expiry Date</Label>
-//                         <Input
-//                             type="text"
-//                             placeholder="MM/YY"
-//                             value={expiryDate}
-//                             onChange={(e) => setExpiryDate(e.target.value)}
-//                         />
-//                     </FormGroup>
-//                     <FormGroup>
-//                         <Label>CVC</Label>
-//                         <Input
-//                             type="text"
-//                             placeholder="CVC"
-//                             value={cvc}
-//                             onChange={(e) => setCvc(e.target.value)}
-//                         />
-//                     </FormGroup>
-//                     <Button type="submit">Submit Payment</Button>
-//                 </PaymentForm>
-//             </PaymentSectionContainer>
-//          */}

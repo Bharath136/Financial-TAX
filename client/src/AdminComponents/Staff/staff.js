@@ -1,16 +1,39 @@
+// Libraries
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
+
+// Components
 import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
-import { SearchButton, ClientsHeaderContainer,Container, ExecuteButton, H1, SearchBar, SearchBarContainer, StaffListContainer, Table, TableContainer, Td, Th, NoClientContainer } from './styledComponents';
-import { BiSearch } from 'react-icons/bi';
 import showAlert from '../../SweetAlert/sweetalert';
 import SweetLoading from '../../SweetLoading/SweetLoading';
-import noClient from '../../Assets/no-customers.jpg'
-import { useNavigate } from 'react-router-dom';
 
+// Assets
+import noClient from '../../Assets/no-customers.jpg'
+import { BiSearch } from 'react-icons/bi';
+
+// Styled Components
+import {
+    SearchButton,
+    ClientsHeaderContainer,
+    Container,
+    ExecuteButton,
+    H1,
+    SearchBar,
+    SearchBarContainer,
+    StaffListContainer,
+    Table,
+    TableContainer,
+    Td,
+    Th,
+    NoClientContainer
+} from './styledComponents';
+
+
+// Constants for API status
 const apiStatusConstants = {
     initial: 'INITIAL',
     success: 'SUCCESS',
@@ -19,11 +42,13 @@ const apiStatusConstants = {
 };
 
 const Staff = () => {
+    // State variables
     const [staffList, setStaff] = useState([]);
     const [selectedAction, setSelectedAction] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(19);
-    const [clients, setClients] = useState([])
+    const [clients, setClients] = useState([]);
+    const [filteredStaff, setFilteredStaff] = useState([]);
     const [assignedClients, setAssignedClients] = useState([])
     const [viewAssignedClients, setViewAssignedClients] = useState(false);
     const [selectedStaff, setSelectedStaff] = useState({})
@@ -32,10 +57,25 @@ const Staff = () => {
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const token = localStorage.getItem('customerJwtToken');
 
+    // Handle search term change
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
+    // Handle search button click
+    const onSearch = () => {
+        // Filter users by name
+        if(searchTerm){
+            const filteredDataByName = filteredStaff.filter((user) =>
+                user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setFilteredStaff(filteredDataByName)
+        }else{
+            setFilteredStaff(staffList)
+        }
+    }
+
+    // Fetch data from API
     const fetchData = async () => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -53,11 +93,14 @@ const Staff = () => {
 
             const [staffData, assignedClientsData] = await Promise.all([staffResponse, assignedClientsResponse]);
 
+            // Filter staff and clients
             const filteredStaff = staffData.data.filter((user) => user.role === 'STAFF');
             const filteredClients = staffData.data.filter((user) => user.role === 'CUSTOMER');
             setClients(filteredClients);
+            setFilteredStaff(filteredStaff)
             setStaff(filteredStaff);
 
+            // Find unassigned clients
             const assignedClients = assignedClientsData.data;
             const unassignedClients = filteredClients.filter((client) => {
                 return !assignedClients.some((assignedClient) => assignedClient.client_id === client.user_id);
@@ -69,11 +112,14 @@ const Staff = () => {
         }
     };
 
+    // Navigation hook
     const navigate = useNavigate();
 
+    // User details
     const user = JSON.parse(localStorage.getItem('currentUser'))
 
     useEffect(() => {
+        // Redirect based on user role
         if (user.role === 'STAFF') {
             navigate('/staff-dashboard')
         } else if (user.role === 'CUSTOMER') {
@@ -82,16 +128,18 @@ const Staff = () => {
         fetchData();
     }, []);
 
-
+    // Handle edit button click
     const handleEditClick = () => {
         setIsEditModalOpen(!isEditModalOpen);
         fetchData();
     };
 
+    // Handle modal close
     const handleEditModalClose = () => {
         setIsEditModalOpen(false);
     };
 
+    // Handle staff deletion
     const onDeleteStaff = async (id) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -107,16 +155,19 @@ const Staff = () => {
         }
     };
 
+    // Action options for staff
     const actionOptions = [
         { value: 'edit', label: 'Edit / View' },
         { value: 'hold', label: 'Hold' },
         { value: 'delete', label: 'Delete' },
     ];
 
+    // Handle action change
     const handleActionChange = (selectedOption) => {
         setSelectedAction(selectedOption);
     };
 
+    // Handle executing selected action
     const handleExecuteAction = (staffId) => {
         if (selectedAction) {
             switch (selectedAction.value) {
@@ -137,10 +188,12 @@ const Staff = () => {
         }
     };
 
+    // Get client label
     const getClientLabel = (client) => {
         return `${client.first_name} ${client.last_name}`;
     };
 
+    // Get assigned clients for a staff member
     const getAssignedClients = async (id) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -165,18 +218,19 @@ const Staff = () => {
         } catch (error) {
             console.error('Error fetching assigned clients:', error);
         }
-    };    
+    };
 
+    // Handle assigning a client to a staff member
     const handleAssign = async (staffId) => {
-        const assignData = { client_id: selectedAction.data.user_id, staff_id:staffId}
+        const assignData = { client_id: selectedAction.data.user_id, staff_id: staffId }
         setApiStatus(apiStatusConstants.inProgress)
-        try{
+        try {
             const response = await axios.post(`${domain.domain}/staff-customer-assignments/assign`, assignData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            if(response.status === 200){
+            if (response.status === 200) {
                 setApiStatus(apiStatusConstants.success)
                 showAlert({
                     title: 'Client Assigned Successfully!',
@@ -186,17 +240,18 @@ const Staff = () => {
                 });
                 fetchData()
             }
-        }catch(error){
+        } catch (error) {
             console.log(error)
         }
     }
 
+    // Render different components based on API status
     const renderComponents = () => {
-        switch(apiStatus){
+        switch (apiStatus) {
             case apiStatusConstants.failure:
                 return <div>failure</div>
             case apiStatusConstants.inProgress:
-                return <SweetLoading/>
+                return <SweetLoading />
             case apiStatusConstants.success:
                 return <TableContainer className='shadow'>
                     <ClientsHeaderContainer>
@@ -207,7 +262,7 @@ const Staff = () => {
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />
-                            <SearchButton><BiSearch size={25} /></SearchButton>
+                            <SearchButton onClick={onSearch}><BiSearch size={25} /></SearchButton>
                         </SearchBarContainer>
                     </ClientsHeaderContainer>
                     <Container>
@@ -224,7 +279,7 @@ const Staff = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {staffList.map((staff) => (
+                                {filteredStaff.map((staff) => (
                                     <tr key={staff.user_id}>
                                         <Td>{staff.user_id}</Td>
                                         <Td>{staff.first_name}</Td>
@@ -299,8 +354,8 @@ const Staff = () => {
                     </Table>}
                     {viewAssignedClients && assignedClients.length === 0 && <p>No Clients Assigned</p>}
                 </TableContainer>
-            default :
-            return null
+            default:
+                return null
         }
     }
 

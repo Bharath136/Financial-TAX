@@ -71,7 +71,7 @@ const Sidebar = () => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(location.pathname);
     const [currentUser, setCurrentUser] = useState('');
-    const [isDarkMode, setDarkMode] = useState(false);
+    // const [isDarkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('currentUser'));
@@ -81,9 +81,9 @@ const Sidebar = () => {
         setActiveItem(location.pathname);
     }, [location.pathname]);
 
-    const onChangeMode = () => {
-        setDarkMode(!isDarkMode);
-    };
+    // const onChangeMode = () => {
+    //     setDarkMode(!isDarkMode);
+    // };
 
     return (
         <AuthContext.Consumer>
@@ -125,7 +125,7 @@ const Sidebar = () => {
                                             className={`sidebar-link ${activeItem === item.path ? 'active' : ''}`}
                                         >
                                             <div className='d-flex' style={{ gap: '15px' }}>
-                                                {hideSidebar ? <span>{item.icon}</span> : <><span>{item.icon} </span><span>{item.label}</span></>}
+                                                {hideSidebar ? <span>{item.icon}</span> : <><span>{item.icon} </span><span style={{fontSize:'17px'}}>{item.label}</span></>}
                                             </div>
                                         </Link>
                                     </li>

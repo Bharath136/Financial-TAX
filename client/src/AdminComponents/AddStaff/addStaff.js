@@ -50,6 +50,7 @@ const AddStaff = () => {
                 icon: 'success',
                 confirmButtonText: 'OK',
             });
+            setFormData({})
         } catch (error) {
             console.error('Error:', error);
         }
@@ -62,7 +63,7 @@ const AddStaff = () => {
             <AddStaffContainer>
                 <AddStaffCard className='shadow'>
                     <AddStaffHeader >Add Staff</AddStaffHeader>
-                    <FormContainer onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <div className='row'>
                             {initialFormFields.map((field, index) => (
                                 <div className='col-12 col-md-6' key={index}>
@@ -90,7 +91,7 @@ const AddStaff = () => {
                             </AddStaffButton>
                         </ButtonContainer>
 
-                    </FormContainer>
+                    </form>
                 </AddStaffCard>
 
             </AddStaffContainer>

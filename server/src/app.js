@@ -11,6 +11,7 @@ const customerTaxInputs = require('./routes/customerTaxInputs');
 const taxInputs = require('./routes/taxInputs');
 const taxDocuments = require('./routes/taxDocuments');
 const taxReturnDocuments = require('./routes/taxReturnDocuments')
+const paypalPayment = require('./routes/paypalPayment')
 const client = require('./database/connection');
 
 app.use(express.urlencoded({ extended: true }));
@@ -65,6 +66,9 @@ app.use('/staff-customer-assignments', staffCustomerAssignmentsRouter)
 
 // Mount the tax return documents router
 app.use('/tax-return-document', taxReturnDocuments)
+
+// Mount the paypal payment gateway
+app.use('/paypal', paypalPayment)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

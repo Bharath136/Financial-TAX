@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './landingpage.css';
 import { Carousel } from 'react-responsive-carousel';
 import { FaHandshake, FaChartBar, FaClock, FaLock, FaUsers } from 'react-icons/fa';
@@ -6,6 +6,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Footer from '../Footer/footer';
+import { useNavigate } from 'react-router-dom';
 
 const Landingpage = () => {
     // Carousel data
@@ -65,8 +66,14 @@ const Landingpage = () => {
         return id % 2 === 0;
     }
 
+    const navigate = useNavigate();
 
-
+    useEffect(() => {
+        const token = localStorage.getItem('customerJwtToken')
+        if(token){
+            navigate('/user-dashboard')
+        }
+    })
 
     return (
         <div>

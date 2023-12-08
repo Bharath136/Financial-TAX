@@ -42,8 +42,6 @@ const Header = ({ setShowNav }) => {
         { id: '4', to: '/contact', text: 'CONTACT' },
     ];
 
-    console.log(currentPath)
-
     return (
         <AuthContext.Consumer>
             {(value) => {

@@ -152,10 +152,14 @@ const Clients = () => {
     // Handle search button click
     const onSearch = () => {
         // Filter users by name
-        const filteredDataByName = filteredClients.filter((user) =>
-            user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredClients(filteredDataByName)
+        if(searchTerm){
+            const filteredDataByName = filteredClients.filter((user) =>
+                user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setFilteredClients(filteredDataByName)
+        }else{
+            setFilteredClients(clients)
+        }
     }
 
     // Render different components based on API status

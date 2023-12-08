@@ -19,9 +19,19 @@ export const H1 = styled.h1`
     font-family:Arial, Helvetica, sans-serif
 `;
 
+export const ClientTaxDocumentsHeaderContainer = styled.div`
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    @media screen and (max-width:768px){
+        flex-direction:column;
+        align-items:flex-start;
+    }
+`
+
 export const ClientsHeaderContainer = styled.div`
     display:flex;
-    width:100%;
     flex-direction:column;
     justify-content:center;
     align-items:flex-start;
@@ -33,9 +43,9 @@ export const ClientsHeaderContainer = styled.div`
 
 export const Select = styled.select`
     padding:10px;
-    width:20%;
+    width:200px;
     @media screen and (max-width:768px){
-        width:100%;
+        width:80vw;
     }
 `
 
@@ -101,3 +111,4 @@ export const NoDocuments = styled.div`
     justify-content:center;
     min-height:60vh;
 `
+

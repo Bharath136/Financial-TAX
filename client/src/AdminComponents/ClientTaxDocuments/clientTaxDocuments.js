@@ -1,62 +1,108 @@
+// Libraries
 import React, { useEffect, useState } from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import axios from 'axios';
+
+// Components
 import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import showAlert from '../../SweetAlert/sweetalert';
-import pdf from '../../Assets/PDF_file_icon.svg.png'
+
+// Assets
+import pdf from '../../Assets/PDF_file_icon.svg.png';
 import doc from '../../Assets/doc.png';
-import docx from '../../Assets/docx.png'
-import noDoc from '../../Assets/no-documents.jpg'
-import { ClientDocumentContainer, ClientsHeaderContainer, CtaSection, Description, DocumentName, DocumentTable, DocumentTableContainer, H1, NoDocuments, Select, Td, Th } from './styledComponents';
+import docx from '../../Assets/docx.png';
+import noDoc from '../../Assets/no-documents.jpg';
+
+// Styled Components
+import {
+    ClientDocumentContainer,
+    ClientTaxDocumentsHeaderContainer,
+    ClientsHeaderContainer,
+    CtaSection,
+    Description,
+    DocumentName,
+    DocumentTable,
+    DocumentTableContainer,
+    H1,
+    NoDocuments,
+    Select,
+    Td,
+    Th
+} from './styledComponents';
 import { useNavigate } from 'react-router-dom';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+
+// Constants for API status
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
 
 const ClientTaxDocuments = () => {
+    // State and variables
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
     const [documents, setDocuments] = useState([]);
     const [filteredDocuments, setFilteredDocuments] = useState([]);
     const [clients, setClients] = useState([]);
     const [selectedClient, setSelectedClient] = useState('');
 
+    // Fetch documents from the server
     const fetchDocuments = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
-            const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents`, { 
-                headers: { Authorization: `Bearer ${accessToken}` } 
+            const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
             });
-            setDocuments(response.data);
-            setFilteredDocuments(response.data)
+            if(response.status === 200){
+                setDocuments(response.data);
+                setFilteredDocuments(response.data);
+                setApiStatus(apiStatusConstants.success)
+            }
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
     };
 
+    // Fetch clients from the server
     const fetchClients = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
         const response = await axios.get(`${domain.domain}/user`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            }
-        })
-        const filteredClients = response.data.filter((client) => {
-            return client.role === 'CUSTOMER'
-        })
-        setClients(filteredClients)
-    }
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
 
-    const formatDateTime = (dateTimeString) => new Date(dateTimeString).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-    });
+        if(response.status === 200){
+            const filteredClients = response.data.filter((client) => {
+                return client.role === 'CUSTOMER';
+            });
+            setClients(filteredClients);
+            setApiStatus(apiStatusConstants.success)
+        }
+        
+    };
 
+    // Format date and time
+    const formatDateTime = (dateTimeString) =>
+        new Date(dateTimeString).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        });
+
+    // Handle document status change
     const onChangeDocumentStatus = async (id, status) => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
-            await axios.put(`${domain.domain}/customer-tax-document/review-status/${id}`, { user_id: user.user_id, review_status: status }, { 
-                headers: { Authorization: `Bearer ${accessToken}` } 
+            await axios.put(`${domain.domain}/customer-tax-document/review-status/${id}`, { user_id: user.user_id, review_status: status }, {
+                headers: { Authorization: `Bearer ${accessToken}` }
             });
             showAlert({
                 title: 'Status Updated Successfully!',
@@ -65,25 +111,30 @@ const ClientTaxDocuments = () => {
                 confirmButtonText: 'Ok',
             });
             fetchDocuments();
+            setApiStatus(apiStatusConstants.success)
         } catch (error) {
             console.error('Error updating document status:', error.message);
         }
     };
 
+    // Navigation hook
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Redirect users based on role
         if (user.role === 'STAFF') {
-            navigate('/staff-dashboard')
+            navigate('/staff-dashboard');
         } else if (user.role === 'CUSTOMER') {
-            navigate('/user-dashboard')
+            navigate('/user-dashboard');
         }
+        // Fetch documents and clients
         fetchDocuments();
         fetchClients();
-        
     }, [navigate]);
 
+    // Handle download click
     const handleDownloadClick = async (document) => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             const downloadUrl = `${domain.domain}/customer-tax-document/download/${document.document_id}`;
             const headers = { Authorization: `Bearer ${accessToken}` };
@@ -97,11 +148,13 @@ const ClientTaxDocuments = () => {
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
+            setApiStatus(apiStatusConstants.success)
         } catch (error) {
             console.error('Error downloading file:', error);
         }
     };
 
+    // Render document thumbnail based on file type
     const renderDocumentThumbnail = (document) => {
         const fileExtension = document.document_path.split('.').pop().toLowerCase();
         const fileTypeIcons = {
@@ -127,40 +180,31 @@ const ClientTaxDocuments = () => {
         }
     };
 
-
+    // Handle client change for filtering documents
     const handleClientChange = async (e) => {
+        setApiStatus(apiStatusConstants.inProgress)
         const id = e.target.value;
         setSelectedClient(id);
         try {
-            const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents/${id}`, { 
-                headers: { Authorization: `Bearer ${accessToken}` } 
+            const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents/${id}`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
             });
-            if(response.status === 200){
-                setFilteredDocuments(response.data)
-            }else{
+            if (response.status === 200) {
+                setFilteredDocuments(response.data);
+                setApiStatus(apiStatusConstants.success)
+            } else {
                 setFilteredDocuments(documents);
             }
-            
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
     };
 
-
-
-
-
-    return (
-        <div className="d-flex">
-            <Sidebar />
-            <ClientDocumentContainer >
-                <H1>Tax Documents</H1>
-                <Description >
-                    Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
-                </Description>
-                {documents.length > 0 ? <CtaSection className="shadow">
-                    
-                    <DocumentTableContainer >
+    const successRender = () => {
+        return(
+            <CtaSection className="shadow">
+                <DocumentTableContainer >
+                    <ClientTaxDocumentsHeaderContainer>
                         <H1>Uploaded Documents</H1>
                         <ClientsHeaderContainer>
                             <label><strong>Filter by client</strong></label>
@@ -179,7 +223,9 @@ const ClientTaxDocuments = () => {
                                 ))}
                             </Select>
                         </ClientsHeaderContainer>
-                        {filteredDocuments.length > 0 ? <DocumentTable >
+                    </ClientTaxDocumentsHeaderContainer>
+                    {filteredDocuments.length > 0 ? (
+                        <DocumentTable >
                             <thead>
                                 <tr>
                                     <Th>Document</Th>
@@ -192,26 +238,27 @@ const ClientTaxDocuments = () => {
                                 {filteredDocuments.map((document) => (
                                     <tr key={document.document_id}>
                                         <Td>
-                                            <div className='d-flex flex-column'> <a
-                                                href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                download
-                                                onClick={(e) => handleDownloadClick(document)}
-                                            >
-                                                {renderDocumentThumbnail(document)}
-                                            </a>
+                                            <div className='d-flex flex-column'>
+                                                <a
+                                                    href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    download
+                                                    onClick={(e) => handleDownloadClick(document)}
+                                                >
+                                                    {renderDocumentThumbnail(document)}
+                                                </a>
                                                 <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
                                             </div>
                                         </Td>
                                         <Td>{formatDateTime(document.created_on)}</Td>
                                         <Td style={{
-                                                color:
-                                                    document.review_status === 'Pending' ? 'orange' :
-                                                        document.review_status === 'Rejected' ? 'red' :
-                                                            document.review_status === 'Reviewed' ? 'green' :
-                                                                'inherit'  
-                                            }}><strong>{document.review_status}</strong>
+                                            color:
+                                                document.review_status === 'Pending' ? 'orange' :
+                                                    document.review_status === 'Rejected' ? 'red' :
+                                                        document.review_status === 'Reviewed' ? 'green' :
+                                                            'inherit'
+                                        }}><strong>{document.review_status}</strong>
                                         </Td>
                                         <Td>
                                             <DropdownButton id={`dropdown-button-${document.document_id}`} title="Change" variant="warning">
@@ -225,14 +272,45 @@ const ClientTaxDocuments = () => {
                                     </tr>
                                 ))}
                             </tbody>
-                        </DocumentTable> : <div>No Documents uploaded by this client</div>}
-                    </DocumentTableContainer>
-                </CtaSection> :
+                        </DocumentTable>
+                    ) : (
+                        <div>No Documents uploaded by this client</div>
+                    )}
+                </DocumentTableContainer>
+            </CtaSection>
+        )
+    }
+
+    const onRenderComponents = () => {
+        switch(apiStatus){
+            case apiStatusConstants.inProgress:
+                return <SweetLoading/>
+            case apiStatusConstants.success:
+                return successRender()
+            case apiStatusConstants.failure:
+                return <div>failure..</div>
+            default:
+                return null
+        }
+    }
+
+    return (
+        <div className="d-flex">
+            <Sidebar />
+            <ClientDocumentContainer >
+                <H1>Tax Documents</H1>
+                <Description >
+                    Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
+                </Description>
+                {documents.length > 0 ? 
+                    onRenderComponents()
+                 : (
                     <NoDocuments>
                         <img src={noDoc} alt='no-doc' className='img-fluid' />
                         <H1>No Documents!</H1>
                         <label>No documents have been uploaded by the client. Please upload relevant documents to proceed.</label>
-                    </NoDocuments>}
+                    </NoDocuments>
+                )}
             </ClientDocumentContainer>
         </div>
     );

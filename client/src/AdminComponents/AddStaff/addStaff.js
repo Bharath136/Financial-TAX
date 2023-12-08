@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import './addStaff.css'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import domain from '../../domain/domain';
 import axios from 'axios';
 import showAlert from '../../SweetAlert/sweetalert';
 import Sidebar from '../../userComponents/SideBar/sidebar';
+import { AddStaffButton, AddStaffCard, AddStaffContainer, AddStaffHeader, ButtonContainer, FormContainer, FormLabel, MarginBottom2 } from './styledComponents.js';
+import { useNavigate } from 'react-router-dom';
 
 const AddStaff = () => {
     const initialFormFields = [
@@ -16,6 +16,17 @@ const AddStaff = () => {
     ];
 
     const [formData, setFormData] = useState({});
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (currentUser.role === 'STAFF') {
+            navigate('/staff-dashboard')
+        } else if (currentUser.role === 'CUSTOMER') {
+            navigate('/user-dashboard')
+        }
+    },[currentUser,navigate])
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,21 +59,19 @@ const AddStaff = () => {
     return (
         <div className='d-flex'>
         <Sidebar/>
-            <div className="add-staff-container">
-                <div className="add-staff-card shadow text-start">
-                    <h2 className="add-staff-header">Add Staff</h2>
-                    <form onSubmit={handleSubmit} className='form-container'>
+            <AddStaffContainer>
+                <AddStaffCard className='shadow'>
+                    <AddStaffHeader >Add Staff</AddStaffHeader>
+                    <FormContainer onSubmit={handleSubmit}>
                         <div className='row'>
                             {initialFormFields.map((field, index) => (
                                 <div className='col-12 col-md-6' key={index}>
-                                    <div className="mb-2 d-flex flex-column" >
-                                        <label htmlFor={field.name} className="form-label text-dark m-0">
+                                    <MarginBottom2 >
+                                        <FormLabel htmlFor={field.name} >
                                             {field.label}
-                                        </label>
+                                        </FormLabel>
                                         <input
                                             type={field.type}
-                                            
-
                                             className="p-2 text-dark" style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
                                             id={field.name}
                                             placeholder={field.placeholder}
@@ -71,18 +80,20 @@ const AddStaff = () => {
                                             onChange={handleChange}
                                             required
                                         />
-                                    </div>
+                                    </MarginBottom2>
                                 </div>
                             ))}
                         </div>
-                        <button type="submit" className="add-staff-button w-100 mt-2">
-                            Add Staff
-                        </button>
+                        <ButtonContainer>
+                            <AddStaffButton type="submit">
+                                Add Staff
+                            </AddStaffButton>
+                        </ButtonContainer>
 
-                    </form>
-                </div>
+                    </FormContainer>
+                </AddStaffCard>
 
-            </div>
+            </AddStaffContainer>
         </div>
     );
 };

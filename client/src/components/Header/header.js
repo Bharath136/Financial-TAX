@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import { Nav, Navbar } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { BiLogIn } from 'react-icons/bi';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useEffect, useState } from 'react';
@@ -16,7 +16,6 @@ const Header = ({ setShowNav }) => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
     useEffect(() => {
-        
         if (currentUser) {
             const fullName = `${currentUser.first_name} ${currentUser.last_name}`
             setActiveUser(fullName)
@@ -33,12 +32,17 @@ const Header = ({ setShowNav }) => {
         setIsEditModalOpen(false);
     };
 
+    const location = useLocation();
+    const currentPath = location.pathname;
+
     const navLinks = [
         { id: '1', to: '/', text: 'HOME' },
         { id: '2', to: '/about', text: 'ABOUT US' },
         { id: '3', to: '/services', text: 'SERVICES' },
         { id: '4', to: '/contact', text: 'CONTACT' },
     ];
+
+    console.log(currentPath)
 
     return (
         <AuthContext.Consumer>
@@ -53,7 +57,7 @@ const Header = ({ setShowNav }) => {
                     <div>
                         <Navbar
                             fixed="top"
-                            className="p-2 border"
+                            className="border p-2"
                             expand="lg"
                             variant="light"
                             style={{ minHeight: '10vh', backgroundColor: 'white' }}
@@ -90,13 +94,14 @@ const Header = ({ setShowNav }) => {
                                     <div className="w-100 d-flex align-items-start justify-content-lg-end">
                                         <Nav className="ml-auto">
                                             {navLinks.map((link, index) => (
-                                                <NavLink
+                                                <Link
                                                     key={index}
                                                     to={link.to}
-                                                    className="nav-link"
+                                                    className={`nav-link ${link.to === currentPath ? 'active-nav' : ''}`}
                                                 >
                                                     {link.text}
-                                                </NavLink>
+                                                </Link>
+                                                
                                             ))}
 
                                             <NavLink to='/login' className="auth-button ml-2 d-flex align-items-center pl-2 pr-2 pt-0 pb-0">

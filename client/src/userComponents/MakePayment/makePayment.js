@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Sidebar from '../SideBar/sidebar';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
-import BreadCrumb from '../../breadCrumb/breadCrumb';
+import { useNavigate } from 'react-router-dom';
 
 const PaymentSectionContainer = styled.div`
   display: flex;
@@ -64,55 +64,91 @@ const Button = styled.button`
 `;
 
 const MakePayment = () => {
-    const [cardNumber, setCardNumber] = useState('');
-    const [expiryDate, setExpiryDate] = useState('');
-    const [cvc, setCvc] = useState('');
+  const user = JSON.parse(localStorage.getItem('currentUser'))
 
-    const handlePaymentSubmit = (e) => {
-        e.preventDefault();
-        // Add your payment processing logic here
-        console.log('Payment submitted:', { cardNumber, expiryDate, cvc });
-    };
+  const navigate = useNavigate()
 
-    return (
-        <div className='d-flex'>
-            <Sidebar />
-            <PaymentSectionContainer>
-            {/* <BreadCrumb/> */}
-                <PaymentForm onSubmit={handlePaymentSubmit}>
-                    <h2 style={{ marginBottom: '30px', textAlign: 'center', color: '#333' }}>Payment Details</h2>
-                    <FormGroup>
-                        <Label>Card Number</Label>
-                        <Input
-                            type="text"
-                            placeholder="Enter card number"
-                            value={cardNumber}
-                            onChange={(e) => setCardNumber(e.target.value)}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label>Expiry Date</Label>
-                        <Input
-                            type="text"
-                            placeholder="MM/YY"
-                            value={expiryDate}
-                            onChange={(e) => setExpiryDate(e.target.value)}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label>CVC</Label>
-                        <Input
-                            type="text"
-                            placeholder="CVC"
-                            value={cvc}
-                            onChange={(e) => setCvc(e.target.value)}
-                        />
-                    </FormGroup>
-                    <Button type="submit">Submit Payment</Button>
-                </PaymentForm>
-            </PaymentSectionContainer>
+  useEffect(() => {
+    if (user.role === 'ADMIN') {
+      navigate('/admin-dashboard')
+    } else if (user.role === 'STAFF') {
+      navigate('/staff-dashboard')
+    }
+  })
+
+  return (
+    <div className='d-flex'>
+      <Sidebar />
+      <PaymentSectionContainer>
+        <div>
+          <h2>Pay Tax with PayPal</h2>
+          <PayPalScriptProvider options={{ 'client-id': 'YOUR_PAYPAL_CLIENT_ID' }}>
+            <PayPalButtons
+              style={{ layout: 'horizontal' }}
+              createOrder={(data, actions) => {
+                // Implement logic to create tax payment order on the server
+                return actions.order.create({
+                  purchase_units: [
+                    {
+                      description: 'Tax Payment',
+                      amount: {
+                        currency_code: 'USD',
+                        value: '100.00', // Set your tax payment amount
+                      },
+                    },
+                  ],
+                });
+              }}
+              onApprove={(data, actions) => {
+                // Implement logic to capture the tax payment on the server
+                return actions.order.capture().then(details => {
+                  console.log('Tax Payment completed by ' + details.payer.name.given_name);
+                  // Call your backend to save the tax payment details
+                });
+              }}
+            />
+          </PayPalScriptProvider>
         </div>
-    );
+      </PaymentSectionContainer>
+    </div>
+  );
 };
 
 export default MakePayment;
+
+
+
+// {/* <PaymentSectionContainer>
+//                 <PaymentForm onSubmit={handlePaymentSubmit}>
+//                     <h2 style={{ marginBottom: '30px', textAlign: 'center', color: '#333' }}>Payment Details</h2>
+//                     <FormGroup>
+//                         <Label>Card Number</Label>
+//                         <Input
+//                             type="text"
+//                             placeholder="Enter card number"
+//                             value={cardNumber}
+//                             onChange={(e) => setCardNumber(e.target.value)}
+//                         />
+//                     </FormGroup>
+//                     <FormGroup>
+//                         <Label>Expiry Date</Label>
+//                         <Input
+//                             type="text"
+//                             placeholder="MM/YY"
+//                             value={expiryDate}
+//                             onChange={(e) => setExpiryDate(e.target.value)}
+//                         />
+//                     </FormGroup>
+//                     <FormGroup>
+//                         <Label>CVC</Label>
+//                         <Input
+//                             type="text"
+//                             placeholder="CVC"
+//                             value={cvc}
+//                             onChange={(e) => setCvc(e.target.value)}
+//                         />
+//                     </FormGroup>
+//                     <Button type="submit">Submit Payment</Button>
+//                 </PaymentForm>
+//             </PaymentSectionContainer>
+//          */}

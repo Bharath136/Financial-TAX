@@ -1,5 +1,8 @@
 import styled from "styled-components";
 
+export const MainContainer = styled.div`
+`
+
 export const ClientListContainer = styled.div`
     width: 100%;
     margin: auto;
@@ -11,13 +14,13 @@ export const ClientListContainer = styled.div`
 `
 
 export const H1 = styled.h1`
-    color: #3271f8;
+    color: var(--headings);
     font-weight: bolder;
     font-size: 26px;
     margin: 10px 0;
     margin-bottom: 20px;
-    font-family:Arial, Helvetica, sans-serif
-`;
+    font-family:Arial, Helvetica, sans-serif;
+`
 
 export const TableContainer = styled.div`
     background-color: var(--background-white);
@@ -32,16 +35,15 @@ export const Table = styled.table`
     text-align: center;
 `
 
-
 export const Th = styled.th`
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     padding: 10px;
     text-align: center;
-    background-color: #f2f2f2;
+    background-color: var(--main-background);
 `
 
 export const Td = styled.td`
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     padding: 10px;
     text-align: center;
 `
@@ -50,7 +52,7 @@ export const Button = styled.button`
     border-radius: 30px;
     padding: 8px 16px;
     background-color: transparent;
-    color: #fff;
+    color: var(--main-background-white);
     cursor: pointer;
     font-weight: bold;
     border: none;

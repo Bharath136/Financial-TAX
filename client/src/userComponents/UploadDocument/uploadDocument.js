@@ -31,6 +31,8 @@ import {
 import showAlert from '../../SweetAlert/sweetalert';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import BreadCrumb from '../../breadCrumb/breadCrumb';
+import { useNavigate } from 'react-router-dom';
+import { message } from '../../components/Footer/footer';
 
 // ... (import statements)
 const apiStatusConstants = {
@@ -48,9 +50,16 @@ const UploadDocument = () => {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
 
+    const navigate = useNavigate()
+
     useEffect(() => {
+        if (user.role === 'ADMIN') {
+            navigate('/admin-dashboard')
+        } else if (user.role === 'STAFF') {
+            navigate('/staff-dashboard')
+        }
         fetchDocuments();
-    }, []);
+    }, [navigate]);
 
     const fetchDocuments = async () => {
         setApiStatus(apiStatusConstants.inProgress)
@@ -340,6 +349,7 @@ const UploadDocument = () => {
                 </TaxDescription>
                 
                 {renderComponents()}
+                {message}
             </TaxInterviewContainer>
         </div>
     );

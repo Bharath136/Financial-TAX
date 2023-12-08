@@ -44,12 +44,12 @@ const BreadCrumb = () => {
     }, [location.pathname]);
 
     return(
-        <div className="d-flex bg-light mt-2 mb-4 p-3">
+        <div className="d-flex mt-2 mb-4 p-3">
             <div className="row w-100">
                 {steps.map((step) => (
-                    <div style={{ color: activeItem === step.link ? '#076e1b' : 'grey' }} className="col-6 col-md-4 col-lg-2 d-flex align-items-center"  key={step.step}>
-                        <div className="m-2">
-                            <h6 className="m-0 p-0">{step.name}</h6>
+                    <div style={{ color: activeItem === step.link ? 'green' : 'grey', fontWeight: activeItem === step.link && '700'}} className="col-6 col-md-4 col-lg-2 d-flex align-items-center"  key={step.step}>
+                        <div className="mt-2 mb-2">
+                            <h6 className="m-0 p-0" style={{ fontWeight: activeItem === step.link && '700' }}>{step.name}</h6>
                             <p className="m-0 p-0">step: {step.step}</p>
                         </div>
                         <FaAnglesRight size={20} />

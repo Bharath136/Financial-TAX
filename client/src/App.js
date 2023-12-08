@@ -27,24 +27,6 @@ import AddStaff from './AdminComponents/AddStaff/addStaff';
 import UploadDocument from './userComponents/UploadDocument/uploadDocument';
 import AdminDashboard from './AdminComponents/AdminDashboard/adminDashboard';
 
-// const routes = [
-//   { path: '/', element: <Landingpage /> },
-//   { path: '/login', element: <Login /> },
-//   { path: '/signup', element: <Register /> },
-//   { path: '/about', element: <About /> },
-//   { path: '/services', element: <Services /> },
-//   { path: '/contact', element: <Contact /> },
-// ];
-
-// const userRoutes = [
-//   { path: '/user-dashboard', component: Profile },
-//   { path: '/tax-interview', component: TaxInterview },
-//   { path: '/upload-document', component: UploadDocument },
-//   { path: '/my-summary', component: MySummary },
-//   { path: '/make-payment', component: MakePayment },
-//   { path: '/my-tax-documents', component: MyTaxDocuments },
-// ];
-
 function App() {
   const [currentToken, setCurrentToken] = useState('');
   const [hideSidebar, setHideSidebar] = useState(false);
@@ -93,10 +75,10 @@ function App() {
 
 
     //Staff components
-    { path: '/staff-dashboard', element: <ProtectedRoute Component={StaffDashboard} /> },
+    { path: '/staff-dashboard', element: <ProtectedRoute Component={StaffDashboard}  /> },
     { path: '/staff-assigned-clients', element: <ProtectedRoute Component={AssignedClientList} /> },
     { path: '/staff-tax-documents', element: <ProtectedRoute Component={ClientDocuments} /> },
-    { path: '/staff-customer-tax-return', element: <ProtectedRoute Component={TaxReturnDocument}/>},
+    { path: '/staff-customer-tax-return', element: <ProtectedRoute Component={TaxReturnDocument}  />},
 
      //admin components
     { path: '/admin-dashboard', element: <ProtectedRoute Component={AdminDashboard} /> },

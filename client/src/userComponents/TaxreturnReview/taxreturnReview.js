@@ -4,20 +4,22 @@ import axios from 'axios';
 import domain from '../../domain/domain';
 import './taxreturnReview.css'
 import {  CtaSection, DocumentTable, DocumentTableContainer, H1,  TaxDescription, Td, Th } from '../../staffComponents/TaxReturnDocument/styledComponents';
-import { DocumentName } from '../../userComponents/CommentDocument/styledComponents';
-import { DeleteButton } from '../../userComponents/UploadDocument/styledComponents';
-import { MdDelete } from 'react-icons/md';
+import { DocumentName, EmptyDocumentContainer } from '../../userComponents/CommentDocument/styledComponents';
 import pdf from '../../Assets/PDF_file_icon.svg.png'
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
 import BreadCrumb from '../../breadCrumb/breadCrumb';
+import { useNavigate } from 'react-router-dom';
+import { message } from '../../components/Footer/footer';
+import noDoc from '../../Assets/no-documents.jpg'
 
 const TaxreturnReview = () => {
     const [documents, setDocuments] = useState([]);
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
+    const user = JSON.parse(localStorage.getItem('currentUser'))
 
-
+    const navigate = useNavigate()
 
     const fetchDocuments = async () => {
         // setApiStatus(apiStatusConstants.inProgress)
@@ -39,6 +41,11 @@ const TaxreturnReview = () => {
 
 
     useEffect(() => {
+        if (user.role === 'ADMIN') {
+            navigate('/admin-dashboard')
+        } else if (user.role === 'STAFF') {
+            navigate('/staff-dashboard')
+        }
         fetchDocuments()
     }, [])
 
@@ -92,6 +99,15 @@ const TaxreturnReview = () => {
             <span>📁</span>
         );
     };
+
+    const EmptyDocumentsState = () => (
+        <EmptyDocumentContainer>
+            <img src={noDoc} alt="Empty Documents State" />
+            <H1>No Documents available</H1>
+            <p>No tax documents available to add comment. Please wait for your tax return documents.</p>
+        </EmptyDocumentContainer>
+    );
+
     return (
         <div className='d-flex'>
             <Sidebar />
@@ -102,8 +118,8 @@ const TaxreturnReview = () => {
                     Welcome to our Tax Return service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
                 </TaxDescription>
                 
-                <CtaSection className='cta-section shadow'>
-                    {documents.length > 0 && (
+                {documents.length > 0 ? (<CtaSection className='cta-section shadow'>
+                    
                         <DocumentTableContainer>
                             <H1>Tax Return Documents</H1>
                             <DocumentTable>
@@ -146,15 +162,6 @@ const TaxreturnReview = () => {
                                                                 'inherit'
                                             }}><strong>{document.payment_status}</strong></Td>
                                             <Td>{document.payment_amount}</Td>
-                                            {/* <Td style={{
-                                                color:
-                                                    document.review_status === 'Pending' ? 'orange' :
-                                                        document.review_status === 'Rejected' ? 'red' :
-                                                            document.review_status === 'Reviewed' ? 'green' :
-                                                                'inherit'
-                                            }}>
-                                                <strong>{document.review_status}</strong>
-                                            </Td> */}
                                             <Td>{document.created_by}</Td>
 
                                         </tr>
@@ -162,8 +169,9 @@ const TaxreturnReview = () => {
                                 </tbody>
                             </DocumentTable>
                         </DocumentTableContainer>
-                    )}
-                </CtaSection>
+                    
+                </CtaSection>) : EmptyDocumentsState()}
+                {message}
             </div>
         </div>
     )

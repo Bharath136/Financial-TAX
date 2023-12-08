@@ -6,8 +6,8 @@ const EditModal = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEdita
 
     const customStyles = {
         content: {
-            width: '80%',
-            height: '75%', 
+            width: '40%',
+            height: '50%', 
             margin: 'auto',
             backgroundColor: '#ffffff'
         },

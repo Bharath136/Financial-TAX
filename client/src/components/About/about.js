@@ -3,6 +3,7 @@ import './about.css';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import Footer from '../Footer/footer';
 
 const About = () => {
     const sliderSettings = {
@@ -46,7 +47,7 @@ const About = () => {
         <div>
             <div id="about" className="about-container">
                 <div className="container">
-                    <h2 className="section-title text-dark text-center mb-5">ABOUT US</h2>
+                    <h2 style={{color:`var(--headings)`}} className="section-title text-center mb-5">ABOUT US</h2>
                     <div className="row">
                         <div className="col-lg-6 text-secondary text-start">
                             <h2 className="section-title">About Our Financial Tax System</h2>
@@ -79,6 +80,7 @@ const About = () => {
                     </div>
                 </div>
             </div>
+            <Footer/>
         </div>
     );
 };

@@ -75,8 +75,8 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
     };
 
     return (
-        <div className="user-profile-container">
-            <h2>Your Profile</h2>
+        <div className="user-profile-container p-4">
+            <h1 className='mb-3'>Profile</h1>
 
             {/* User Profile Items */}
             <div className="user-profile-item">

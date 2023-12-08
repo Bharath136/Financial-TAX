@@ -11,7 +11,7 @@ export const TaxDocumentContainer = styled.div`
 `;
 
 export const H1 = styled.h1`
-    color: #3271f8;
+    color: var(--headings);
     font-weight: bolder;
     font-size: 26px;
     margin: 10px 0;
@@ -155,14 +155,14 @@ export const DocumentTable = styled.table`
 
 
 export const Th = styled.th`
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     padding: 10px;
     text-align: center;
-    background-color: #f2f2f2;
+    background-color: var(--main-background);
 `
 
 export const Td = styled.td`
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     padding: 10px;
     text-align: center;
 `

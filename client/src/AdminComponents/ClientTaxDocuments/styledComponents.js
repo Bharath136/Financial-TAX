@@ -11,7 +11,7 @@ export const ClientDocumentContainer = styled.div`
 `
 
 export const H1 = styled.h1`
-    color: #3271f8;
+     color: var(--headings);
     font-weight: bolder;
     font-size: 26px;
     margin: 10px 0;
@@ -90,7 +90,7 @@ export const Td = styled.td`
     border: 1px solid var(--border);
     padding: 10px;
     text-align: center;
-    color: ${(props) => (props.reviewed ? 'green' : (props.rejected ? 'red' : (props.pending ? 'orange' : (props.assigned ? 'green' : 'grey'))))};
+    ${'' /* color: ${(props) => (props.reviewed ? 'green' : (props.rejected ? 'red' : (props.pending ? 'orange' : (props.assigned ? 'green' : 'grey'))))}; */}
 
 `
 

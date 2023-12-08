@@ -11,6 +11,7 @@ import { MdDelete } from 'react-icons/md';
 import pdf from '../../Assets/PDF_file_icon.svg.png'
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
+import { useNavigate } from 'react-router-dom';
 
 const TaxReturnDocument = () => {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -22,6 +23,17 @@ const TaxReturnDocument = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (currentUser.role === 'ADMIN') {
+            navigate('/admin-dashboard')
+        } else if (currentUser.role === 'CUSTOMER') {
+            navigate('/user-dashboard')
+        }
+        getAllAssignedClients();
+        fetchDocuments();
+    }, [navigate]);
 
     const handleChange = (e) => {
         setFormData({ ...data, [e.target.name]: e.target.value });
@@ -143,13 +155,6 @@ const TaxReturnDocument = () => {
             console.error('Error fetching assigned clients:', error);
         }
     };
-
-    useEffect(() => {
-        getAllAssignedClients();
-        fetchDocuments()
-    }, [])
-
-
 
     const handleClientChange = (e) => {
         const id = e.target.value;

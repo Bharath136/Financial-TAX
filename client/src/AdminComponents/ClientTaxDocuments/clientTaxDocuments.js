@@ -9,6 +9,7 @@ import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
 import noDoc from '../../Assets/no-documents.jpg'
 import { ClientDocumentContainer, ClientsHeaderContainer, CtaSection, Description, DocumentName, DocumentTable, DocumentTableContainer, H1, NoDocuments, Select, Td, Th } from './styledComponents';
+import { useNavigate } from 'react-router-dom';
 
 const ClientTaxDocuments = () => {
     const user = JSON.parse(localStorage.getItem('currentUser'));
@@ -69,12 +70,18 @@ const ClientTaxDocuments = () => {
         }
     };
 
+    const navigate = useNavigate();
 
     useEffect(() => {
+        if (user.role === 'STAFF') {
+            navigate('/staff-dashboard')
+        } else if (user.role === 'CUSTOMER') {
+            navigate('/user-dashboard')
+        }
         fetchDocuments();
         fetchClients();
         
-    }, []);
+    }, [navigate]);
 
     const handleDownloadClick = async (document) => {
         try {

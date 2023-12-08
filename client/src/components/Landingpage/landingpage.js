@@ -1,11 +1,11 @@
 import React from 'react';
 import './landingpage.css';
 import { Carousel } from 'react-responsive-carousel';
+import { FaHandshake, FaChartBar, FaClock, FaLock, FaUsers } from 'react-icons/fa';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { Link } from 'react-router-dom';
-
+import Footer from '../Footer/footer';
 
 const Landingpage = () => {
     // Carousel data
@@ -19,24 +19,54 @@ const Landingpage = () => {
             image: 'https://www.shoonyatax.com/img/s4.jpg',
             title: 'Welcome to Our Tax Management',
             description: 'Praesent commodo cursus magna, vel scelerisque nisl consectetur.',
-        },
-        // Add more carousel items as needed
+        }
     ];
 
-    // Features data
     const features = [
         {
-            iconClass: 'fas fa-handshake',
+            id:1,
+            icon: <FaHandshake size={280} className="icon" />,
             title: 'Expert Support',
-            description: 'Get expert support and guidance from our dedicated team to address your concerns.',
+            description:
+                'Get expert support and guidance from our dedicated team to address your concerns. Our knowledgeable professionals are here to assist you at every step of the way.',
         },
         {
-            iconClass: 'fas fa-chart-bar',
+            id: 2,
+            icon: <FaChartBar size={280} className="icon" />,
             title: 'Comprehensive Reporting',
-            description: 'Access detailed tax reports and analysis to make informed financial decisions.',
+            description:
+                'Access detailed tax reports and analysis to make informed financial decisions. Our comprehensive reporting tools provide you with a clear understanding of your financial data.',
         },
-        // Add more features as needed
+        {
+            id: 3,
+            icon: <FaClock size={280} className="icon" />,
+            title: 'Time-saving Solutions',
+            description:
+                'Save time with our efficient solutions. We understand the value of your time, and our tools are designed to streamline your financial processes, giving you more time for what matters.',
+        },
+        {
+            id: 4,
+            icon: <FaLock size={280} className="icon" />,
+            title: 'Secure Transactions',
+            description:
+                'Ensure the security of your transactions. We prioritize the safety of your financial data and implement robust security measures to protect your information from unauthorized access.',
+        },
+        {
+            id: 5,
+            icon: <FaUsers size={280} className="icon" />,
+            title: 'Collaborative Environment',
+            description:
+                'Experience a collaborative environment. Our platform allows seamless collaboration between different users, making it easy for teams to work together on financial tasks.',
+        }
     ];
+
+
+    const isEven = (id) => {
+        return id % 2 === 0;
+    }
+
+
+
 
     return (
         <div>
@@ -55,34 +85,28 @@ const Landingpage = () => {
 
                 <section id="why-choose-us" className="why-choose-us-container">
                     <div className="container">
-                        <h2 className="section-title text-center" style={{ color: '#faae0b' }}>Why Choose Us</h2>
-                        <div className="row d-flex align-items-center p-3">
+                        <h2 className="section-title">WHY CHOOSE US</h2>
+                        <div className="features-container">
                             {features.map((feature, index) => (
-                                <div key={index} className={`col-lg-6${index % 2 === 1 ? ' order-md-2' : ''}`}>
+                                <div key={index} className={`feature-item ${isEven(feature.id) && 'feature-item-reverse'} `}>
+                                    <div className='feature-icon'>
+                                        {feature.icon}
+                                    </div>
                                     <div className="feature">
-                                        <i className={feature.iconClass}></i>
+                                        
                                         <h3>{feature.title}</h3>
                                         <p>{feature.description}</p>
                                     </div>
-                                    <Link to='why-choose-us' className='btn bg-dark text-warning button border'>
-                                        Read more
-                                    </Link>
+                                    
                                 </div>
                             ))}
-                            {features.map((feature, index) => (
-                                <div key={index} className={`col-lg-6${index % 2 === 1 ? ' order-md-1' : ''} mb-4`}>
-                                    <img
-                                        src={index % 2 === 0 ? 'https://img.freepik.com/premium-vector/people-suffering-from-problems_179970-813.jpg' : 'https://img.freepik.com/premium-vector/credit-score-vector-illustration-with-loan-arrow-gauge-speedometer-indicator-from-poor-good-rate_2175-15382.jpg?size=626&ext=jpg&ga=GA1.1.386372595.1697587200&semt=ais'}
-                                        className='img-fluid shadow'
-                                        alt={feature.title}
-                                    />
-                                </div>
-                            ))}
+                            
                         </div>
                     </div>
                 </section>
 
             </div>
+            <Footer/>
         </div>
     );
 };

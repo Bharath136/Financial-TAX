@@ -1,7 +1,14 @@
 import styled from "styled-components";
 
+export const MainContainer = styled.div`
+    height:90vh;
+    overflow:auto;
+    background-color: var(--main-background);
+    width:100%;
+    margin-top:10vh;
+`
 export const CommentDocumentContainer = styled.div`
-    margin-top: 10vh;
+    margin-top:10vh;
     height: 90vh;
     padding: 1rem;
     width: 100%;
@@ -11,7 +18,7 @@ export const CommentDocumentContainer = styled.div`
 `
 
 export const H1 = styled.h1`
-    color: #3271f8;
+    color: var(--headings);
     font-weight: bolder;
     font-size: 26px;
     margin: 10px 0;
@@ -64,7 +71,7 @@ export const Button = styled.button`
     border-radius: 30px;
     padding: 8px 16px;
     background-color: transparent;
-    color: #fff;
+    color: var(--main-background);
     cursor: pointer;
     font-weight: bold;
     border: none;
@@ -154,4 +161,13 @@ export const Td = styled.td`
     border: 1px solid var(--border);
     padding: 10px;
     text-align: center;
+`
+
+export const EmptyDocumentContainer = styled.div`
+    width:100%;
+    min-height:60vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
 `

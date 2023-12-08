@@ -9,6 +9,7 @@ import { BiSearch } from 'react-icons/bi';
 import showAlert from '../../SweetAlert/sweetalert';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import noClient from '../../Assets/no-customers.jpg'
+import { useNavigate } from 'react-router-dom';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -68,7 +69,16 @@ const Staff = () => {
         }
     };
 
+    const navigate = useNavigate();
+
+    const user = JSON.parse(localStorage.getItem('currentUser'))
+
     useEffect(() => {
+        if (user.role === 'STAFF') {
+            navigate('/staff-dashboard')
+        } else if (user.role === 'CUSTOMER') {
+            navigate('/user-dashboard')
+        }
         fetchData();
     }, []);
 

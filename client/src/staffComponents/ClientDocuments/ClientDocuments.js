@@ -11,6 +11,7 @@ import { ClientDocumentContainer, CtaSection, Description, DocumentName, Documen
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import noDocuments from '../../Assets/no-documents.jpg'
 import { MdDelete } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -81,7 +82,14 @@ const ClientDocuments = () => {
         }
     };
 
+    const navigate = useNavigate();
+
     useEffect(() => {
+        if (user.role === 'ADMIN') {
+            navigate('/admin-dashboard')
+        } else if (user.role === 'CUSTOMER') {
+            navigate('/user-dashboard')
+        }
         fetchDocuments();
     }, []);
 

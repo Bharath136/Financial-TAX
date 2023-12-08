@@ -11,7 +11,7 @@ export const ClientDocumentContainer = styled.div`
 `
 
 export const H1 = styled.h1`
-    color: #3271f8;
+    color: var(--headings);
     font-weight: bolder;
     font-size: 26px;
     margin: 10px 0;
@@ -42,7 +42,7 @@ export const Button = styled.button`
     border-radius: 30px;
     padding: 8px 16px;
     background-color: transparent;
-    color: #fff;
+    color: var(--main-background-white);
     cursor: pointer;
     font-weight: bold;
     border: none;

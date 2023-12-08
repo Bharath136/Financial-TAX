@@ -3,9 +3,11 @@ import axios from 'axios';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
 import domain from '../../domain/domain';
-import { ClientListContainer, H1, NoClientContainer, Table, TableContainer, Td, Th, ViewButton } from './styledComponents';
+import { ClientListContainer, H1, MainContainer, NoClientContainer, Table, TableContainer, Td, Th, ViewButton } from './styledComponents';
 import noClient from '../../Assets/no-customers.jpg'
 import SweetLoading from '../../SweetLoading/SweetLoading';
+import Footer from '../../components/Footer/footer';
+import { useNavigate } from 'react-router-dom';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -22,8 +24,14 @@ const AssignedClientList = () => {
     const [profileId, setProfileId] = useState(null);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
 
+    const navigate = useNavigate();
 
     useEffect(() => {
+        if (currentUser.role === 'ADMIN') {
+            navigate('/admin-dashboard')
+        } else if (currentUser.role === 'CUSTOMER') {
+            navigate('/user-dashboard')
+        }
         const getAllAssignedClients = async () => {
             setApiStatus(apiStatusConstants.inProgress);
             try {
@@ -100,16 +108,16 @@ const AssignedClientList = () => {
     return (
         <div className='d-flex'>
             <Sidebar />
-            <ClientListContainer>
-                <H1>Clients</H1>
-                {myClients.length > 0 ? renderComponents() : 
-                    <NoClientContainer>
-                        <img src={noClient} alt='img' className='img-fluid' />
-                        <H1>No Clients Assigned</H1>
-                        <p>Oops! It seems there are no clients assigned to you.</p>
-                    </NoClientContainer>
-                }
-            </ClientListContainer>
+                <ClientListContainer>
+                    <H1>Clients</H1>
+                    {myClients.length > 0 ? renderComponents() :
+                        <NoClientContainer>
+                            <img src={noClient} alt='img' className='img-fluid' />
+                            <H1>No Clients Assigned</H1>
+                            <p>Oops! It seems there are no clients assigned to you.</p>
+                        </NoClientContainer>
+                    }
+                </ClientListContainer>
 
             <EditModal
                 isOpen={isEditModalOpen}

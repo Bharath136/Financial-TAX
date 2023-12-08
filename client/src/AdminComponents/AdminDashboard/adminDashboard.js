@@ -1,6 +1,7 @@
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import { useEffect, useState } from 'react'
 import { FaFileAlt, FaClock, FaCheck, FaMoneyBillAlt, FaClipboardList } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 
 const AdminDashboard = () => {
@@ -9,11 +10,19 @@ const AdminDashboard = () => {
 
     const user = JSON.parse(localStorage.getItem('currentUser'));
 
+    const navigate = useNavigate();
+
     useEffect(() => {
+        if (user.role === 'STAFF') {
+            navigate('/staff-dashboard')
+        } else if (user.role === 'CUSTOMER') {
+            navigate('/user-dashboard')
+        }
         if (user) {
             setCurrentUser(user.first_name);
         }
-    }, [user]);
+
+    }, [user,navigate]);
 
     const data = {
         total: { description: 'Total documents' },

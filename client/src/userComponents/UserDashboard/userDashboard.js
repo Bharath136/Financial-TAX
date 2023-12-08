@@ -4,27 +4,27 @@ import Sidebar from '../SideBar/sidebar';
 import {  FaUser, FaFileUpload, FaComment, FaClipboardCheck, FaMoneyBillAlt } from "react-icons/fa";
 
 import { FaAnglesRight } from "react-icons/fa6";
-import { Link } from 'react-router-dom';
-import { CardBody, CardText, CardTitle, CurrentUser, DashboardContainer, H1, StepCard, StepDetails } from './styledComponents';
+import { Link, useNavigate } from 'react-router-dom';
+import { CardBody, CardText, CardTitle, CurrentUser, DashboardContainer, H1, IntroText, StepCard, StepDetails } from './styledComponents';
+import { message } from '../../components/Footer/footer';
 
 const UserDashboard = () => {
     const [currentUser, setCurrentUser] = useState('');
 
     const user = JSON.parse(localStorage.getItem('currentUser'));
 
+    const navigate = useNavigate()
+
     useEffect(() => {
+        if(user.role === 'ADMIN'){
+            navigate('/admin-dashboard')
+        }else if(user.role === 'STAFF'){
+            navigate('/staff-dashboard')
+        }
         if (user) {
             setCurrentUser(user.first_name);
         }
-    }, [user]);
-
-    const data = {
-        total: { description: 'Total documents' },
-        pending: { description: 'Pending documents' },
-        reviewed: { description: 'Reviewed documents' },
-        payments: { description: 'Total payments' },
-        summary: { description: 'Summary details' },
-    };
+    }, [user,navigate]);
 
     const steps = [
         {
@@ -73,14 +73,14 @@ const UserDashboard = () => {
             <DashboardContainer>
                 <H1>Welcome <CurrentUser className="current-user">{currentUser}</CurrentUser></H1>
                 <div className="intro-section">
-                    <p className="intro-text">
+                    <IntroText>
                         Embark on a hassle-free tax filing journey with us. Our user-friendly platform ensures a seamless experience
                         as you navigate through the various steps. Take control of your financial responsibilities and complete your
                         tax filing effortlessly in 5 simple steps.
-                    </p>
+                    </IntroText>
                 </div>
 
-                <div className='container'>
+                <div className='container p-0 m-0'>
                     <div className='row'>
                         {steps.map((step) => (
                             <div key={step.step} className='col-12 col-lg-4 col-md-6'>
@@ -102,7 +102,7 @@ const UserDashboard = () => {
                         ))}
                     </div>
                 </div>
-
+                {message}
             </DashboardContainer>
         </div>
     );

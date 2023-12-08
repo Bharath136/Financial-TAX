@@ -11,7 +11,7 @@ const DashboardContainer = styled.div`
 const StepCard = styled.div`
     display: flex;
     align-items: center;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border);
     background-color: var(--background-white);
     border-radius: 8px;
     margin: 10px;
@@ -37,7 +37,7 @@ const CardTitle = styled.h2`
 `;
 
 const CardText = styled.p`
-    color: #555;
+    color: grey;
     margin-bottom: 15px;
 `;
 
@@ -58,11 +58,19 @@ const H1 = styled.h1`
 `
 
 const CurrentUser = styled.span`
-    color: rgb(206, 57, 247);
+    color: green;
 `
 
 const Shadow = styled.div`
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `
 
-export { StepCard, CardBody, CardTitle, CardText, ArrowIcon, StepDetails, DashboardContainer, H1, CurrentUser, Shadow };
+const IntroText = styled.p`
+    font-size:18px;
+    color:#232636;
+    @media screen and (max-width:768px){
+        font-size:14px;
+    }
+`
+
+export { StepCard, CardBody, CardTitle, CardText, ArrowIcon, StepDetails, DashboardContainer, H1, CurrentUser, Shadow, IntroText };

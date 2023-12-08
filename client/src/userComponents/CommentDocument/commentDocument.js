@@ -7,6 +7,8 @@ import { MdDelete } from 'react-icons/md';
 import pdf from '../../Assets/PDF_file_icon.svg.png'
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
+import {message} from '../../components/Footer/footer'
+import noDoc from '../../Assets/no-documents.jpg'
 // import SweetLoading from '../../SweetLoading/SweetLoading';
 
 import {
@@ -31,9 +33,12 @@ import {
     Th,
     Td,
     DocumentName,
+    MainContainer,
+    EmptyDocumentContainer,
 } from './styledComponents';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import BreadCrumb from '../../breadCrumb/breadCrumb';
+import { useNavigate } from 'react-router-dom';
 
 
 const apiStatusConstants = {
@@ -57,7 +62,14 @@ const CommentDocument = () => {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
 
+    const navigate = useNavigate();
+
     useEffect(() => {
+        if (user.role === 'ADMIN') {
+            navigate('/admin-dashboard')
+        } else if (user.role === 'STAFF') {
+            navigate('/staff-dashboard')
+        }
         setApiStatus(apiStatusConstants.inProgress)
         const fetchData = async () => {
             try {
@@ -374,19 +386,27 @@ const CommentDocument = () => {
         }
     }
 
+    const EmptyDocumentsState = () => (
+        <EmptyDocumentContainer>
+            <img src={noDoc} alt="Empty Documents State" />
+            <H1>No Documents available</H1>
+            <p>No tax documents available to add comment. Please upload your tax documents.</p>
+        </EmptyDocumentContainer>
+    );
+
 
     return (
         <div className="d-flex">
             <Sidebar />
-            <CommentDocumentContainer>
+                <CommentDocumentContainer>
                 <BreadCrumb />
                 <H1>Comment on Document</H1>
                 <CommentDescription>
                     Welcome to our Comment Document service! Add comments to the documents for your tax return process.
                 </CommentDescription>
-                
-                {renderComponents()}
-            </CommentDocumentContainer>
+                {documents.length > 0 ? renderComponents() : EmptyDocumentsState()}
+                {message}
+            </CommentDocumentContainer>            
         </div>
     );
 };

@@ -15,15 +15,17 @@ code {
 :root {
   /* Background Colors */
   --background-white: #ffffff;
-  --main-background: #f4f4f4;
+  --main-background: #f6f6f6;
   --main-background-shade: rgb(234, 231, 253);
   --accent-background: rgb(88, 53, 227);
+  /* --accent-background:#6a5acd; */
   --page-background: rgb(242, 243, 248);
 
   /* Text Colors */
   --main-text: #333333;
   --text-subtle: #5c5c5c;
   --heading: #0f1238;
+  --headings: rgb(88, 53, 227);
   --button-text: aliceblue;
   --main-link-text:rgb(88, 53, 227);
 

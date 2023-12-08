@@ -1,74 +1,88 @@
+// Import necessary Libraries
 import { useEffect, useState } from 'react';
-import Sidebar from '../SideBar/sidebar'
 import axios from 'axios';
-import domain from '../../domain/domain';
-import './taxreturnReview.css'
-import {  CtaSection, DocumentTable, DocumentTableContainer, H1,  TaxDescription, Td, Th } from '../../staffComponents/TaxReturnDocument/styledComponents';
-import { DocumentName, EmptyDocumentContainer } from '../../userComponents/CommentDocument/styledComponents';
-import pdf from '../../Assets/PDF_file_icon.svg.png'
-import doc from '../../Assets/doc.png';
-import docx from '../../Assets/docx.png'
-import BreadCrumb from '../../breadCrumb/breadCrumb';
 import { useNavigate } from 'react-router-dom';
+
+// Components
+import Sidebar from '../SideBar/sidebar';
+import BreadCrumb from '../../breadCrumb/breadCrumb';
+import domain from '../../domain/domain';
 import { message } from '../../components/Footer/footer';
-import noDoc from '../../Assets/no-documents.jpg'
 
+// Assets
+import pdf from '../../Assets/PDF_file_icon.svg.png';
+import doc from '../../Assets/doc.png';
+import docx from '../../Assets/docx.png';
+import noDoc from '../../Assets/no-documents.jpg';
+
+// Styled Components 
+import { DocumentName, EmptyDocumentContainer } from '../../userComponents/CommentDocument/styledComponents';
+import { CtaSection, DocumentTable, DocumentTableContainer, H1, TaxDescription, TaxDocumentContainer, Td, Th } from './styledComponents';
+
+
+// Functional component for TaxreturnReview
 const TaxreturnReview = () => {
+    // State variables
     const [documents, setDocuments] = useState([]);
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const accessToken = localStorage.getItem('customerJwtToken');
-    const user = JSON.parse(localStorage.getItem('currentUser'))
+    const navigate = useNavigate();
 
-    const navigate = useNavigate()
-
+    // Function to fetch tax return documents
     const fetchDocuments = async () => {
-        // setApiStatus(apiStatusConstants.inProgress)
         try {
+            const accessToken = localStorage.getItem('customerJwtToken');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+            // Make API request to fetch tax return documents
             const response = await axios.get(`${domain.domain}/tax-return-document`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
-                }
+                },
             });
+
+            // If API request is successful, filter and set the documents
             if (response.status === 200) {
                 const filteredData = response.data.documents.filter(document => document.customer_id === currentUser.user_id);
                 setDocuments(filteredData);
-                // setApiStatus(apiStatusConstants.success)
             }
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
     };
 
-
+    // useEffect to fetch documents and navigate based on user role
     useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+
+        // Redirect based on user role
         if (user.role === 'ADMIN') {
-            navigate('/admin-dashboard')
+            navigate('/admin-dashboard');
         } else if (user.role === 'STAFF') {
-            navigate('/staff-dashboard')
+            navigate('/staff-dashboard');
         }
-        fetchDocuments()
-    }, [])
 
+        // Fetch tax return documents on component mount
+        fetchDocuments();
+    }, []);
 
-
-
+    // Function to format date and time
     const formatDateTime = (dateTimeString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
         return new Date(dateTimeString).toLocaleString('en-US', options);
     };
 
-
+    // Function to handle document download
     const handleDownloadClick = async (document) => {
-        // setApiStatus(apiStatusConstants.inProgress)
         try {
+            const accessToken = localStorage.getItem('customerJwtToken');
             const downloadUrl = `${domain.domain}/tax-return-document/download/${document.taxreturn_id}`;
             const headers = {
                 Authorization: `Bearer ${accessToken}`,
             };
+
+            // Fetch the document and initiate download
             const response = await fetch(downloadUrl, { headers });
             const blob = await response.blob();
 
-            // setApiStatus(apiStatusConstants.success)
             const url = window.URL.createObjectURL(new Blob([blob]));
             const link = document.createElement('a');
             link.href = url;
@@ -81,6 +95,7 @@ const TaxreturnReview = () => {
         }
     };
 
+    // Function to render document thumbnail based on file extension
     const renderDocumentThumbnail = (document) => {
         const fileExtension = document.document_path.split('.').pop().toLowerCase();
 
@@ -100,6 +115,7 @@ const TaxreturnReview = () => {
         );
     };
 
+    // Component for empty documents state
     const EmptyDocumentsState = () => (
         <EmptyDocumentContainer>
             <img src={noDoc} alt="Empty Documents State" />
@@ -108,18 +124,19 @@ const TaxreturnReview = () => {
         </EmptyDocumentContainer>
     );
 
+    // JSX structure for TaxreturnReview component
     return (
         <div className='d-flex'>
             <Sidebar />
-            <div className="my-taxreturn-container">
+            <TaxDocumentContainer>
                 <BreadCrumb />
                 <H1>Taxreturn Review</H1>
-                <TaxDescription className='tax-description'>
+                <TaxDescription >
                     Welcome to our Tax Return service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
                 </TaxDescription>
-                
-                {documents.length > 0 ? (<CtaSection className='cta-section shadow'>
-                    
+
+                {documents.length > 0 ? (
+                    <CtaSection className='cta-section shadow'>
                         <DocumentTableContainer>
                             <H1>Tax Return Documents</H1>
                             <DocumentTable>
@@ -137,7 +154,6 @@ const TaxreturnReview = () => {
                                         <tr key={document.taxreturn_id}>
                                             <Td>
                                                 <div className='d-flex flex-column'>
-                                                    {/* <div className='d-flex align-items-center justify-content-center'> */}
                                                     <a
                                                         href={`${domain.domain}/tax-return-document/download/${document.taxreturn_id}`}
                                                         target="_blank"
@@ -147,34 +163,37 @@ const TaxreturnReview = () => {
                                                     >
                                                         {renderDocumentThumbnail(document)}
                                                     </a>
-                                                    {/* <FaDownload size={25} />
-                                                    </div> */}
                                                     <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
                                                 </div>
-
                                             </Td>
                                             <Td>{formatDateTime(document.created_on)}</Td>
-                                            <Td style={{
-                                                color:
-                                                    document.payment_status === 'Pending' ? 'orange' :
-                                                        document.payment_status === 'Rejected' ? 'red' :
-                                                            document.payment_status === 'Paid' ? 'green' :
-                                                                'inherit'
-                                            }}><strong>{document.payment_status}</strong></Td>
+                                            <Td
+                                                style={{
+                                                    color:
+                                                        document.payment_status === 'Pending' ? 'orange' :
+                                                            document.payment_status === 'Rejected' ? 'red' :
+                                                                document.payment_status === 'Paid' ? 'green' :
+                                                                    'inherit'
+                                                }}
+                                            >
+                                                <strong>{document.payment_status}</strong>
+                                            </Td>
                                             <Td>{document.payment_amount}</Td>
                                             <Td>{document.created_by}</Td>
-
                                         </tr>
                                     ))}
                                 </tbody>
                             </DocumentTable>
                         </DocumentTableContainer>
-                    
-                </CtaSection>) : EmptyDocumentsState()}
+                    </CtaSection>
+                ) : (
+                    EmptyDocumentsState()
+                )}
                 {message}
-            </div>
+            </TaxDocumentContainer>
         </div>
-    )
-}
+    );
+};
 
-export default TaxreturnReview
+// Export the TaxreturnReview component
+export default TaxreturnReview;

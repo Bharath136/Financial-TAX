@@ -109,22 +109,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-
-
-
-/* <div className="dashboard-items">
-                {Object.entries(data).map(([key, value]) => (
-                    <div key={key} className={`dashboard-item ${key === 'payments' || key === 'summary' ? 'dashboard-item-2' : ''}`}>
-                        <div className={`dashboard-icon dashboard-icon-${key}`}>
-                            {key === 'total' && <FaFileAlt size={80} />}
-                            {key === 'pending' && <FaClock size={80} />}
-                            {key === 'reviewed' && <FaCheck size={80} />}
-                            {key === 'payments' && <FaMoneyBillAlt size={80} />}
-                            {key === 'summary' && <FaClipboardList size={80} />}
-                        </div>
-                        <div className="dashboard-text">
-                            <h4>{value.description}</h4>
-                        </div>
-                    </div>
-                ))}
-            </div> */

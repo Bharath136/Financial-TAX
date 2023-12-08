@@ -1,11 +1,25 @@
-import React, { useEffect, useState } from 'react';
+// Import necessary Libraries
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { MdDelete } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
+
+// Components
 import Sidebar from '../SideBar/sidebar';
+import BreadCrumb from '../../breadCrumb/breadCrumb';
 import domain from '../../domain/domain';
-import pdf from '../../Assets/PDF_file_icon.svg.png'
+import { message } from '../../components/Footer/footer';
+import showAlert from '../../SweetAlert/sweetalert';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+
+// Assets
+import pdf from '../../Assets/PDF_file_icon.svg.png';
 import doc from '../../Assets/doc.png';
-import docx from '../../Assets/docx.png'
+import docx from '../../Assets/docx.png';
+
+// Icons
+import { MdDelete } from 'react-icons/md';
+
+// Styled Components
 import {
     TaxInterviewContainer,
     H1,
@@ -28,20 +42,18 @@ import {
     Lable,
     Select
 } from './styledComponents';
-import showAlert from '../../SweetAlert/sweetalert';
-import SweetLoading from '../../SweetLoading/SweetLoading';
-import BreadCrumb from '../../breadCrumb/breadCrumb';
-import { useNavigate } from 'react-router-dom';
-import { message } from '../../components/Footer/footer';
 
-// ... (import statements)
+// Define constants for API status
 const apiStatusConstants = {
     initial: 'INITIAL',
     success: 'SUCCESS',
     failure: 'FAILURE',
     inProgress: 'IN_PROGRESS',
 }
+
+// Component for Uploading Documents
 const UploadDocument = () => {
+    // State variables
     const [selectedFile, setSelectedFile] = useState(null);
     const [data, setFormData] = useState({});
     const [errorMsg, setErrorMsg] = useState(null);
@@ -52,6 +64,7 @@ const UploadDocument = () => {
 
     const navigate = useNavigate()
 
+    // useEffect to handle redirection based on user role and fetch documents
     useEffect(() => {
         if (user.role === 'ADMIN') {
             navigate('/admin-dashboard')
@@ -61,6 +74,7 @@ const UploadDocument = () => {
         fetchDocuments();
     }, [navigate]);
 
+    // Function to fetch user's tax documents
     const fetchDocuments = async () => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -69,7 +83,7 @@ const UploadDocument = () => {
                     'Authorization': `Bearer ${accessToken}`,
                 }
             });
-            if(response.status === 200){
+            if (response.status === 200) {
                 const filteredData = response.data.documents.filter(document => document.customer_id === user.user_id);
                 setDocuments(filteredData);
                 setApiStatus(apiStatusConstants.success)
@@ -78,17 +92,19 @@ const UploadDocument = () => {
             console.error('Error fetching documents:', error);
         }
     };
-    
 
+    // Event handler for form input change
     const handleChange = (e) => {
         setFormData({ ...data, [e.target.name]: e.target.value });
     };
 
+    // Event handler for file input change
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setSelectedFile(file);
     };
 
+    // Event handlers for drag and drop functionality
     const handleDragOver = (e) => {
         e.preventDefault();
     };
@@ -99,6 +115,7 @@ const UploadDocument = () => {
         setSelectedFile(file);
     };
 
+    // Event handler for file upload
     const handleFileUpload = async (e) => {
         e.preventDefault();
         setApiStatus(apiStatusConstants.inProgress)
@@ -141,6 +158,7 @@ const UploadDocument = () => {
         }
     };
 
+    // Array of document types
     const documentTypes = [
         { value: 'homeLoan', label: 'Home Loan' },
         { value: 'goldLoan', label: 'Gold Loan' },
@@ -153,6 +171,7 @@ const UploadDocument = () => {
         { value: 'creditCard', label: 'Credit Card' }
     ];
 
+    // Initial form fields
     const initialFormFields = [
         { label: 'Document Name', name: 'document_name', type: 'text', placeholder: 'Enter Document Name' },
         { label: 'Document Type', name: 'document_type', type: 'select', options: documentTypes, placeholder: 'Document Type' },
@@ -161,11 +180,13 @@ const UploadDocument = () => {
         { label: 'Quarter', name: 'financial_quarter', type: 'number', placeholder: 'Ex:- 1' }
     ];
 
+    // Function to format date and time
     const formatDateTime = (dateTimeString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
         return new Date(dateTimeString).toLocaleString('en-US', options);
     };
 
+    // Event handler for document deletion
     const onDeleteDocument = async (id) => {
         setApiStatus(apiStatusConstants.inProgress)
         const result = window.confirm("Are you sure you want to delete this document?");
@@ -184,6 +205,7 @@ const UploadDocument = () => {
         }
     };
 
+    // Event handler for document download
     const handleDownloadClick = async (document) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -207,6 +229,7 @@ const UploadDocument = () => {
         }
     };
 
+    // Function to render document thumbnail based on file type
     const renderDocumentThumbnail = (document) => {
         const fileExtension = document.document_path.split('.').pop().toLowerCase();
 
@@ -226,9 +249,9 @@ const UploadDocument = () => {
         );
     };
 
-
+    // Function to render different components based on API status
     const renderComponents = () => {
-        switch(apiStatus){
+        switch (apiStatus) {
             case apiStatusConstants.failure:
                 return <div>failure</div>
             case apiStatusConstants.success:
@@ -299,7 +322,6 @@ const UploadDocument = () => {
                                         <tr key={document.document_id}>
                                             <Td>
                                                 <div className='d-flex flex-column'>
-                                                    {/* <div className='d-flex align-items-center justify-content-center'> */}
                                                     <a
                                                         href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
                                                         target="_blank"
@@ -309,8 +331,6 @@ const UploadDocument = () => {
                                                     >
                                                         {renderDocumentThumbnail(document)}
                                                     </a>
-                                                    {/* <FaDownload size={25} />
-                                                    </div> */}
                                                     <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
                                                 </div>
 
@@ -332,12 +352,13 @@ const UploadDocument = () => {
                     )}
                 </CtaSection>
             case apiStatusConstants.inProgress:
-                return <SweetLoading/>
+                return <SweetLoading />
             default:
                 return null
         }
     }
 
+    // Return the JSX for the component
     return (
         <div className='d-flex'>
             <Sidebar />
@@ -347,7 +368,7 @@ const UploadDocument = () => {
                 <TaxDescription>
                     Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
                 </TaxDescription>
-                
+
                 {renderComponents()}
                 {message}
             </TaxInterviewContainer>
@@ -355,7 +376,5 @@ const UploadDocument = () => {
     );
 }
 
+// Export the component
 export default UploadDocument;
-
-
-

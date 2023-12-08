@@ -1,11 +1,23 @@
+// Libraries
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MdDelete } from 'react-icons/md';
+
+// Components
 import Sidebar from '../SideBar/sidebar';
 import domain from '../../domain/domain';
-import pdf from '../../Assets/PDF_file_icon.svg.png'
+import SweetLoading from '../../SweetLoading/SweetLoading';
+import BreadCrumb from '../../breadCrumb/breadCrumb';
+import { useNavigate } from 'react-router-dom';
+import { message } from '../../components/Footer/footer';
+import { EmptyDocumentContainer } from '../CommentDocument/styledComponents';
+
+// Assets
+import pdf from '../../Assets/PDF_file_icon.svg.png';
 import doc from '../../Assets/doc.png';
-import docx from '../../Assets/docx.png'
+import docx from '../../Assets/docx.png';
+import noDoc from '../../Assets/no-documents.jpg';
+
 import {
     TaxInterviewContainer,
     H1,
@@ -18,29 +30,27 @@ import {
     DeleteButton,
     DocumentName
 } from './styledComponents';
-import SweetLoading from '../../SweetLoading/SweetLoading';
-import BreadCrumb from '../../breadCrumb/breadCrumb';
-import { useNavigate } from 'react-router-dom';
-import { message } from '../../components/Footer/footer';
-import { EmptyDocumentContainer } from '../CommentDocument/styledComponents';
-import noDoc from '../../Assets/no-documents.jpg'
 
-// ... (import statements)
+// Constants for API status
 const apiStatusConstants = {
     initial: 'INITIAL',
     success: 'SUCCESS',
     failure: 'FAILURE',
     inProgress: 'IN_PROGRESS',
 }
+
+// Functional component for TaxInterview
 const TaxInterview = () => {
-    const [selectedFile, setSelectedFile] = useState(null);
+    // State variables
     const [documents, setDocuments] = useState([]);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
+    const [showFooter, setShowFooter] = useState(false)
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
 
     const navigate = useNavigate()
 
+    // useEffect to handle redirection based on user role and fetch documents
     useEffect(() => {
         if (user.role === 'ADMIN') {
             navigate('/admin-dashboard')
@@ -50,6 +60,7 @@ const TaxInterview = () => {
         fetchDocuments();
     }, [navigate]);
 
+    // Function to fetch user's tax documents
     const fetchDocuments = async () => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -62,30 +73,20 @@ const TaxInterview = () => {
                 const filteredData = response.data.documents.filter(document => document.customer_id === user.user_id);
                 setDocuments(filteredData);
                 setApiStatus(apiStatusConstants.success)
+                setShowFooter(true)
             }
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
     };
 
-
- 
-    const handleDragOver = (e) => {
-        e.preventDefault();
-    };
-
-    const handleDrop = (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        setSelectedFile(file);
-    };
-
- 
+    // Function to format date and time
     const formatDateTime = (dateTimeString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
         return new Date(dateTimeString).toLocaleString('en-US', options);
     };
 
+    // Event handler for document deletion
     const onDeleteDocument = async (id) => {
         setApiStatus(apiStatusConstants.inProgress)
         const result = window.confirm("Are you sure you want to delete this document?");
@@ -104,6 +105,7 @@ const TaxInterview = () => {
         }
     };
 
+    // Event handler for document download
     const handleDownloadClick = async (document) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -127,6 +129,7 @@ const TaxInterview = () => {
         }
     };
 
+    // Function to render document thumbnail based on file type
     const renderDocumentThumbnail = (document) => {
         const fileExtension = document.document_path.split('.').pop().toLowerCase();
 
@@ -146,7 +149,7 @@ const TaxInterview = () => {
         );
     };
 
-
+    // Function to render different components based on API status
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
@@ -170,7 +173,6 @@ const TaxInterview = () => {
                                         <tr key={document.document_id}>
                                             <Td>
                                                 <div className='d-flex flex-column'>
-                                                    {/* <div className='d-flex align-items-center justify-content-center'> */}
                                                     <a
                                                         href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
                                                         target="_blank"
@@ -180,8 +182,6 @@ const TaxInterview = () => {
                                                     >
                                                         {renderDocumentThumbnail(document)}
                                                     </a>
-                                                    {/* <FaDownload size={25} />
-                                                    </div> */}
                                                     <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
                                                 </div>
 
@@ -209,6 +209,7 @@ const TaxInterview = () => {
         }
     }
 
+    // Component for empty documents state
     const EmptyDocumentsState = () => (
         <EmptyDocumentContainer>
             <img src={noDoc} alt="Empty Documents State" />
@@ -217,10 +218,11 @@ const TaxInterview = () => {
         </EmptyDocumentContainer>
     );
 
+    // Return JSX for the component
     return (
         <div className='d-flex'>
             <Sidebar />
-            <TaxInterviewContainer onDragOver={handleDragOver} onDrop={handleDrop}>
+            <TaxInterviewContainer >
                 <BreadCrumb />
                 <H1>Tax Interview</H1>
                 <TaxDescription>
@@ -228,13 +230,11 @@ const TaxInterview = () => {
                 </TaxDescription>
 
                 {documents.length > 0 ? renderComponents() : EmptyDocumentsState()}
-                {message}
+                {showFooter && message}
             </TaxInterviewContainer>
         </div>
     );
 }
 
+// Export the component
 export default TaxInterview;
-
-
-

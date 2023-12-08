@@ -1,9 +1,0 @@
-.my-taxreturn-container {
-    margin-top: 10vh;
-    height: 90vh;
-    padding: 1rem;
-    width: 100%;
-    text-align: start;
-    overflow: auto;
-    background-color: var(--main-background);
-}

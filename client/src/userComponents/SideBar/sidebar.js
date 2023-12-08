@@ -4,8 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './sidebar.css';
 import {
     MdPayments,
-    MdDarkMode,
-    MdOutlineDarkMode,
+    // MdDarkMode,
+    // MdOutlineDarkMode,
     MdDashboardCustomize
 } from 'react-icons/md';
 import {
@@ -18,7 +18,6 @@ import {
     FaUser,
     FaFileAlt,
     FaCheck,
-    // FaCloudUploadAlt,
     FaComments,
     FaFileUpload
 } from 'react-icons/fa';

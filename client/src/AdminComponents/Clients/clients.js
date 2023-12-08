@@ -1,12 +1,22 @@
+// Libraries
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
+// Components
 import domain from '../../domain/domain';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
 import SweetLoading from '../../SweetLoading/SweetLoading';
+
+// Icons
 import { BiSearch } from 'react-icons/bi';
 import { MdFilterList } from 'react-icons/md';
+
+// Assets
 import noClient from '../../Assets/no-customers.jpg'
+
+// Styled Components
 import {
     ClientListContainer,
     ClientsHeaderContainer,
@@ -22,8 +32,9 @@ import {
     Th,
     ViewButton,
 } from './styledComponents';
-import { useNavigate } from 'react-router-dom';
 
+
+// Constants for API status
 const apiStatusConstants = {
     initial: 'INITIAL',
     success: 'SUCCESS',
@@ -32,6 +43,7 @@ const apiStatusConstants = {
 };
 
 const Clients = () => {
+    // State variables
     const [clients, setClients] = useState([]);
     const [filteredClients, setFilteredClients] = useState([]);
     const [assignmentClients, setAssignedClients] = useState([]);
@@ -42,16 +54,21 @@ const Clients = () => {
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const token = localStorage.getItem('customerJwtToken');
 
+    // User details
     const user = JSON.parse(localStorage.getItem('currentUser'))
 
+    // Navigation hook
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Redirect based on user role
         if (user.role === 'STAFF') {
             navigate('/staff-dashboard')
         } else if (user.role === 'CUSTOMER') {
             navigate('/user-dashboard')
         }
+
+        // Fetch assigned clients and all clients
         getAllAssignedClients();
         const fetchClients = async () => {
             setApiStatus(apiStatusConstants.initial)
@@ -75,12 +92,14 @@ const Clients = () => {
         };
 
         fetchClients();
-    }, [token,navigate]);
+    }, [token, navigate]);
 
+    // Handle search term change
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
+    // Handle filter change
     const handleFilterChange = (filterType) => {
         setFilterType(filterType);
 
@@ -100,6 +119,7 @@ const Clients = () => {
         setFilteredClients(filteredData);
     };
 
+    // Fetch all assigned clients
     const getAllAssignedClients = async () => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -108,27 +128,28 @@ const Clients = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            if(assignedClientsResponse.status === 200){
+            if (assignedClientsResponse.status === 200) {
                 setApiStatus(apiStatusConstants.success)
                 const assignedClients = assignedClientsResponse.data;
                 setAssignedClients(assignedClients);
             }
-            
+
         } catch (error) {
             console.error('Error fetching assigned clients:', error);
         }
     };
 
-
-
+    // Handle edit button click
     const handleEditClick = () => {
         setIsEditModalOpen(!isEditModalOpen);
     };
 
+    // Handle modal close
     const handleEditModalClose = () => {
         setIsEditModalOpen(false);
     };
 
+    // Handle search button click
     const onSearch = () => {
         // Filter users by name
         const filteredDataByName = filteredClients.filter((user) =>
@@ -137,12 +158,13 @@ const Clients = () => {
         setFilteredClients(filteredDataByName)
     }
 
+    // Render different components based on API status
     const renderComponents = () => {
-        switch(apiStatus){
+        switch (apiStatus) {
             case apiStatusConstants.failure:
                 return <div>failure</div>
             case apiStatusConstants.inProgress:
-                return <SweetLoading/>
+                return <SweetLoading />
             case apiStatusConstants.success:
                 return <TableContainer className="shadow">
                     <ClientsHeaderContainer>
@@ -207,20 +229,21 @@ const Clients = () => {
         }
     }
 
+    // Return JSX for the component
     return (
         <div className="d-flex">
             <Sidebar />
             <ClientListContainer>
                 <H1>Clients</H1>
-                
-                    {clients.length > 0 ? renderComponents() : 
+
+                {clients.length > 0 ? renderComponents() :
                     <NoClientContainer>
                         <img src={noClient} alt='img' className='img-fluid' />
                         <H1>No Clients Registered</H1>
                         <p>Oops! It seems there are no clients registered here.</p>
                     </NoClientContainer>
-                    }
-                
+                }
+
             </ClientListContainer>
 
             <EditModal

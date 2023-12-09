@@ -12,6 +12,7 @@ const taxInputs = require('./routes/taxInputs');
 const taxDocuments = require('./routes/taxDocuments');
 const taxReturnDocuments = require('./routes/taxReturnDocuments')
 const paypalPayment = require('./routes/paypalPayment')
+const contact = require('./routes/contact')
 const client = require('./database/connection');
 
 app.use(express.urlencoded({ extended: true }));
@@ -69,6 +70,9 @@ app.use('/tax-return-document', taxReturnDocuments)
 
 // Mount the paypal payment gateway
 app.use('/paypal', paypalPayment)
+
+// Mount the contact
+app.use('/contact', contact)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

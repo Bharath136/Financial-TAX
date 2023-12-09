@@ -5,7 +5,6 @@ import Footer from '../Footer/footer';
 
 const ServicesSection = styled.section`
   margin-top:12vh;
-  text-align: center;
 `;
 
 const ServicesContainer = styled.div`

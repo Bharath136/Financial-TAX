@@ -25,7 +25,7 @@ import AuthContext from '../../AuthContext/AuthContext';
 import { IoPersonAddSharp } from "react-icons/io5";
 
 const menuItems = [
-    { path: '/user-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
+    { path: '/user-dashboard', label: 'Home', icon: <MdDashboardCustomize size={25} /> },
     { path: '/tax-interview', label: 'Tax Interview', icon: <FaUser size={25} /> },
     { path: '/upload-document', label: 'Upload Document', icon: <FaFileUpload size={25} /> },
     { path: '/comment-to-document', label: 'Add Comment', icon: <FaComments size={25} /> },

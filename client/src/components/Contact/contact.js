@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import './contact.css'; // Import the CSS file for styling
+import domain from '../../domain/domain'
+import axios from 'axios'
+import showAlert from '../../SweetAlert/sweetalert';
+import './contact.css'; 
 import Footer from '../Footer/footer';
 
 const Contact = () => {
@@ -17,17 +20,26 @@ const Contact = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission here
-        console.log('Form submitted:', formData);
+        const response = await axios.post(`${domain.domain}/contact/message`,formData)
+        if(response.status === 200){
+            showAlert({
+                title: 'Message sent Successful!',
+                text: '',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel'
+            });
+            setFormData({})
+        }
     };
 
     return (
         <>
             <section id="contact-us" className="contact-us-container">
                 <div className="container">
-                    <h2 className="section-title text-center mb-5">CONTACT US</h2>
+                    <h2 className="section-title mb-5">CONTACT US</h2>
                     <div className="row">
                         <div className="col-md-6 text-start">
                             <form onSubmit={handleSubmit} className="contact-form content">

@@ -26,6 +26,7 @@ import NotFound from './NotFound/notFound';
 import AddStaff from './AdminComponents/AddStaff/addStaff';
 import UploadDocument from './userComponents/UploadDocument/uploadDocument';
 import AdminDashboard from './AdminComponents/AdminDashboard/adminDashboard';
+import ForgotPassword from './components/ForgotPassword/forgotPassword';
 
 function App() {
   const [currentToken, setCurrentToken] = useState('');
@@ -61,6 +62,7 @@ function App() {
     // Landing components 
     { path: '/', element: <Landingpage /> },
     { path: '/login', element: <Login setShowNav={setShowNav} /> },
+    { path: '/forgot-password', element: <ForgotPassword setShowNav={setShowNav} /> },
     { path: '/signup', element: <Register /> },
     { path: '/about', element: <About /> },
     { path: '/services', element: <Services /> },

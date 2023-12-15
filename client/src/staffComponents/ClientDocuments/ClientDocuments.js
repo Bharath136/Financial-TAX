@@ -12,6 +12,7 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 import noDocuments from '../../Assets/no-documents.jpg'
 import { MdDelete } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { ClientTaxDocumentsHeaderContainer, ClientsHeaderContainer, Select } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -28,6 +29,9 @@ const ClientDocuments = () => {
     const [showComments, setShowComments] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState({});
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+    const [selectedClient, setSelectedClient] = useState('');
+    const [filteredDocuments, setFilteredDocuments] = useState([]);
+    const [clients, setClients] = useState([]);
 
     const fetchDocuments = async () => {
         setApiStatus(apiStatusConstants.inProgress)
@@ -39,13 +43,31 @@ const ClientDocuments = () => {
                 const filteredData = response.data.filter(
                     (document) => document.staff_id === user.user_id
                 );
-                setApiStatus(apiStatusConstants.success)
                 setDocuments(filteredData);
+                setFilteredDocuments(filteredData);
+                setApiStatus(apiStatusConstants.success)
             }
 
         } catch (error) {
             console.error('Error fetching documents:', error);
         }
+    };
+
+    // Fetch clients from the server
+    const fetchClients = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
+        const response = await axios.get(`${domain.domain}/user`, {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        if (response.status === 200) {
+            const filteredClients = response.data.filter((client) => {
+                return client.role === 'CUSTOMER';
+            });
+            setClients(filteredClients);
+            setApiStatus(apiStatusConstants.success)
+        }
+
     };
 
     const formatDateTime = (dateTimeString) => {
@@ -85,12 +107,15 @@ const ClientDocuments = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user.role === 'ADMIN') {
-            navigate('/admin-dashboard')
-        } else if (user.role === 'CUSTOMER') {
-            navigate('/user-dashboard')
+        if(user){
+            if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard')
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user-dashboard')
+            }
         }
         fetchDocuments();
+        fetchClients();
     }, []);
 
     const handleDownloadClick = async (document) => {
@@ -173,7 +198,7 @@ const ClientDocuments = () => {
             showAlert({ title: 'Comment Deleted Successfully!', icon: 'success', confirmButtonText: 'Ok' });
         } catch (error) {
             console.error('Error deleting comment:', error);
-        }
+        } 
     };
 
     const onChangeCommentStatus = async (id, statusOption) => {
@@ -199,6 +224,26 @@ const ClientDocuments = () => {
         }
     };
 
+    // Handle client change for filtering documents
+    const handleClientChange = async (e) => {
+        setApiStatus(apiStatusConstants.inProgress)
+        const id = e.target.value;
+        setSelectedClient(id);
+        try {
+            const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents/${id}`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            if (response.status === 200) {
+                setFilteredDocuments(response.data);
+                setApiStatus(apiStatusConstants.success)
+            } else {
+                setFilteredDocuments(documents);
+            }
+        } catch (error) {
+            console.error('Error fetching documents:', error);
+        }
+    };
+
 
     const renderComponents = () => {
         switch (apiStatus) {
@@ -208,7 +253,26 @@ const ClientDocuments = () => {
                 return <CtaSection className="shadow">
 
                     <DocumentTableContainer className="document-table-container">
-                        <H1>Uploaded Documents</H1>
+                        <ClientTaxDocumentsHeaderContainer>
+                            <H1>Uploaded Documents</H1>
+                            <ClientsHeaderContainer>
+                                <label><strong>Filter by client</strong></label>
+                                <Select
+                                    id="clientSelect"
+                                    name="clientSelect"
+                                    value={selectedClient}
+                                    onChange={handleClientChange}
+                                    required
+                                >
+                                    <option value="">All clients</option>
+                                    {clients.map(client => (
+                                        <option key={client.user_id} value={client.user_id}>
+                                            {client.first_name}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </ClientsHeaderContainer>
+                        </ClientTaxDocumentsHeaderContainer>
                         <DocumentTable className="document-table">
                             <thead>
                                 <tr>
@@ -220,9 +284,9 @@ const ClientDocuments = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {documents.map((document) => (
+                                {filteredDocuments.map((document) => (
                                     <tr key={document.document_id}>
-                                        <Td>
+                                        <Td title='Download'>
                                             <div className='d-flex flex-column'> <a
                                                 href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
                                                 target="_blank"

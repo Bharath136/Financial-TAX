@@ -11,7 +11,7 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 import EditModal from '../../SweetPopup/sweetPopup';
 import { CurrentUser, DashboardContainer, DashboardItem, DetailsContainer, MainContainer, SectionCard } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
-
+import { MdDelete } from "react-icons/md";
 
 
 const apiStatusConstants = {
@@ -58,6 +58,7 @@ const AdminDashboard = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setAllClients(allClients)
+            
 
             if (assignedClientsResponse.status === 200) {
                 setApiStatus(apiStatusConstants.success);
@@ -75,13 +76,14 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         getAllAssignedClients();
-        if (user.role === 'ADMIN') {
-            navigate('/admin-dashboard');
-        } else if (user.role === 'CUSTOMER') {
-            navigate('/user-dashboard');
-        }
+        
         if (user) {
             setCurrentUser(user.first_name);
+            if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard');
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user-dashboard');
+            }
         }
 
     }, [navigate]);
@@ -178,6 +180,44 @@ const AdminDashboard = () => {
         setAvailableSteps([]);
     };
 
+
+    // Handle staff deletion
+    const onDeleteClient = async (id) => {
+        setApiStatus(apiStatusConstants.inProgress);
+
+        const isConfirmed = window.confirm('Are you sure you want to delete?');
+        if (isConfirmed) {
+            try {
+                await axios.delete(`${domain.domain}/user/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                setApiStatus(apiStatusConstants.success);
+
+                // Show success alert
+                showAlert({
+                    title: 'Staff Deleted Successfully!',
+                    text: 'The staff member has been deleted successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            } catch (error) {
+                console.error('Error Deleting staff:', error);
+                setApiStatus(apiStatusConstants.failure);
+
+                // Show error alert
+                showAlert({
+                    title: 'Error Deleting Staff',
+                    text: 'An error occurred while deleting the staff member.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                });
+            }
+        }
+    };
+
     const renderClients = () => (
         <TableContainer className='shadow'>
             <Table>
@@ -189,6 +229,7 @@ const AdminDashboard = () => {
                         <Th>Phone</Th>
                         <Th>Actions</Th>
                         <Th>Update</Th>
+                        <Th>Delete</Th>
                     </tr>
                 </thead>
                 <tbody>
@@ -208,7 +249,11 @@ const AdminDashboard = () => {
                                     Move To
                                 </ViewButton>
                             </Td>
-                            {/* <Td>{}</Td> */}
+                            <Td>
+                                <div className=' d-flex align-items-center justify-content-center'>
+                                    <button className='btn text-danger' onClick={() => onDeleteClient(client.user_id)} style={{ gap: '10px' }} title='Delete client'> Delete <MdDelete size={25} /></button>
+                                </div>
+                            </Td>
                         </tr>
                     ))}
                 </tbody>

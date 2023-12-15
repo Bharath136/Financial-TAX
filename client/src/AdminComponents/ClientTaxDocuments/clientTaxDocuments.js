@@ -122,10 +122,12 @@ const ClientTaxDocuments = () => {
 
     useEffect(() => {
         // Redirect users based on role
-        if (user.role === 'STAFF') {
-            navigate('/staff-dashboard');
-        } else if (user.role === 'CUSTOMER') {
-            navigate('/user-dashboard');
+        if(user){
+            if (user.role === 'STAFF') {
+                navigate('/staff-dashboard');
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user-dashboard');
+            }
         }
         // Fetch documents and clients
         fetchDocuments();

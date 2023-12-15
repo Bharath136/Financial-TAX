@@ -22,10 +22,12 @@ const AddStaff = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (currentUser.role === 'STAFF') {
-            navigate('/staff-dashboard')
-        } else if (currentUser.role === 'CUSTOMER') {
-            navigate('/user-dashboard')
+        if(currentUser){
+            if (currentUser.role === 'STAFF') {
+                navigate('/staff-dashboard')
+            } else if (currentUser.role === 'CUSTOMER') {
+                navigate('/user-dashboard')
+            }
         }
     },[currentUser,navigate])
 

@@ -26,10 +26,12 @@ const AssignedClientList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (currentUser.role === 'ADMIN') {
-            navigate('/admin-dashboard')
-        } else if (currentUser.role === 'CUSTOMER') {
-            navigate('/user-dashboard')
+        if(currentUser){
+            if (currentUser.role === 'ADMIN') {
+                navigate('/admin-dashboard')
+            } else if (currentUser.role === 'CUSTOMER') {
+                navigate('/user-dashboard')
+            }
         }
         const getAllAssignedClients = async () => {
             setApiStatus(apiStatusConstants.inProgress);

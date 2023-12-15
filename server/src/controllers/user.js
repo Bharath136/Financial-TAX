@@ -81,6 +81,51 @@ const userRegistration = async (req, res) => {
     }
 };
 
+
+const editPassword = async (req, res) => {
+    const { email_address, new_password } = req.body;
+
+    try {
+        // Check if the user exists based on the provided email
+        const checkUserQuery = `
+            SELECT *
+            FROM user_logins
+            WHERE email_address = $1;
+        `;
+        const userResult = await client.query(checkUserQuery, [email_address]);
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        // Hash the new password before updating it in the database
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hashedNewPassword = await bcrypt.hash(new_password, salt);
+
+        // Update the user's password
+        const updatePasswordQuery = `
+            UPDATE user_logins
+            SET password = $1, updated_on = $2, updated_by = $3
+            WHERE email_address = $4
+            RETURNING user_id;
+        `;
+        const values = [hashedNewPassword, new Date(), 'admin', email_address];
+        const result = await client.query(updatePasswordQuery, values);
+
+        res.status(200).json({
+            success: true,
+            message: 'Password updated successfully',
+            user_id: result.rows[0].user_id
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error updating password' });
+    }
+};
+
+
 // Adding Staff by admin
 const addStaff = async (req, res) => {
     const {
@@ -408,5 +453,6 @@ module.exports = {
     getUsersByCurrentStatus,
     updateCurrentStatusById,
     updateStaffTeamById,
-    getAllStaffUnAssignedClients
+    getAllStaffUnAssignedClients,
+    editPassword
 };

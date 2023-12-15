@@ -63,6 +63,7 @@ const CommentDocument = () => {
     const [selectedDocument, setSelectedDocument] = useState({});
     const [comments, setComments] = useState([]);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
+    const [errorMsg, setErrorMsg] = useState(null);
 
     // User and access token retrieval
     const user = JSON.parse(localStorage.getItem('currentUser'));
@@ -74,10 +75,12 @@ const CommentDocument = () => {
     // useEffect for initial data fetching
     useEffect(() => {
         // Redirect if user is admin or staff
-        if (user.role === 'ADMIN') {
-            navigate('/admin-dashboard');
-        } else if (user.role === 'STAFF') {
-            navigate('/staff-dashboard');
+        if(user){
+            if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard');
+            } else if (user.role === 'STAFF') {
+                navigate('/staff-dashboard');
+            }
         }
 
         // Fetch data from the API
@@ -114,8 +117,13 @@ const CommentDocument = () => {
 
     // Function to handle submitting a comment
     const handleCommentSubmit = async () => {
-        setApiStatus(apiStatusConstants.inProgress);
+        
+        if (!formData.comment || !formData.financial_year ) {
+            setErrorMsg('Please fill in all required fields.');
+            return;
+        }
         try {
+            setApiStatus(apiStatusConstants.inProgress);
             const token = localStorage.getItem('customerJwtToken');
             const newComment = {
                 customer_id: user.user_id,
@@ -123,8 +131,6 @@ const CommentDocument = () => {
                 document_id: selectedDocument.document_id,
                 comment: formData.comment,
                 financial_year: formData.financial_year,
-                financial_quarter: formData.financial_quarter,
-                financial_month: formData.financial_month,
             };
 
             // Post the new comment
@@ -199,8 +205,6 @@ const CommentDocument = () => {
     // Initial form fields
     const initialFormFields = [
         { label: 'Year', name: 'financial_year', type: 'number', placeholder: 'Ex:- 2023' },
-        { label: 'Month', name: 'financial_month', type: 'number', placeholder: 'Ex:- 5' },
-        { label: 'Quarter', name: 'financial_quarter', type: 'number', placeholder: 'Ex:- 1' },
     ];
 
     // Function to handle document download
@@ -362,11 +366,18 @@ const CommentDocument = () => {
                                         value={formData.comment || ''}
                                         placeholder="Write your comment to the document..."
                                         onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                                        required
                                     />
+                                    {errorMsg && <p className='text-danger'>{errorMsg}</p>}
                                     <ButtonContainer>
-                                        <SendButton type="button" onClick={handleCommentSubmit}>
+                                        <SendButton
+                                            type="button"
+                                            onClick={handleCommentSubmit}
+                                            // disabled={!formData.comment?.trim()}
+                                        >
                                             Send Comment
                                         </SendButton>
+
                                     </ButtonContainer>
                                 </CommentSectionContainer>
                             )}
@@ -461,7 +472,7 @@ const CommentDocument = () => {
     return (
         <div className="d-flex">
             <Sidebar />
-                <CommentDocumentContainer>
+            <CommentDocumentContainer>
                 <BreadCrumb />
                 <H1>Comment on Document</H1>
                 <CommentDescription>
@@ -469,7 +480,7 @@ const CommentDocument = () => {
                 </CommentDescription>
                 {documents.length > 0 ? renderComponents() : EmptyDocumentsState()}
                 {message}
-            </CommentDocumentContainer>            
+            </CommentDocumentContainer>
         </div>
     );
 };

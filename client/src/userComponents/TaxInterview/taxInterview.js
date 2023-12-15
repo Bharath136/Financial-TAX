@@ -52,10 +52,12 @@ const TaxInterview = () => {
 
     // useEffect to handle redirection based on user role and fetch documents
     useEffect(() => {
-        if (user.role === 'ADMIN') {
-            navigate('/admin-dashboard')
-        } else if (user.role === 'STAFF') {
-            navigate('/staff-dashboard')
+        if (user) {
+            if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard')
+            } else if (user.role === 'STAFF') {
+                navigate('/staff-dashboard')
+            }
         }
         fetchDocuments();
     }, [navigate]);

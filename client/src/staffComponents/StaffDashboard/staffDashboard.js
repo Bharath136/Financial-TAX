@@ -45,6 +45,7 @@ const StaffDashboard = () => {
     const [availableSteps, setAvailableSteps] = useState([]);
     const [customerResponse, setCustomerResponse] = useState('');
     const [showSecretCodePopup, setShowSecretCodePopup] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const token = localStorage.getItem('customerJwtToken');
@@ -71,13 +72,13 @@ const StaffDashboard = () => {
 
     useEffect(() => {
         getAllAssignedClients();
-        if (user.role === 'ADMIN') {
-            navigate('/admin-dashboard');
-        } else if (user.role === 'CUSTOMER') {
-            navigate('/user-dashboard');
-        }
         if (user) {
             setCurrentUser(user.first_name);
+            if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard');
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user-dashboard');
+            }
         }
 
     }, [navigate]);
@@ -126,6 +127,10 @@ const StaffDashboard = () => {
             }
         }, 100);
     };
+
+    const onChangeAccess = () => {
+        setIsAuthenticated(!isAuthenticated)
+    }
 
     const handleEditClick = clientId => {
         setIsEditModalOpen(!isEditModalOpen);
@@ -197,6 +202,7 @@ const StaffDashboard = () => {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 });
+                setCustomerResponse('')
             } else {
                 showAlert({
                     title: 'Error!',
@@ -248,11 +254,12 @@ const StaffDashboard = () => {
                                 </ViewButton>
                             </Td>
                             <Td>
-                                <div className='d-flex align-items-center p-0'>
+                                <div className='d-flex align-items-center justify-content-center p-0' style={{gap:"10px"}}>
                                     <input
                                         type='text'
                                         value={customerResponse}
-                                        className='form-control mr-2'
+                                        className="p-2 text-dark"
+                                        style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
                                         placeholder='Enter customer response...'
                                         onChange={(e) => onChangeCustomerResponse(e)}
                                         required
@@ -271,7 +278,7 @@ const StaffDashboard = () => {
                 </tbody>
             </Table>
 
-            {selectedClient && availableSteps.length > 0 && (
+            {isAuthenticated && availableSteps.length > 0 && (
                 <div className='d-flex align-items-center justify-content-end mt-4'>
                     <label htmlFor="moveTo" className='m-2'><strong>Move To: </strong></label>
                     <select
@@ -345,9 +352,9 @@ const StaffDashboard = () => {
                     <SecretCode
                         isOpen={showSecretCodePopup}
                         onRequestClose={() => setShowSecretCodePopup(false)}
-                        profileId={selectedClient?.user_id}
                         handleOpenClick={() => setShowSecretCodePopup(true)}
-                        isEditable={false}
+                        onChangeAccess={onChangeAccess}
+                        myCode={user.secret_code}
                     />
                 )}
 

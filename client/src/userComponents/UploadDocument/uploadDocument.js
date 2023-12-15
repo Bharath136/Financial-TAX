@@ -66,10 +66,12 @@ const UploadDocument = () => {
 
     // useEffect to handle redirection based on user role and fetch documents
     useEffect(() => {
-        if (user.role === 'ADMIN') {
-            navigate('/admin-dashboard')
-        } else if (user.role === 'STAFF') {
-            navigate('/staff-dashboard')
+        if (user) {
+            if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard')
+            } else if (user.role === 'STAFF') {
+                navigate('/staff-dashboard')
+            }
         }
         fetchDocuments();
     }, [navigate]);
@@ -118,13 +120,15 @@ const UploadDocument = () => {
     // Event handler for file upload
     const handleFileUpload = async (e) => {
         e.preventDefault();
-        setApiStatus(apiStatusConstants.inProgress)
-        try {
-            if (!selectedFile) {
-                setErrorMsg('Please select a file to upload.');
-                return;
-            }
+        // Check if required fields are filled
+        if (!data.document_name || !data.document_type || !data.financial_year || !selectedFile) {
+            setErrorMsg('Please fill in all required fields and select a file to upload.');
+            return;
+        }
 
+        
+        try {
+            setApiStatus(apiStatusConstants.inProgress)
             const formData = new FormData();
             formData.append('file', selectedFile);
             formData.append('customer_id', user.user_id);
@@ -176,8 +180,6 @@ const UploadDocument = () => {
         { label: 'Document Name', name: 'document_name', type: 'text', placeholder: 'Enter Document Name' },
         { label: 'Document Type', name: 'document_type', type: 'select', options: documentTypes, placeholder: 'Document Type' },
         { label: 'Year', name: 'financial_year', type: 'number', placeholder: 'Ex:- 2023' },
-        { label: 'Month', name: 'financial_month', type: 'number', placeholder: 'Ex:- 5' },
-        { label: 'Quarter', name: 'financial_quarter', type: 'number', placeholder: 'Ex:- 1' }
     ];
 
     // Function to format date and time
@@ -271,7 +273,7 @@ const UploadDocument = () => {
                                             name={field.name}
                                             value={data[field.name] || ''}
                                             onChange={handleChange}
-                                            required
+                                            
                                         >
                                             <option value="">{field.placeholder}</option>
                                             {field.options.map(type => (
@@ -287,7 +289,7 @@ const UploadDocument = () => {
                                             name={field.name}
                                             value={data[field.name] || ''}
                                             onChange={handleChange}
-                                            required
+                                            
                                         />
                                     )}
                                 </InputFieldsSubContainer>
@@ -300,6 +302,11 @@ const UploadDocument = () => {
                             <DocumentImage src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" />
                         </DragDropArea>
                         {errorMsg && <p className='text-danger'>{errorMsg}</p>}
+                        {selectedFile && (
+                            <div style={{ backgroundColor: '#cdddf7', padding: "20px", marginBottom: '20px' }}>
+                                <p className='m-0'>Selected File: {selectedFile.name}</p>
+                            </div>
+                        )}
                         <ButtonContainer>
                             <UploadButton type='submit'>Upload Tax Documents</UploadButton>
                         </ButtonContainer>

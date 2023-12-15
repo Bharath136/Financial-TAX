@@ -61,10 +61,10 @@ const Header = ({ setShowNav }) => {
                     <div>
                         <Navbar
                             fixed="top"
-                            className="border p-2"
+                            className="border navbar-container"
                             expand="lg"
                             variant="light"
-                            style={{ minHeight: '10vh', backgroundColor: 'white' }}
+                          
                         >
                             <div className="container-fluid">
                                 <Navbar.Brand>
@@ -80,14 +80,13 @@ const Header = ({ setShowNav }) => {
                                 {token && 
                                 <div className='d-block d-md-none d-flex align-items-center ml-2'>
                                     <div className='d-flex align-items-center' onClick={() => handleEditClick(currentUser.user_id)} style={{ cursor: 'pointer' }}>
-                                        <div className='profile' style={{ backgroundColor: `${randomColor}` }}>
-                                            <label>{profile}</label>
+                                        <div className='profile'  style={{ backgroundColor: `${randomColor}`  }}>
+                                            <label style={{ cursor: 'pointer' }}>{profile}</label>
                                         </div>
                                         <label style={{ cursor: 'pointer' }}><strong>{activeUser}</strong></label>
                                     </div>
-                                <button className='d-block d-md-none three-dots align-items-center' title='Close' onClick={toggleSidebar}>
-                                    
-                                    <BsThreeDotsVertical size={24} />
+                                <button className='d-block d-md-none three-dots align-items-center' style={{marginLeft:'10px'}} title='Close' onClick={toggleSidebar}>
+                                    <BsThreeDotsVertical size={18} />
                                 </button>
                                 </div>}
                                 {token && <Navbar.Toggle aria-controls="navbarSupportedContent" id="navbar-toggle" className='d-none d-md-block d-lg-none' />}
@@ -96,8 +95,8 @@ const Header = ({ setShowNav }) => {
                                         <Nav className="ml-auto">
                                             <div className='d-flex align-items-center' onClick={() => handleEditClick(currentUser.user_id)} style={{ cursor: 'pointer' }}>
                                                 {/* <img src='https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small/default-avatar-profile-icon-of-social-media-user-vector.jpg' width={40} className='profile-image' alt='profile' /> */}
-                                                <div className='profile' style={{backgroundColor:`${randomColor}`}}>
-                                                    <label>{profile}</label>
+                                                <div className='profile'  style={{backgroundColor:`${randomColor}` }}>
+                                                    <label style={{ cursor: 'pointer' }}>{profile}</label>
                                                 </div>
                                                 <label style={{ cursor: 'pointer' }}><strong>{activeUser}</strong></label>
                                             </div>

@@ -22,8 +22,6 @@ const createCustomerNewTaxComment = async (req, res) => {
             document_id,
             comment,
             financial_year,
-            financial_quarter,
-            financial_month,
             'Pending',
             new Date(),
             new Date(),
@@ -63,7 +61,6 @@ const updateCommentStatus = async (req, res) => {
         comment_status,
         staff_id
     } = req.body;
-    console.log(comment_id)
     try {
         const updateStatusQuery = `
             UPDATE customer_tax_comments
@@ -100,8 +97,6 @@ const updateCustomerComments = async (req, res) => {
     const {
         comment,
         financial_year,
-        financial_quarter,
-        financial_month
     } = req.body;
 
     const updatedOn = new Date().toISOString();
@@ -110,8 +105,6 @@ const updateCustomerComments = async (req, res) => {
         const queryParams = [
             `comment = '${comment}'`,
             `financial_year = '${financial_year}'`,
-            `financial_quarter = '${financial_quarter}'`,
-            `financial_month = '${financial_month}'`,
             `updated_on = '${updatedOn}'`,
         ];
 
@@ -140,7 +133,6 @@ const getCustomerCommentById = async (req, res) => {
     try {
         const deleteQuery = 'SELECT * FROM customer_tax_comments WHERE comment_id = $1';
         const result = await client.query(deleteQuery, [id])
-        console.log(result.rows)
         res.status(200).json(result.rows[0])
     } catch (error) {
         console.log(error)

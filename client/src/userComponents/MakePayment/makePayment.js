@@ -133,12 +133,14 @@ const MakePayment = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user.role === 'ADMIN') {
-      navigate('/admin-dashboard');
-    } else if (user.role === 'STAFF') {
-      navigate('/staff-dashboard');
+    if (user) {
+      if (user.role === 'ADMIN') {
+        navigate('/admin-dashboard')
+      } else if (user.role === 'STAFF') {
+        navigate('/staff-dashboard')
+      }
     }
-  }, [navigate, user.role]);
+  }, [navigate]);
 
   const onChangeAmount = (event) => {
     setAmount(event.target.value);

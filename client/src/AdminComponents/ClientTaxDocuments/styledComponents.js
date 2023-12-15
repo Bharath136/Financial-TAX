@@ -61,7 +61,6 @@ export const CtaSection = styled.div`
     background-color: white;
     padding: 20px;
     border-radius: 4px;
-    min-height:50vh;
 `;
 
 export const DocumentsTableContainer = styled.div`

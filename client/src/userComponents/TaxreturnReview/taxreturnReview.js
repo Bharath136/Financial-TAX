@@ -54,10 +54,12 @@ const TaxreturnReview = () => {
         const user = JSON.parse(localStorage.getItem('currentUser'));
 
         // Redirect based on user role
-        if (user.role === 'ADMIN') {
-            navigate('/admin-dashboard');
-        } else if (user.role === 'STAFF') {
-            navigate('/staff-dashboard');
+        if (user) {
+            if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard')
+            } else if (user.role === 'STAFF') {
+                navigate('/staff-dashboard')
+            }
         }
 
         // Fetch tax return documents on component mount
@@ -146,7 +148,7 @@ const TaxreturnReview = () => {
                                         <Th>Date & Time</Th>
                                         <Th>Payment Status</Th>
                                         <Th>Payment Amount</Th>
-                                        <Th>Agent</Th>
+                                        <Th>Staff</Th>
                                     </tr>
                                 </thead>
                                 <tbody>

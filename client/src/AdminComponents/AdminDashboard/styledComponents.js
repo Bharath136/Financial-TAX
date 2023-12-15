@@ -24,7 +24,7 @@ export const SectionCard = styled.div`
   flex: 0 0 calc(100% - 20px);
   margin-bottom: 20px;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 2px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: pointer;

@@ -64,16 +64,19 @@ const Staff = () => {
 
     // Handle search button click
     const onSearch = () => {
-        // Filter users by name
-        if(searchTerm){
-            const filteredDataByName = filteredStaff.filter((user) =>
-                user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
+        // Filter users by name, mobile number, or email
+        if (searchTerm) {
+            const filteredData = staffList.filter((staff) =>
+                staff?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                staff?.contact_number?.includes(searchTerm) ||
+                staff?.email_address?.toLowerCase().includes(searchTerm.toLowerCase())
             );
-            setFilteredStaff(filteredDataByName)
-        }else{
-            setFilteredStaff(staffList)
+            setFilteredStaff(filteredData);
+        } else {
+            setFilteredStaff(staffList);
         }
-    }
+    };
+
 
     // Fetch data from API
     const fetchData = async () => {
@@ -120,10 +123,12 @@ const Staff = () => {
 
     useEffect(() => {
         // Redirect based on user role
-        if (user.role === 'STAFF') {
-            navigate('/staff-dashboard')
-        } else if (user.role === 'CUSTOMER') {
-            navigate('/user-dashboard')
+        if(user){
+            if (user.role === 'STAFF') {
+                navigate('/staff-dashboard')
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user-dashboard')
+            }
         }
         fetchData();
     }, []);
@@ -278,7 +283,7 @@ const Staff = () => {
                         <SearchBarContainer>
                             <SearchBar
                                 type="text"
-                                placeholder="Search client by name"
+                                placeholder="Search client by N.., E.., P.."
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />

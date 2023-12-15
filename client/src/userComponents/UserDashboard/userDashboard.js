@@ -16,12 +16,12 @@ const UserDashboard = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if(user.role === 'ADMIN'){
-            navigate('/admin-dashboard')
-        }else if(user.role === 'STAFF'){
-            navigate('/staff-dashboard')
-        }
         if (user) {
+            if (user.role === 'ADMIN') {
+                navigate('/admin-dashboard')
+            } else if (user.role === 'STAFF') {
+                navigate('/staff-dashboard')
+            }
             setCurrentUser(user.first_name);
         }
     }, [user,navigate]);

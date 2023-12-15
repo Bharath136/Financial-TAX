@@ -26,18 +26,23 @@ const TaxReturnDocument = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (currentUser.role === 'ADMIN') {
-            navigate('/admin-dashboard')
-        } else if (currentUser.role === 'CUSTOMER') {
-            navigate('/user-dashboard')
+        if(currentUser){
+            if (currentUser.role === 'ADMIN') {
+                navigate('/admin-dashboard')
+            } else if (currentUser.role === 'CUSTOMER') {
+                navigate('/user-dashboard')
+            }
         }
         getAllAssignedClients();
         fetchDocuments();
     }, [navigate]);
 
     const handleChange = (e) => {
-        setFormData({ ...data, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData((prevData) => ({ ...prevData, [name]: value }));
+        console.log(data);
     };
+
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -78,7 +83,13 @@ const TaxReturnDocument = () => {
 
     const handleFileUpload = async (e) => {
         e.preventDefault();
-        console.log(data)
+        // Check if required fields are filled
+        if (!data.document_name || !data.document_type || !data.financial_year || !selectedFile) {
+            setErrorMsg('Please fill in all required fields and select a file to upload.');
+            return;
+        }else{
+            setErrorMsg("")
+        }
 
         try {
             if (!selectedFile) {
@@ -91,12 +102,9 @@ const TaxReturnDocument = () => {
             formData.append('customer_id', selectedClient);
             formData.append('staff_id', currentUser.user_id);
             formData.append('financial_year', data.financial_year)
-            formData.append('financial_month', data.financial_month)
-            formData.append('financial_quarter', data.financial_quarter)
             formData.append('document_name', data.document_name);
             formData.append('document_type', data.document_type);
             formData.append('payment_amount', data.payment_amount)
-
 
             const res = await axios.post(`${domain.domain}/tax-return-document/upload`, formData, {
                 headers: {
@@ -112,9 +120,10 @@ const TaxReturnDocument = () => {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 });
+                setSelectedFile(null);
+                setFormData({})
             }
 
-            setSelectedFile(null);
         } catch (error) {
             console.error('Error uploading file:', error);
         }
@@ -137,8 +146,6 @@ const TaxReturnDocument = () => {
         { label: 'Document Type', name: 'document_type', type: 'select', options: documentTypes, placeholder: 'Document Type' },
         { label: 'Select Client', name: 'client', type: 'select', options: myClients, placeholder: 'Select a Client' },
         { label: 'Year', name: 'financial_year', type: 'number', placeholder: 'Ex:- 2023' },
-        { label: 'Month', name: 'financial_month', type: 'number', placeholder: 'Ex:- 5' },
-        { label: 'Quarter', name: 'financial_quarter', type: 'number', placeholder: 'Ex:- 1' },
         { label: 'Payment Amount', name: 'payment_amount', type: 'number', placeholder: 'Ex:- $120' }
     ];
 
@@ -171,7 +178,7 @@ const TaxReturnDocument = () => {
                     name={field.name}
                     value={data[field.name] || ''}
                     onChange={handleChange}
-                    required
+                    
                 >
                     <option value="">{field.placeholder}</option>
                     {field.options.map(type => (
@@ -187,7 +194,7 @@ const TaxReturnDocument = () => {
                     name={field.name}
                     value={selectedClient}
                     onChange={handleClientChange}
-                    required
+                    
                 >
                     <option value="">Select a client</option>
                     {myClients.map(client => (
@@ -307,10 +314,16 @@ const TaxReturnDocument = () => {
                             <DocumentImage src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" />
                         </DragDropArea>
                         {errorMsg && <p className='text-danger'>{errorMsg}</p>}
+                        {selectedFile && (
+                            <div style={{ backgroundColor:'#cdddf7',padding:"20px", marginBottom:'20px'}}>
+                                <p className='m-0'>Selected File: {selectedFile.name}</p>
+                            </div>
+                        )}
                         <ButtonContainer>
                             <UploadButton type='submit'>Upload Tax Documents</UploadButton>
                         </ButtonContainer>
                     </Form>
+                    
 
                     {documents.length > 0 && (
                         <DocumentTableContainer>

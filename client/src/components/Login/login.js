@@ -6,6 +6,7 @@ import domain from '../../domain/domain';
 import AuthContext from '../../AuthContext/AuthContext';
 import showAlert from '../../SweetAlert/sweetalert';
 import authImage from '../../Assets/loginbg.png'
+import EyeButton from '../EyeButton/EyeButton';
 
 const Login = ({ setShowNav }) => {
     const initialFormFields = [
@@ -24,6 +25,7 @@ const Login = ({ setShowNav }) => {
 
     const [formData, setFormData] = useState({});
     const [errorMsg, setErrorMsg] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -76,23 +78,35 @@ const Login = ({ setShowNav }) => {
                             <form onSubmit={handleSubmit} className='form-container'>
                                 {initialFormFields.map((field, index) => (
                                     <div className="mb-2 d-flex flex-column" key={index}>
-                                        <div className='d-flex justify-content-between'>
+                                        <div className="d-flex justify-content-between">
                                             <label htmlFor={field.name} className="form-label text-dark m-0">
                                                 {field.label}
                                             </label>
-                                            {field.name === 'password' && <Link className='link'>Forgot password?</Link>}
+                                            {field.name === 'password' && (
+                                                <Link to="/forgot-password" className="link">
+                                                    Forgot password?
+                                                </Link>
+                                            )}
                                         </div>
-                                        <input
-                                            type={field.type}
-                                            className="p-2 text-dark"
-                                            style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
-                                            id={field.name}
-                                            placeholder={field.placeholder}
-                                            name={field.name}
-                                            value={formData[field.name] || ''}
-                                            onChange={handleChange}
-                                            required
-                                        />
+                                        <div className="input-group w-100 " style={{ border: '1px solid grey', borderRadius: '4px', }}>
+                                            <input
+                                                type={field.type}
+                                                className="form-control"
+                                                style={{ border: 'none', borderRadius: '4px', outline: 'none' }}
+                                                id={field.name}
+                                                placeholder={field.placeholder}
+                                                name={field.name}
+                                                value={formData[field.name] || ''}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                            {field.name === 'password' && (
+                                                <EyeButton
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    isShowPassword={showPassword}
+                                                />
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                                 <div className='d-flex align-items-center mt-3 mb-3'>

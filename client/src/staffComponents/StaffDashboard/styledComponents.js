@@ -24,7 +24,7 @@ export const SectionCard = styled.div`
   flex: 0 0 calc(100% - 20px);
   margin-bottom: 20px;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 2px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: pointer;
@@ -37,7 +37,12 @@ export const SectionCard = styled.div`
   @media (min-width: 1024px) {
     flex: 0 0 calc(33.333% - 20px);
   }
+
+  &:hover {
+    transform: scale(1.6);
+  }
 `;
+
 
 export const DashboardItem = styled.div`
   display: flex;

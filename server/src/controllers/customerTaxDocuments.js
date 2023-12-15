@@ -22,8 +22,6 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
         const {
             customer_id,
             financial_year,
-            financial_quarter,
-            financial_month,
             document_name,
             document_type
         } = req.body;
@@ -42,8 +40,6 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
                 customer_id,
                 document_path,
                 financial_year,
-                financial_quarter,
-                financial_month,
                 document_name,
                 document_type,
                 review_status,
@@ -52,7 +48,7 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
                 created_on,
                 updated_on
             )
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING document_id
         `;
 
@@ -62,8 +58,6 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
                 customer_id,
                 document_path,
                 financial_year,
-                financial_quarter,
-                financial_month,
                 document_name,
                 document_type,
                 review_status,
@@ -139,8 +133,6 @@ const updateCustomerDocument = async (req, res) => {
         user_id,
         document_path,
         financial_year,
-        financial_month,
-        financial_quarter
     } = req.body
 
     const updatedOn = new Date().toISOString();
@@ -155,8 +147,6 @@ const updateCustomerDocument = async (req, res) => {
         const queryParams = [
             `document_path = '${document_path}'`,
             `financial_year = '${financial_year}'`,
-            `financial_month = '${financial_month}'`,
-            `financial_quarter = '${financial_quarter}'`,
             `updated_by = '${updated_by}'`,
             `updated_on = '${updatedOn}'`,
         ];
@@ -281,7 +271,7 @@ const getCustomerDocumentByUserId = async (req, res) => {
     try {
         const deleteDocumentQuery = 'SELECT * FROM customer_tax_documents WHERE customer_id = $1';
         const result = await client.query(deleteDocumentQuery, [id])
-        console.log(result.rows)
+        
         res.status(200).json(result.rows)
 
     } catch (error) {

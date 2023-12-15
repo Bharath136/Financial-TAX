@@ -62,10 +62,12 @@ const Clients = () => {
 
     useEffect(() => {
         // Redirect based on user role
-        if (user.role === 'STAFF') {
-            navigate('/staff-dashboard')
-        } else if (user.role === 'CUSTOMER') {
-            navigate('/user-dashboard')
+        if(user){
+            if (user.role === 'STAFF') {
+                navigate('/staff-dashboard')
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user-dashboard')
+            }
         }
 
         // Fetch assigned clients and all clients
@@ -151,16 +153,20 @@ const Clients = () => {
 
     // Handle search button click
     const onSearch = () => {
-        // Filter users by name
-        if(searchTerm){
-            const filteredDataByName = filteredClients.filter((user) =>
-                user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
+        // Filter users by name, mobile number, or email
+        if (searchTerm) {
+            const filteredData = clients.filter((user) =>
+                user?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user?.contact_number?.includes(searchTerm) ||
+                user?.email_address?.toLowerCase().includes(searchTerm.toLowerCase())
             );
-            setFilteredClients(filteredDataByName)
-        }else{
-            setFilteredClients(clients)
+            setFilteredClients(filteredData);
+        } else {
+            setFilteredClients(clients);
         }
-    }
+    };
+
+
 
     // Render different components based on API status
     const renderComponents = () => {
@@ -175,7 +181,7 @@ const Clients = () => {
                         <SearchBarContainer>
                             <SearchBar
                                 type="text"
-                                placeholder="Search client by name"
+                                placeholder="Search client by N.., E.., P.."
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />

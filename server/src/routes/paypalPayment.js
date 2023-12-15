@@ -10,7 +10,7 @@ const errorHandler = (err, req, res, next) => {
 };
 
 // Define your API routes
-router.post('/create-payment', authenticate(['STAFF', 'CUSTOMER']), createTaxReturnPayment);
+router.post('/create-payment',  createTaxReturnPayment);
 router.get('/execute-payment', authenticate(['STAFF', 'CUSTOMER']), executeTaxReturnPayment);
 
 // Apply the error handling middleware

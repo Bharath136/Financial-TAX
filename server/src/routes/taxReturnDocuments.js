@@ -3,6 +3,7 @@ const { authenticate } = require('../middlewares/middleware');
 const router = express.Router();
 const multer = require('multer');
 
+// Multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
@@ -15,16 +16,19 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const {
-        createTaxReturnDocument,
-        downloadDocument,
-        updateTaxreturnDocument,
-        getCustomerAllDocuments
-    } = require('../controllers/taxReturnDocuments')
+    createTaxReturnDocument,
+    downloadDocument,
+    updateTaxreturnDocument,
+    getCustomerAllDocuments
+} = require('../controllers/taxReturnDocuments');
 
-router.post('/upload', upload.single('file'), authenticate(['STAFF']), createTaxReturnDocument)
+// API endpoint for uploading tax return documents
+router.post('/upload', upload.single('file'), authenticate(['STAFF']), createTaxReturnDocument);
 
-router.get('/download/:id',  downloadDocument)
+// API endpoint for downloading tax return documents
+router.get('/download/:id', downloadDocument);
 
-router.get('/', authenticate(['STAFF', 'CUSTOMER']), getCustomerAllDocuments)
+// API endpoint for getting all customer documents
+router.get('/', authenticate(['STAFF', 'CUSTOMER']), getCustomerAllDocuments);
 
-module.exports = router
+module.exports = router;

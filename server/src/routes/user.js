@@ -2,37 +2,49 @@ const express = require('express');
 const { authenticate } = require('../middlewares/middleware');
 const router = express.Router();
 
-const { 
+const {
     getAllUsers,
     getUserById,
-    userRegistration, 
-    updateUserById, 
-    deleteUserById, 
+    userRegistration,
+    updateUserById,
+    deleteUserById,
     userLogin,
     addStaff,
-    getAllStaffAssignedClients
+    getAllStaffAssignedClients,
+    getUsersByCurrentStatus,
+    updateCurrentStatusById,
+    updateStaffTeamById,
+    getAllStaffUnAssignedClients
 } = require('../controllers/user');
 
-// Register a new user api
-router.post('/register', userRegistration)
+// Register a new user API
+router.post('/register', userRegistration);
 
-// Login a registered user api
-router.post('/login', userLogin)
+// Login a registered user API
+router.post('/login', userLogin);
 
-// Add Staff by admin
-router.post('/add-staff',authenticate(['ADMIN']), addStaff)
+// Add Staff by admin API
+router.post('/add-staff', authenticate(['ADMIN']), addStaff);
 
-// Authorized user api
-router.get('/',authenticate(['STAFF', 'ADMIN']), getAllUsers);
+// Authorized user API
+router.get('/', authenticate(['STAFF', 'ADMIN']), getAllUsers);
 
-// Get staff assigned clients
-router.get('/staff-clients', authenticate(['STAFF', 'ADMIN']), getAllStaffAssignedClients)
+// Get staff assigned clients API
+router.get('/staff-clients', authenticate(['STAFF', 'ADMIN']), getAllStaffAssignedClients);
 
-// Authorized user api
+// Get unassigned clients API
+router.get('/unassigned-clients', getAllStaffUnAssignedClients);
+
+// Update current step (journey status) API
+router.post('/current-step/:id', authenticate(['STAFF', 'ADMIN']), updateCurrentStatusById);
+
+// Get customers by current step (journey status) API
+router.get('/current-step/:current_step', authenticate(['STAFF', 'ADMIN']), getUsersByCurrentStatus);
+
+// Authorized user API with common CRUD operations
 router.route("/:id")
-    .get(authenticate(['CUSTOMER','ADMIN','STAFF']), getUserById)
-    .put(authenticate(['CUSTOMER','STAFF','ADMIN']), updateUserById)
-    .delete(authenticate(['CUSTOMER']), deleteUserById);
-
+    .get(authenticate(['CUSTOMER', 'ADMIN', 'STAFF']), getUserById)
+    .put(authenticate(['CUSTOMER', 'STAFF', 'ADMIN']), updateUserById)
+    .delete(authenticate(['CUSTOMER','ADMIN']), deleteUserById);
 
 module.exports = router;

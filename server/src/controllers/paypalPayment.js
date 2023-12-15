@@ -2,18 +2,18 @@ const paypal = require('paypal-rest-sdk');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const paypal_client_id = process.env.PAYPAL_CLIENT_ID;
-const paypal_client_secret = process.env.PAYPAL_CLIENT_SECRET;
+const paypalClientId = process.env.PAYPAL_CLIENT_ID;
+const paypalClientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
 // Configure PayPal with your credentials
 paypal.configure({
     mode: 'sandbox', // Set to 'live' for production
-    client_id: paypal_client_id,
-    client_secret: paypal_client_secret,
+    client_id: paypalClientId,
+    client_secret: paypalClientSecret,
 });
 
-// Create a payment
-const createPayment = async (req, res) => {
+// Create a payment for tax return
+const createTaxReturnPayment = async (req, res) => {
     const { user, amount } = req.body;
     try {
         const paymentData = {
@@ -22,30 +22,30 @@ const createPayment = async (req, res) => {
                 payment_method: 'paypal',
             },
             redirect_urls: {
-                return_url: 'http://localhost:3000/success', // Replace with your success URL
-                cancel_url: 'http://localhost:3000/cancel', // Replace with your cancel URL
+                return_url: 'http://localhost:3000/tax-return/success', // Replace with your success URL for tax return
+                cancel_url: 'http://localhost:3000/tax-return/cancel', // Replace with your cancel URL for tax return
             },
             transactions: [{
                 item_list: {
                     items: [{
-                        name: `Payment for ${user.first_name}'s item`, // Dynamic item name based on user
-                        sku: 'item001',
-                        price: amount, // Use the dynamic amount from the user
+                        name: `Tax Return Payment for ${user.first_name}`,
+                        sku: 'tax_return_item',
+                        price: amount,
                         currency: 'USD',
                         quantity: 1,
                     }],
                 },
                 amount: {
-                    total: amount, // Use the dynamic amount from the user
+                    total: amount,
                     currency: 'USD',
                 },
-                description: `Payment for ${user.first_name}'s item`, // Dynamic description based on user
+                description: `Tax return payment for ${user.first_name}`,
             }],
         };
 
         paypal.payment.create(paymentData, (error, payment) => {
             if (error) {
-                res.status(500).json({ error: `Failed to create payment: ${error.message}` });
+                res.status(500).json({ error: `Failed to create tax return payment: ${error.message}` });
             } else {
                 const approvalUrl = payment.links.find(link => link.rel === 'approval_url').href;
                 res.json({ approvalUrl });
@@ -57,8 +57,8 @@ const createPayment = async (req, res) => {
     }
 };
 
-// Execute the payment
-const executePayment = async (req, res) => {
+// Execute the tax return payment
+const executeTaxReturnPayment = async (req, res) => {
     try {
         const { paymentId, payerId } = req.body;
 
@@ -68,7 +68,7 @@ const executePayment = async (req, res) => {
 
         paypal.payment.execute(paymentId, executeData, (error, payment) => {
             if (error) {
-                res.status(500).json({ error: `Failed to execute payment: ${error.message}` });
+                res.status(500).json({ error: `Failed to execute tax return payment: ${error.message}` });
             } else {
                 res.json({ payment });
             }
@@ -80,6 +80,6 @@ const executePayment = async (req, res) => {
 };
 
 module.exports = {
-    createPayment,
-    executePayment
+    createTaxReturnPayment,
+    executeTaxReturnPayment
 };

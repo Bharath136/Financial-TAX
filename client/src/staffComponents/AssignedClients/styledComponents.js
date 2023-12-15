@@ -7,10 +7,9 @@ export const ClientListContainer = styled.div`
     width: 100%;
     margin: auto;
     margin-top: 10vh;
-    overflow-y: auto;
     padding: 1rem;
     background-color: var(--main-background);
-    height: 90vh;
+    height: 88vh;
 `
 
 export const H1 = styled.h1`

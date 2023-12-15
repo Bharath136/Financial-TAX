@@ -3,10 +3,9 @@ import axios from 'axios';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
 import domain from '../../domain/domain';
-import { ClientListContainer, H1, MainContainer, NoClientContainer, Table, TableContainer, Td, Th, ViewButton } from './styledComponents';
+import { ClientListContainer, H1, NoClientContainer, Table, TableContainer, Td, Th, ViewButton } from './styledComponents';
 import noClient from '../../Assets/no-customers.jpg'
 import SweetLoading from '../../SweetLoading/SweetLoading';
-import Footer from '../../components/Footer/footer';
 import { useNavigate } from 'react-router-dom';
 
 const apiStatusConstants = {
@@ -39,7 +38,7 @@ const AssignedClientList = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                if (assignedClientsResponse.status) {
+                if (assignedClientsResponse.status === 200) {
                     setApiStatus(apiStatusConstants.success);
                     const filteredClients = assignedClientsResponse.data.filter(client => client.staff_id === currentUser.user_id);
                     setMyClients(filteredClients);
@@ -51,8 +50,7 @@ const AssignedClientList = () => {
         };
 
         getAllAssignedClients();
-    }, [token]); // Only token is a valid dependency here
-
+    }, [token, navigate]);
 
     const handleEditClick = clientId => {
         setIsEditModalOpen(!isEditModalOpen);
@@ -63,6 +61,37 @@ const AssignedClientList = () => {
         setIsEditModalOpen(false);
     };
 
+    const renderClients = () => (
+        <TableContainer className='shadow'>
+            <Table>
+                <thead>
+                    <tr>
+                        <Th>ID</Th>
+                        <Th>Name</Th>
+                        <Th>Email</Th>
+                        <Th>Phone</Th>
+                        <Th>Actions</Th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {myClients.map(client => (
+                        <tr key={client.user_id}>
+                            <Td>{client.user_id}</Td>
+                            <Td>{client.first_name}</Td>
+                            <Td>{client.email_address}</Td>
+                            <Td>{client.contact_number}</Td>
+                            <Td>
+                                <ViewButton onClick={() => handleEditClick(client.user_id)}>
+                                    View Profile
+                                </ViewButton>
+                            </Td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        </TableContainer>
+    );
+
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
@@ -70,36 +99,7 @@ const AssignedClientList = () => {
             case apiStatusConstants.inProgress:
                 return <SweetLoading />;
             case apiStatusConstants.success:
-                return (
-                    <TableContainer className='shadow'>
-                        <Table>
-                            <thead>
-                                <tr>
-                                    <Th>ID</Th>
-                                    <Th>Name</Th>
-                                    <Th>Email</Th>
-                                    <Th>Phone</Th>
-                                    <Th>Actions</Th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {myClients.map(client => (
-                                    <tr key={client.user_id}>
-                                        <Td>{client.user_id}</Td>
-                                        <Td>{client.first_name}</Td>
-                                        <Td>{client.email_address}</Td>
-                                        <Td>{client.contact_number}</Td>
-                                        <Td>
-                                            <ViewButton onClick={() => handleEditClick(client.user_id)}>
-                                                View Profile
-                                            </ViewButton>
-                                        </Td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </TableContainer>
-                );
+                return renderClients();
             default:
                 return null;
         }
@@ -108,17 +108,16 @@ const AssignedClientList = () => {
     return (
         <div className='d-flex'>
             <Sidebar />
-                <ClientListContainer>
-                    <H1>Clients</H1>
-                    {myClients.length > 0 ? renderComponents() :
-                        <NoClientContainer>
-                            <img src={noClient} alt='img' className='img-fluid' />
-                            <H1>No Clients Assigned</H1>
-                            <p>Oops! It seems there are no clients assigned to you.</p>
-                        </NoClientContainer>
-                    }
-                </ClientListContainer>
-
+            <ClientListContainer>
+                <H1>Clients</H1>
+                {myClients.length > 0 ? renderComponents() :
+                    <NoClientContainer>
+                        <img src={noClient} alt='img' className='img-fluid' />
+                        <H1>No Clients Assigned</H1>
+                        <p>Oops! It seems there are no clients assigned to you.</p>
+                    </NoClientContainer>
+                }
+            </ClientListContainer>
             <EditModal
                 isOpen={isEditModalOpen}
                 profileId={profileId}

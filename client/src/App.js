@@ -46,7 +46,8 @@ function App() {
     };
     setShowNav(true)
     showAlert(popup);
-    localStorage.clear();
+    localStorage.removeItem('customerJwtToken')
+    localStorage.removeItem('currentUser')
     setCurrentToken('');
   };
 

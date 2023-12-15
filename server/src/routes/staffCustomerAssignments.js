@@ -2,24 +2,28 @@ const express = require('express');
 const { authenticate } = require('../middlewares/middleware');
 const router = express.Router();
 
-const { getAssignments,
+const {
+    getAssignments,
     createAssignment,
     updateAssignment,
     deleteAssignment,
     getAssignmentById,
-    getStaffAssignments } = require('../controllers/staffCustomerAssignments')
+    getStaffAssignments
+} = require('../controllers/staffCustomerAssignments');
 
-router.get('/',authenticate(['ADMIN','STAFF']), getAssignments)
+// Get all assignments (accessible by ADMIN and STAFF)
+router.get('/', authenticate(['ADMIN', 'STAFF']), getAssignments);
 
-router.get('/staff/:id', authenticate(['STAFF', 'ADMIN']), getStaffAssignments)
+// Get assignments for a specific staff member (accessible by STAFF and ADMIN)
+router.get('/staff/:id', authenticate(['STAFF', 'ADMIN']), getStaffAssignments);
 
-router.post('/assign', authenticate(['ADMIN']), createAssignment)
+// Create a new assignment (accessible by ADMIN)
+router.post('/assign', authenticate(['ADMIN']), createAssignment);
 
+// Routes for a specific assignment by ID
 router.route('/:id')
-    .get(authenticate(['STAFF', 'ADMIN']), getAssignmentById)
-    .put(authenticate(['ADMIN']), updateAssignment)
-    .delete(authenticate(['ADMIN']),deleteAssignment)
+    .get(authenticate(['STAFF', 'ADMIN']), getAssignmentById) // Get assignment by ID (accessible by STAFF and ADMIN)
+    .put(authenticate(['ADMIN']), updateAssignment) // Update assignment by ID (accessible by ADMIN)
+    .delete(authenticate(['ADMIN']), deleteAssignment); // Delete assignment by ID (accessible by ADMIN)
 
-
-
-module.exports = router
+module.exports = router;

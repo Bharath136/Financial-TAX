@@ -1,12 +1,46 @@
-const client = require('../database/connection')
+const client = require('../database/connection');
 const path = require('path');
 const fs = require('fs');
 
-// Create customer new tax comment
+// Create a new tax return document
 const createTaxReturnDocument = async (req, res, next) => {
     try {
+        // Check if the tax_return_documents table exists, create it if not
+        const checkTableQuery = `
+            SELECT EXISTS (
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_name = 'tax_return_documents'
+            ) AS table_exists;
+        `;
+        const tableCheckResult = await client.query(checkTableQuery);
+
+        if (!tableCheckResult.rows[0].table_exists) {
+            // Table doesn't exist, create it
+            const createTableQuery = `
+                CREATE TABLE tax_return_documents (
+                    taxreturn_id SERIAL PRIMARY KEY,
+                    customer_id INT,
+                    staff_id INT,
+                    payment_amount NUMERIC,
+                    payment_status VARCHAR(50),
+                    document_path VARCHAR(255),
+                    financial_year INT,
+                    document_name VARCHAR(255),
+                    document_type VARCHAR(50),
+                    review_status VARCHAR(50),
+                    created_by VARCHAR(255),
+                    updated_by VARCHAR(255),
+                    created_on TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                    updated_on TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+                );
+            `;
+            await client.query(createTableQuery);
+        }
+
+        // Continue with document creation logic
         if (!req.file) {
-            return res.status(400).send({
+            return res.status(400).json({
                 status: false,
                 data: "File Not Found :(",
             });
@@ -22,8 +56,6 @@ const createTaxReturnDocument = async (req, res, next) => {
             staff_id,
             payment_amount,
             financial_year,
-            financial_quarter,
-            financial_month,
             document_name,
             document_type
         } = req.body;
@@ -34,32 +66,30 @@ const createTaxReturnDocument = async (req, res, next) => {
             if (resultUser.rows.length === 0) {
                 return res.status(404).json({ error: 'User not found.' });
             }
-            const document_path = fileInfo.path
+            const document_path = fileInfo.path;
             const updated_by = `${resultUser.rows[0].first_name} ${resultUser.rows[0].last_name}`;
 
-            const payment_status = 'Pending'
+            const payment_status = 'Pending';
 
             const documentQuery = `
-            INSERT INTO tax_return_documents(
-                customer_id,
-                staff_id,
-                payment_amount,
-                payment_status,
-                document_path,
-                financial_year,
-                financial_quarter,
-                financial_month,
-                document_name,
-                document_type,
-                review_status,
-                created_by,
-                updated_by,
-                created_on,
-                updated_on
-            )
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-            RETURNING taxreturn_id
-        `;
+                INSERT INTO tax_return_documents(
+                    customer_id,
+                    staff_id,
+                    payment_amount,
+                    payment_status,
+                    document_path,
+                    financial_year,
+                    document_name,
+                    document_type,
+                    review_status,
+                    created_by,
+                    updated_by,
+                    created_on,
+                    updated_on
+                )
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                RETURNING taxreturn_id
+            `;
 
             const review_status = 'Pending';
 
@@ -70,13 +100,11 @@ const createTaxReturnDocument = async (req, res, next) => {
                 payment_status,
                 document_path,
                 financial_year,
-                financial_quarter,
-                financial_month,
                 document_name,
                 document_type,
                 review_status,
                 updated_by,
-                updated_by,  
+                updated_by,
                 new Date(),
                 new Date(),
             ];
@@ -93,12 +121,16 @@ const createTaxReturnDocument = async (req, res, next) => {
     }
 };
 
-const UPLOADS_DIR = path.join(__dirname, '../..')
+// Directory where uploaded files are stored
+const UPLOADS_DIR = path.join(__dirname, '../..');
+
+// Download a document
 const downloadDocument = async (req, res) => {
     const documentId = req.params.id;
+
     // Fetch document details from the database based on the documentId
     const getDocumentQuery = 'SELECT * FROM tax_return_documents WHERE taxreturn_id = $1';
-    
+
     const documentResult = await client.query(getDocumentQuery, [documentId]);
 
     if (documentResult.rows.length === 0) {
@@ -124,23 +156,19 @@ const downloadDocument = async (req, res) => {
     }
 };
 
-
-
-// Get customer all comments
+// Get all documents for a customer
 const getCustomerAllDocuments = async (req, res) => {
     try {
-        const documentsQuery = 'SELECT * FROM tax_return_documents'
-        const result = await client.query(documentsQuery)
-        res.status(200).json({ documents: result.rows })
+        const documentsQuery = 'SELECT * FROM tax_return_documents';
+        const result = await client.query(documentsQuery);
+        res.status(200).json({ documents: result.rows });
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ error: 'Error documents' })
+        console.log(error);
+        res.status(500).json({ error: 'Error retrieving documents' });
     }
+};
 
-}
-
-
-// PUT /tax-return-documents/:taxreturn_id
+// Update a tax return document
 const updateTaxreturnDocument = async (req, res) => {
     try {
         const id = req.params.id;
@@ -149,17 +177,15 @@ const updateTaxreturnDocument = async (req, res) => {
             staff_id,
             document_path,
             financial_year,
-            financial_month,
-            financial_quarter,
             review_status,
             updated_by,
             payment_status,
             payment_amount
         } = req.body;
 
-        const result = await pool.query(
-            'UPDATE tax_return_documents SET customer_id = $1, staff_id = $2, document_path = $3, financial_year = $4, financial_month = $5, financial_quarter = $6, review_status = $7, updated_by = $8, payment_status = $9, payment_amount = $10 updated_on = CURRENT_TIMESTAMP WHERE taxreturn_id = $11 RETURNING *',
-            [customer_id, staff_id, document_path, financial_year, financial_month, financial_quarter, review_status, updated_by, payment_status, payment_amount, id]
+        const result = await client.query(
+            'UPDATE tax_return_documents SET customer_id = $1, staff_id = $2, document_path = $3, financial_year = $4, review_status = $5, updated_by = $6, payment_status = $7, payment_amount = $8, updated_on = CURRENT_TIMESTAMP WHERE taxreturn_id = $9 RETURNING *',
+            [customer_id, staff_id, document_path, financial_year, review_status, updated_by, payment_status, payment_amount, id]
         );
 
         if (result.rows.length === 0) {
@@ -173,10 +199,9 @@ const updateTaxreturnDocument = async (req, res) => {
     }
 };
 
-
 module.exports = {
     createTaxReturnDocument,
     downloadDocument,
     updateTaxreturnDocument,
     getCustomerAllDocuments
-}
+};

@@ -141,19 +141,39 @@ const Staff = () => {
 
     // Handle staff deletion
     const onDeleteStaff = async (id) => {
-        setApiStatus(apiStatusConstants.inProgress)
+        setApiStatus(apiStatusConstants.inProgress);
+
         try {
             await axios.delete(`${domain.domain}/user/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setApiStatus(apiStatusConstants.success)
+
+            setApiStatus(apiStatusConstants.success);
             fetchData();
+
+            // Show success alert
+            showAlert({
+                title: 'Staff Deleted Successfully!',
+                text: 'The staff member has been deleted successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+            });
         } catch (error) {
             console.error('Error Deleting staff:', error);
+            setApiStatus(apiStatusConstants.failure);
+
+            // Show error alert
+            showAlert({
+                title: 'Error Deleting Staff',
+                text: 'An error occurred while deleting the staff member.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
         }
     };
+
 
     // Action options for staff
     const actionOptions = [
@@ -273,6 +293,7 @@ const Staff = () => {
                                     <Th>Name</Th>
                                     <Th>Email</Th>
                                     <Th>Phone</Th>
+                                    <Th>Secret Code</Th>
                                     <Th>Assign Clients</Th>
                                     <Th>Assigned Clients</Th>
                                     <Th>Actions</Th>
@@ -285,6 +306,7 @@ const Staff = () => {
                                         <Td>{staff.first_name}</Td>
                                         <Td>{staff.email_address}</Td>
                                         <Td>{staff.contact_number}</Td>
+                                        <Td>{staff.secret_code}</Td>
                                         <Td>
                                             <div className='d-flex'>
                                                 <Select

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './register.css'
 import { NavLink, useNavigate } from 'react-router-dom';
 import domain from '../../domain/domain';
@@ -15,6 +15,19 @@ const Register = () => {
         { label: 'Password', name: 'password', type: 'password', placeholder: 'Password' },
     ];
 
+    const randomColors = [
+        '#42A5F5',
+        '#FF7043',
+        '#4CAF50',
+        '#FFEB3B',
+        '#9C27B0',
+        '#EF5350',
+        '#00E676',
+        '#FFC107',
+        '#03A9F4',
+        '#FF5722'
+    ];
+
     const [formData, setFormData] = useState({});
 
     const navigate = useNavigate()
@@ -22,6 +35,10 @@ const Register = () => {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    function getRandomColor() {
+        return randomColors[Math.floor(Math.random() * 10)];
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -36,12 +53,15 @@ const Register = () => {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
+                localStorage.setItem('profileBg',getRandomColor())
 
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
     };
+
+
 
     return (
         <div className='register-main-container'>

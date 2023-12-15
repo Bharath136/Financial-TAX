@@ -3,7 +3,7 @@ import domain from '../../domain/domain';
 import axios from 'axios';
 import showAlert from '../../SweetAlert/sweetalert';
 import Sidebar from '../../userComponents/SideBar/sidebar';
-import { AddStaffButton, AddStaffCard, AddStaffContainer, AddStaffHeader, ButtonContainer, FormContainer, FormLabel, MarginBottom2 } from './styledComponents.js';
+import { AddStaffButton, AddStaffCard, AddStaffContainer, AddStaffHeader, ButtonContainer, FormLabel, MarginBottom2 } from './styledComponents.js';
 import { useNavigate } from 'react-router-dom';
 
 const AddStaff = () => {
@@ -12,7 +12,8 @@ const AddStaff = () => {
         { label: 'Last Name', name: 'last_name', type: 'text', placeholder: 'Last Name' },
         { label: 'Email', name: 'email_address', type: 'email', placeholder: 'Email' },
         { label: 'Phone', name: 'contact_number', type: 'umber', placeholder: 'Mobile Number' },
-        { label: 'Password', name: 'password', type: 'password', placeholder: 'Password' },
+        { label: 'Password', name: 'password', type: 'text', placeholder: 'Password' },
+        { label: 'Secret Code', name: 'secret_code', type: 'text', placeholder: 'Secret Code' },
     ];
 
     const [formData, setFormData] = useState({});
@@ -37,7 +38,6 @@ const AddStaff = () => {
         const currentUser = JSON.parse(localStorage.getItem('currentUser'))
 
         const newFormData = {...formData, created_by:currentUser.first_name}
-
         try {
             await axios.post(`${domain.domain}/user/add-staff`, newFormData, {
                 headers: {
@@ -69,7 +69,7 @@ const AddStaff = () => {
                                 <div className='col-12 col-md-6' key={index}>
                                     <MarginBottom2 >
                                         <FormLabel htmlFor={field.name} >
-                                            {field.label}
+                                            <strong>{field.label}</strong>
                                         </FormLabel>
                                         <input
                                             type={field.type}

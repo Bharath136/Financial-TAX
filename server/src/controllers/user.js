@@ -12,27 +12,48 @@ const userRegistration = async (req, res) => {
         password,
     } = req.body;
 
-
     try {
-        // Check if the user already exists
-        const existingUserQuery = 'SELECT user_id FROM user_logins WHERE email_address = $1';
-        const existingUserResult = await client.query(existingUserQuery, [email_address]);
+        // Check if the user_logins table exists, create it if not
+        const checkTableQuery = `
+            SELECT EXISTS (
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_name = 'user_logins'
+            ) AS table_exists;
+        `;
+        const tableCheckResult = await client.query(checkTableQuery);
 
-        if (existingUserResult.rows.length > 0) {
-            // A user with the same email address already exists
-            return res.status(400).json({ success: false, error: 'User with this email address already exists' });
+        if (!tableCheckResult.rows[0].table_exists) {
+            // Table doesn't exist, create it
+            const createTableQuery = `
+                CREATE TABLE user_logins (
+                    user_id SERIAL PRIMARY KEY,
+                    first_name VARCHAR(255),
+                    last_name VARCHAR(255),
+                    email_address VARCHAR(255) UNIQUE,
+                    contact_number VARCHAR(20),
+                    password VARCHAR(255),
+                    role VARCHAR(50),
+                    status VARCHAR(50),
+                    created_on TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                    updated_on TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                    created_by VARCHAR(255),
+                    updated_by VARCHAR(255)
+                );
+            `;
+            await client.query(createTableQuery);
         }
 
+        // Hash the password before saving it in the database
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
-
-        // Hash the password before saving it in the database
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const role = 'CUSTOMER'
-        const status = 'ACTIVE'
+        // Continue with user registration logic
+        const role = 'CUSTOMER';
+        const status = 'ACTIVE';
 
-        const query = `
+        const insertUserQuery = `
             INSERT INTO user_logins (first_name, last_name, email_address, contact_number, password, role, status, created_on, updated_on, created_by, updated_by)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             RETURNING user_id
@@ -51,16 +72,14 @@ const userRegistration = async (req, res) => {
             first_name
         ];
 
-        const result = await client.query(query, values);
+        const result = await client.query(insertUserQuery, values);
         res.status(201).json({ success: true, message: 'User registered successfully', user_id: result.rows[0].user_id });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, error: 'Error registering user' });
     }
 };
-
-
-
 
 // Adding Staff by admin
 const addStaff = async (req, res) => {
@@ -71,6 +90,7 @@ const addStaff = async (req, res) => {
         email_address,
         contact_number,
         password,
+        secret_code
     } = req.body;
 
     try {
@@ -83,18 +103,18 @@ const addStaff = async (req, res) => {
             return res.status(400).json({ success: false, error: 'User with this email address already exists' });
         }
 
+        // Hash the password before saving it in the database
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
-
-        // Hash the password before saving it in the database
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const role = 'STAFF'
-        const status = 'ACTIVE'
+        // Continue with staff addition logic
+        const role = 'STAFF';
+        const status = 'ACTIVE';
 
         const query = `
-            INSERT INTO user_logins (first_name, last_name, email_address, contact_number, password, role, status, created_on, updated_on, created_by, updated_by)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            INSERT INTO user_logins (first_name, last_name, email_address, contact_number, password, role, status, created_on, updated_on, created_by, updated_by, secret_code)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
             RETURNING user_id
         `;
         const values = [
@@ -108,13 +128,14 @@ const addStaff = async (req, res) => {
             new Date(),
             new Date(),
             created_by,
-            created_by
+            created_by,
+            secret_code
         ];
 
         const result = await client.query(query, values);
-        res.status(201).json({ success: true, message: 'Staff Added successfully', user_id: result.rows[0].user_id });
+        res.status(201).json({ success: true, message: 'Staff added successfully', user_id: result.rows[0].user_id });
     } catch (error) {
-        console.error(error);
+        console.error('Error adding staff:', error);
         res.status(500).json({ success: false, error: 'Error adding staff' });
     }
 };
@@ -152,7 +173,6 @@ const userLogin = async (req, res) => {
     }
 };
 
-
 // Get all users
 const getAllUsers = async (req, res) => {
     try {
@@ -163,9 +183,7 @@ const getAllUsers = async (req, res) => {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-}
-
-
+};
 
 // Get a user by id
 const getUserById = async (req, res) => {
@@ -184,8 +202,7 @@ const getUserById = async (req, res) => {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-}
-
+};
 
 // Update user by user_id
 const updateUserById = async (req, res) => {
@@ -229,48 +246,74 @@ const updateUserById = async (req, res) => {
             SET
             ${queryParams.join(', ')}
             WHERE
-            user_id = $1;
+            user_id = $1
+            RETURNING *;  -- Fetch the updated user details
         `;
 
         const result = await client.query(query, [id]);
 
-        res.send('User updated successfully');
+        // Check if any rows were affected
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const updatedUser = result.rows[0];
+
+        res.json({ success: true, message: 'User updated successfully', user: updatedUser });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
 // Delete a user by user_id
 const deleteUserById = async (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
 
     try {
         const userQuery = 'SELECT * FROM user_logins WHERE user_id = $1';
-        const userResult = await client.query(userQuery, [id])
+        const userResult = await client.query(userQuery, [id]);
 
         if (userResult.rows.length === 0) {
-            return res.status(404).json({ error: 'User not found' })
+            return res.status(404).json({ error: 'User not found' });
         }
 
         const deleteQuery = 'DELETE FROM user_logins WHERE user_id = $1';
-        await client.query(deleteQuery, [id])
-        res.status(204).json({ message: 'User deleted successfully' })
+        await client.query(deleteQuery, [id]);
+        res.status(204).json({ message: 'User deleted successfully' });
 
     } catch (error) {
-        console.log('Error', error)
-        res.status(500).json({ error: 'Internal Server Error' })
+        console.log('Error', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-}
-
+};
 
 const getAllStaffAssignedClients = async (req, res) => {
     try {
         const result = await client.query(`
-      SELECT *
-      FROM user_logins ul
-      JOIN staff_customer_assignments sca ON ul.user_id = sca.client_id
-    `);
+            SELECT *
+            FROM user_logins ul
+            JOIN staff_customer_assignments sca ON ul.user_id = sca.client_id
+        `);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error executing SQL query:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const getAllStaffUnAssignedClients = async (req, res) => {
+    try {
+        const result = await client.query(`
+            SELECT *
+            FROM user_logins ul
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM staff_customer_assignments sca
+                WHERE ul.user_id = sca.client_id
+            )
+        `);
 
         res.json(result.rows);
     } catch (error) {
@@ -285,6 +328,74 @@ function validatePassword(password) {
     return password.length >= 8;
 }
 
+
+// Get users by journey status
+const getUsersByCurrentStatus = async (req, res) => {
+    const currentStep = req.params.current_step;
+
+    try {
+        const query = `
+            SELECT *
+            FROM user_logins
+            WHERE current_step = $1;
+        `;
+        const result = await client.query(query, [currentStep]);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+// Update current_step by user_id
+const updateCurrentStatusById = async (req, res) => {
+    const id = req.params.id;
+    const { current_step, user } = req.body;
+
+    const updated_by = user.first_name
+    const updated_on = new Date().toISOString(); // Convert to ISO format
+
+    try {
+        const query = `
+            UPDATE user_logins
+            SET current_step = $1, updated_by = $2, updated_on = $3
+            WHERE user_id = $4;
+        `;
+        await client.query(query, [current_step, updated_by, updated_on, id]);
+
+        res.send('Journey Status updated successfully');
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+// Update staff_team by user_id
+const updateStaffTeamById = async (req, res) => {
+    const id = req.params.id;
+    const { staff_team, user } = req.body;
+
+    const updated_by = user.first_name + " " + user.last_name;
+    const updated_on = new Date(); // Get the current date
+
+    try {
+        const query = `
+            UPDATE user_logins
+            SET staff_team = $1, updated_by = $2, updated_on = $3
+            WHERE user_id = $4;
+        `;
+        const result = await client.query(query, [staff_team, updated_by, updated_on, id]);
+
+        res.send('Staff team updated successfully');
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -293,5 +404,9 @@ module.exports = {
     userRegistration,
     userLogin,
     addStaff,
-    getAllStaffAssignedClients
+    getAllStaffAssignedClients,
+    getUsersByCurrentStatus,
+    updateCurrentStatusById,
+    updateStaffTeamById,
+    getAllStaffUnAssignedClients
 };

@@ -105,3 +105,14 @@
     color: var(--accent-background);
     font-weight: 600;
 }
+
+.profile{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    color: aliceblue;
+    margin-right: 10px;
+}

@@ -7,15 +7,13 @@ const createCustomerNewTaxComment = async (req, res) => {
         staff_id,
         document_id,
         comment,
-        financial_year,
-        financial_quarter,
-        financial_month,
+        financial_year
     } = req.body;
 
     try {
         const commentQuery = `
-            INSERT INTO customer_tax_comments (customer_id, staff_id, document_id, comment, financial_year, financial_quarter, financial_month, comment_status, created_on, updated_on)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            INSERT INTO customer_tax_comments (customer_id, staff_id, document_id, comment, financial_year, comment_status, created_on, updated_on)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING document_id;
         `;
         const values = [
@@ -26,7 +24,7 @@ const createCustomerNewTaxComment = async (req, res) => {
             financial_year,
             financial_quarter,
             financial_month,
-            'Pending', // Assign 'Pending' to comment_status
+            'Pending',
             new Date(),
             new Date(),
         ];

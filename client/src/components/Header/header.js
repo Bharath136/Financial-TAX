@@ -13,15 +13,21 @@ const Header = ({ setShowNav }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(null)
     const [activeUser, setActiveUser] = useState('')
+    const [profile, setProfile] = useState('');
+    const [randomColor, setRandomColor] = useState('#03A9F4')
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    const profileBg = localStorage.getItem('profileBg')
 
     useEffect(() => {
         if (currentUser) {
             const fullName = `${currentUser.first_name} ${currentUser.last_name}`
             setActiveUser(fullName)
+            setProfile(currentUser.first_name[0]+currentUser.last_name[0])
             setShowNav(false)
+            setRandomColor(profileBg);
         }
-    }, [currentUser, setShowNav]);
+    }, [currentUser, setShowNav, profileBg]);
 
     const handleEditClick = (id) => {
         setProfileId(id)
@@ -40,7 +46,7 @@ const Header = ({ setShowNav }) => {
         { id: '2', to: '/about', text: 'ABOUT US' },
         { id: '3', to: '/services', text: 'SERVICES' },
         { id: '4', to: '/contact', text: 'CONTACT' },
-    ];
+    ];    
 
     return (
         <AuthContext.Consumer>
@@ -71,16 +77,29 @@ const Header = ({ setShowNav }) => {
                                         </div>
                                     </NavLink>
                                 </Navbar.Brand>
-                                {token && <button className='d-block d-md-none three-dots align-items-center' title='Close' onClick={toggleSidebar}>
+                                {token && 
+                                <div className='d-block d-md-none d-flex align-items-center ml-2'>
+                                    <div className='d-flex align-items-center' onClick={() => handleEditClick(currentUser.user_id)} style={{ cursor: 'pointer' }}>
+                                        <div className='profile' style={{ backgroundColor: `${randomColor}` }}>
+                                            <label>{profile}</label>
+                                        </div>
+                                        <label style={{ cursor: 'pointer' }}><strong>{activeUser}</strong></label>
+                                    </div>
+                                <button className='d-block d-md-none three-dots align-items-center' title='Close' onClick={toggleSidebar}>
+                                    
                                     <BsThreeDotsVertical size={24} />
-                                </button>}
+                                </button>
+                                </div>}
                                 {token && <Navbar.Toggle aria-controls="navbarSupportedContent" id="navbar-toggle" className='d-none d-md-block d-lg-none' />}
                                 {token && <Navbar.Collapse id="navbarSupportedContent" >
                                     <div className="w-100 d-flex align-items-start justify-content-lg-end">
                                         <Nav className="ml-auto">
                                             <div className='d-flex align-items-center' onClick={() => handleEditClick(currentUser.user_id)} style={{ cursor: 'pointer' }}>
-                                                <img src='https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small/default-avatar-profile-icon-of-social-media-user-vector.jpg' width={40} className='profile-image' alt='profile' />
-                                                <label style={{ cursor: 'pointer' }}>{activeUser}</label>
+                                                {/* <img src='https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small/default-avatar-profile-icon-of-social-media-user-vector.jpg' width={40} className='profile-image' alt='profile' /> */}
+                                                <div className='profile' style={{backgroundColor:`${randomColor}`}}>
+                                                    <label>{profile}</label>
+                                                </div>
+                                                <label style={{ cursor: 'pointer' }}><strong>{activeUser}</strong></label>
                                             </div>
                                         </Nav>
                                     </div>

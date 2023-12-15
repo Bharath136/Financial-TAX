@@ -61,6 +61,7 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
                     text: 'Your profile has been updated.',
                     confirmButtonText: 'OK',
                 });
+                localStorage.setItem('currentUser', JSON.stringify(response.data.user))
                 isOpen();
             }
         } catch (error) {

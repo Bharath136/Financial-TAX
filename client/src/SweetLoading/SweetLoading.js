@@ -1,7 +1,6 @@
 import React from 'react';
 
-const SweetLoading = ({ loading, setLoading }) => {
-
+const SweetLoading = () => {
 
     return (
        <div style={{height:'60vh'}} className='d-flex align-items-center justify-content-center'>

@@ -12,6 +12,7 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 // Icons
 import { BiSearch } from 'react-icons/bi';
 import { MdFilterList } from 'react-icons/md';
+import { MdDelete } from "react-icons/md";
 
 // Assets
 import noClient from '../../Assets/no-customers.jpg'
@@ -32,6 +33,7 @@ import {
     Th,
     ViewButton,
 } from './styledComponents';
+import showAlert from '../../SweetAlert/sweetalert';
 
 
 // Constants for API status
@@ -166,6 +168,41 @@ const Clients = () => {
         }
     };
 
+    // Handle staff deletion
+    const onDeleteClient = async (id) => {
+        setApiStatus(apiStatusConstants.inProgress);
+
+        try {
+            await axios.delete(`${domain.domain}/user/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            setApiStatus(apiStatusConstants.success);
+            // fetchData();
+
+            // Show success alert
+            showAlert({
+                title: 'Client Deleted Successfully!',
+                text: 'The client has been deleted successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+            });
+        } catch (error) {
+            console.error('Error Deleting Client:', error);
+            setApiStatus(apiStatusConstants.failure);
+
+            // Show error alert
+            showAlert({
+                title: 'Error Deleting Client',
+                text: 'An error occurred while deleting the client member.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+        }
+    };
+
 
 
     // Render different components based on API status
@@ -210,6 +247,7 @@ const Clients = () => {
                                 <Th>Email</Th>
                                 <Th>Phone</Th>
                                 <Th>Actions</Th>
+                                <Th>Delete</Th>
                             </tr>
                         </thead>
                         <tbody>
@@ -228,6 +266,13 @@ const Clients = () => {
                                         >
                                             View
                                         </ViewButton>
+                                    </Td>
+                                    <Td>
+                                        <div className='d-flex align-items-center justify-content-center'>
+                                            <button type='button' onClick={() => onDeleteClient(client.user_id)} className='btn text-danger'>
+                                                <MdDelete size={25} />
+                                            </button>
+                                        </div>
                                     </Td>
                                 </tr>
                             ))}

@@ -41,6 +41,18 @@ const apiStatusConstants = {
     inProgress: 'IN_PROGRESS',
 };
 
+
+const dataOrder = [
+    'Scheduling',
+    'TaxInterview',
+    'Documents',
+    'TaxPreparation',
+    'Review',
+    'Payments',
+    'ClientReview',
+    'Filing',
+];
+
 const Staff = () => {
     // State variables
     const [staffList, setStaff] = useState([]);
@@ -270,6 +282,53 @@ const Staff = () => {
         }
     }
 
+    const [team, setTeam] = useState('')
+
+    const handleTeamChange = (team) => {
+        setTeam(team.value)
+    }
+
+    const handleStaffTeamUpdate = async (id) => {
+        const data = {
+            staff_team: team, // Assuming 'team' is defined somewhere in your code
+            user: user // Assuming 'user' is defined somewhere in your code
+        };
+
+        try {
+            setApiStatus(apiStatusConstants.inProgress);
+
+            const response = await axios.put(
+                `${domain.domain}/user/add/staff-team/${id}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (response) {
+                setApiStatus(apiStatusConstants.success); // Set success status if the request was successful
+                showAlert({
+                    title: 'Staff Team Updated Successfully!',
+                    text: 'The staff team has been successfully updated.',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            setApiStatus(apiStatusConstants.error); // Set error status if there's an error
+            showAlert({
+                title: 'Error',
+                text: 'There was an error updating the staff team. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            });
+        }
+    };
+
+
     // Render different components based on API status
     const renderComponents = () => {
         switch (apiStatus) {
@@ -294,24 +353,45 @@ const Staff = () => {
                         <Table>
                             <thead>
                                 <tr>
-                                    <Th>ID</Th>
+                                    {/* <Th>ID</Th> */}
                                     <Th>Name</Th>
                                     <Th>Email</Th>
-                                    <Th>Phone</Th>
-                                    <Th>Secret Code</Th>
+                                    {/* <Th>Phone</Th> */}
+                                    {/* <Th>Secret Code</Th> */}
+                                    <Th>Select Team</Th>
                                     <Th>Assign Clients</Th>
                                     <Th>Assigned Clients</Th>
-                                    <Th>Actions</Th>
+                                    <Th>Profile Actions</Th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredStaff.map((staff) => (
                                     <tr key={staff.user_id}>
-                                        <Td>{staff.user_id}</Td>
+                                        {/* <Td>{staff.user_id}</Td> */}
                                         <Td>{staff.first_name}</Td>
                                         <Td>{staff.email_address}</Td>
-                                        <Td>{staff.contact_number}</Td>
-                                        <Td>{staff.secret_code}</Td>
+                                        {/* <Td>{staff.contact_number}</Td> */}
+                                        {/* <Td>{staff.secret_code}</Td> */}
+                                        <Td>
+                                            <div className='d-flex'>
+                                                <Select
+                                                    options={dataOrder.map((team) => ({
+                                                        value: team,
+                                                        label: team,
+                                                        data: team,
+                                                    }))}
+                                                    onChange={handleTeamChange}
+                                                    placeholder="Select Team"
+                                                    required
+                                                />
+                                                <ExecuteButton
+                                                    onClick={() => handleStaffTeamUpdate(staff.user_id)}
+                                                    disabled={!team.trim()}
+                                                >
+                                                    Add
+                                                </ExecuteButton>
+                                            </div>
+                                        </Td>
                                         <Td>
                                             <div className='d-flex'>
                                                 <Select
@@ -325,9 +405,11 @@ const Staff = () => {
                                                 />
                                                 <ExecuteButton
                                                     onClick={() => handleAssign(staff.user_id)}
+                                                    disabled={!selectedAction || !selectedAction.trim()}
                                                 >
                                                     Assign
                                                 </ExecuteButton>
+
                                             </div>
                                         </Td>
                                         <Td>

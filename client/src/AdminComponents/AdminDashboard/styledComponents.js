@@ -13,7 +13,9 @@ export const CurrentUser = styled.span`
     color: #007bff;
 `
 
-export const DashboardContainer = styled.div`
+export const DashboardContainer = styled.ul`
+  list-style-type:none;
+  padding:0px;
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
@@ -21,13 +23,14 @@ export const DashboardContainer = styled.div`
 `;
 
 export const SectionCard = styled.div`
-  flex: 0 0 calc(100% - 20px);
+  ${'' /* flex: 0 0 calc(100% - 20px); */}
   margin-bottom: 20px;
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   cursor: pointer;
+  width:100%;
 
   @media (min-width: 768px) {
     flex: 0 0 calc(50% - 20px);
@@ -42,12 +45,16 @@ export const SectionCard = styled.div`
 export const DashboardItem = styled.div`
   display: flex;
   align-items: center;
-  text-align: center;
+  justify-content:center;
+  gap:40px;
   padding: 20px;
 
   .dashboard-icon {
     margin-bottom: 10px;
     color: ${(props) => props.iconColor || '#333'};
+  }
+  @media screen and (max-width:768px){
+    width:100%;
   }
 `;
 

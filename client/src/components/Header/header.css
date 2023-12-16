@@ -3,7 +3,8 @@
 .navbar-container{
     padding: 10px 40px;
     min-height: 10vh;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
+    border-bottom: 1px solid var(--border);
 }
 
 .navbar-image {

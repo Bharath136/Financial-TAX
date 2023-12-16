@@ -4,11 +4,12 @@ const router = express.Router();
 
 const {
     getAssignments,
-    createAssignment,
+    assignClientToStaff,
     updateAssignment,
     deleteAssignment,
     getAssignmentById,
-    getStaffAssignments
+    getStaffAssignments,
+    autoAssignClients
 } = require('../controllers/staffCustomerAssignments');
 
 // Get all assignments (accessible by ADMIN and STAFF)
@@ -18,7 +19,9 @@ router.get('/', authenticate(['ADMIN', 'STAFF']), getAssignments);
 router.get('/staff/:id', authenticate(['STAFF', 'ADMIN']), getStaffAssignments);
 
 // Create a new assignment (accessible by ADMIN)
-router.post('/assign', authenticate(['ADMIN']), createAssignment);
+router.post('/assign', authenticate(['ADMIN']), assignClientToStaff);
+
+router.post('/auto-assign-clients', autoAssignClients)
 
 // Routes for a specific assignment by ID
 router.route('/:id')

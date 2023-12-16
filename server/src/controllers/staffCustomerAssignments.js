@@ -3,7 +3,7 @@ const client = require('../database/connection')
 
 
 // Create Assignment
-const createAssignment = async (req, res) => {
+const assignClientToStaff = async (req, res) => {
     const { staff_id, client_id } = req.body;
     const created_at = new Date().toISOString();
     try {
@@ -92,11 +92,74 @@ const getAssignmentById = async (req, res) => {
 };
 
 
+// Endpoint to assign clients to staff members
+const autoAssignClients = async (req, res) => {
+    try {
+        // Find available staff
+        const availableStaffQuery = `
+            SELECT user_id
+            FROM user_logins
+            WHERE role = 'STAFF' AND staff_team = 'Scheduling';  -- Assuming staff_team is the criteria
+        `;
+        const availableStaffResult = await client.query(availableStaffQuery);
+
+        // Find unassigned clients
+        const unassignedClientsQuery = `
+            SELECT user_id
+            FROM user_logins
+            WHERE role = 'CUSTOMER' AND current_step IS NULL;  -- Assuming current_step is the criteria
+        `;
+        const unassignedClientsResult = await client.query(unassignedClientsQuery);
+
+        const availableStaffIds = availableStaffResult.rows.map((row) => row.user_id);
+        const unassignedClientIds = unassignedClientsResult.rows.map((row) => row.user_id);
+
+        // Assign clients to staff members
+        let staffIndex = 0;
+
+        for (const clientId of unassignedClientIds) {
+            const staffId = availableStaffIds[staffIndex];
+
+            // Get the current timestamp
+            const createdAt = new Date();
+
+            // Insert assignment into staff_customer_assignments table
+            const insertAssignmentQuery = `
+                INSERT INTO staff_customer_assignments (staff_id, client_id, created_at)
+                VALUES ($1, $2, $3)
+            `;
+            await client.query(insertAssignmentQuery, [staffId, clientId, createdAt]);
+
+            staffIndex = (staffIndex + 1) % availableStaffIds.length;
+        }
+
+
+        // // Update current_step to 'Scheduling' for the assigned clients
+        const updateClientStepQuery = `
+            UPDATE user_logins
+            SET current_step = 'Scheduling'
+            WHERE user_id = ANY($1)
+        `;
+
+        // Use unassignedClientIds directly as an array
+        await client.query(updateClientStepQuery, [unassignedClientIds]);
+
+
+        res.status(200).json({ success: true, message: 'Clients assigned and updated successfully' });
+    } catch (error) {
+        console.error('Error assigning clients:', error);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+};
+
+
+
 module.exports = {
     getAssignments,
-    createAssignment,
+    assignClientToStaff,
     updateAssignment,
     deleteAssignment,
     getAssignmentById,
-    getStaffAssignments
+    getStaffAssignments,
+    autoAssignClients
 }

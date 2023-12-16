@@ -73,7 +73,6 @@ export const TableContainer = styled.div`
     background-color: var(--background-white);
     padding: 20px;
     overflow: auto;
-    min-height:50vh;
 `
 
 export const Table = styled.table`

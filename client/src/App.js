@@ -27,6 +27,8 @@ import AddStaff from './AdminComponents/AddStaff/addStaff';
 import UploadDocument from './userComponents/UploadDocument/uploadDocument';
 import AdminDashboard from './AdminComponents/AdminDashboard/adminDashboard';
 import ForgotPassword from './components/ForgotPassword/forgotPassword';
+import FailurePage from './userComponents/FailurePage/FailurePage';
+import SuccessPage from './userComponents/SuccessPage/successPage';
 
 function App() {
   const [currentToken, setCurrentToken] = useState('');
@@ -75,6 +77,8 @@ function App() {
     { path: '/comment-to-document', element: <ProtectedRoute Component={CommentDocument} /> },
     { path: '/tax-return-review', element: <ProtectedRoute Component={MySummary} /> },
     { path: '/make-payment', element: <ProtectedRoute Component={MakePayment} /> },
+    { path: '/tax-return/success', element: <ProtectedRoute Component={SuccessPage}/>},
+    { path: '/tax-return/failure/:id', element: <ProtectedRoute Component={FailurePage} /> },
 
 
     //Staff components

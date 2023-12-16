@@ -52,7 +52,6 @@ const Header = ({ setShowNav }) => {
         <AuthContext.Consumer>
             {(value) => {
                 const { changeSidebar, showNav } = value;
-
                 const toggleSidebar = () => {
                     changeSidebar();
                 };
@@ -61,7 +60,7 @@ const Header = ({ setShowNav }) => {
                     <div>
                         <Navbar
                             fixed="top"
-                            className="border navbar-container"
+                            className="navbar-container"
                             expand="lg"
                             variant="light"
                           

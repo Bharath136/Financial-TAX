@@ -22,15 +22,14 @@ const apiStatusConstants = {
 };
 
 const dataOrder = [
-    'Schedule Interview',
-    'Tax Interview',
+    'Scheduling',
+    'TaxInterview',
     'Documents',
-    'Tax Preparation',
+    'TaxPreparation',
     'Review',
     'Payments',
-    'Client Review',
+    'ClientReview',
     'Filing',
-    'Client Interview',
 ];
 
 const AdminDashboard = () => {
@@ -57,8 +56,10 @@ const AdminDashboard = () => {
             const allClients = await axios.get(`${domain.domain}/user/`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setAllClients(allClients)
-            
+
+            const filteredClients = allClients.data.filter(client => client.role === 'CUSTOMER');
+           
+            setAllClients(filteredClients)
 
             if (assignedClientsResponse.status === 200) {
                 setApiStatus(apiStatusConstants.success);
@@ -88,29 +89,32 @@ const AdminDashboard = () => {
 
     }, [navigate]);
 
-    const colorMapping = {
-        'Schedule Interview': '#42A5F5',
-        'Tax Interview': '#FF7043',
-        Documents: '#4CAF50',
-        'Tax Preparation': '#FFEB3B',
-        Review: '#9C27B0',
-        Payments: '#EF5350',
-        'Client Review': '#00E676',
-        Filing: '#FFC107',
-        'Client Interview': '#FF9800',
+    const calculateTotal = (clients, step) => {
+        const total = clients.filter((client) => client.current_step === step)
+        return total.length
     };
 
-    const calculateTotal = (clients, step) => {};
+    const colorMapping = {
+        Scheduling: '#42A5F5',
+        TaxInterview: '#FF7043',
+        Documents: '#4CAF50',
+        TaxPreparation: '#FFEB3B',
+        Review: '#9C27B0',
+        Payments: '#EF5350',
+        ClientReview: '#00E676',
+        Filing: '#FFC107',
+        ClientInterview: '#FF9800',
+    };
 
     const data = {
-        'Schedule Interview': { total: calculateTotal(allClients, 'Schedule interview'), description: 'Schedule interview', icon: <FaCalendarAlt size={50} />, color: colorMapping['Schedule Interview'] },
-        'Tax Interview': { total: calculateTotal(allClients, 'Complete tax interviews'), description: 'Complete tax interviews', icon: <FaClock size={50} />, color: colorMapping['Tax Interview'] },
-        Documents: { total: calculateTotal(allClients, 'Submit required documents'), description: 'Submit required documents', icon: <FaFileAlt size={50} />, color: colorMapping.Documents },
-        'Tax Preparation': { total: calculateTotal(allClients, 'Prepare tax documents'), description: 'Prepare tax documents', icon: <FaTasks size={50} />, color: colorMapping['Tax Preparation'] },
-        Review: { total: calculateTotal(allClients, 'Review tax information'), description: 'Review tax information', icon: <FaCheck size={50} />, color: colorMapping.Review },
-        Payments: { total: calculateTotal(allClients, 'View payment details'), description: 'View payment details', icon: <FaMoneyBillAlt size={50} />, color: colorMapping.Payments },
-        'Client Review': { total: calculateTotal(allClients, 'Review client feedback'), description: 'Review client feedback', icon: <FaClipboardList size={50} />, color: colorMapping['Client Review'] },
-        Filing: { total: calculateTotal(allClients, 'Submit tax filings'), description: 'Submit tax filings', icon: <FaFileAlt size={50} />, color: colorMapping.Filing },
+        Scheduling: { description: "Scheduling",total: calculateTotal(allClients, 'Scheduling'), icon: <FaCalendarAlt size={50} />, color: colorMapping["Scheduling"] },
+        TaxInterview: { description: 'TaxInterview', total: calculateTotal(allClients, 'TaxInterview'), icon: <FaClock size={50} />, color: colorMapping['TaxInterview'] },
+        Documents: { description: 'Documents', total: calculateTotal(allClients, 'Documents'), icon: <FaFileAlt size={50} />, color: colorMapping.Documents },
+        TaxPreparation: { description: 'TaxPreparation', total: calculateTotal(allClients, 'TaxPreparation'), icon: <FaTasks size={50} />, color: colorMapping['TaxPreparation'] },
+        Review: { description: 'Review', total: calculateTotal(allClients, 'Review'), icon: <FaCheck size={50} />, color: colorMapping.Review },
+        Payments: { description: 'Payments', total: calculateTotal(allClients, 'Payments'), icon: <FaMoneyBillAlt size={50} />, color: colorMapping.Payments },
+        ClientReview: { description: 'ClientReview', total: calculateTotal(allClients, 'ClientReview'), icon: <FaClipboardList size={50} />, color: colorMapping['ClientReview'] },
+        Filing: { description: 'Filing', total: calculateTotal(allClients, 'Filing'), icon: <FaFileAlt size={50} />, color: colorMapping.Filing },
     };
 
 
@@ -162,18 +166,39 @@ const AdminDashboard = () => {
         }));
         setApiStatus(apiStatusConstants.inProgress);
 
-        const response = await axios.post(`${domain.domain}/user/current-step/${selectedClient.user_id}`, { current_step: selectedStep, user }, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-        if (response) {
+        try {
+            const response = await axios.post(
+                `${domain.domain}/user/current-step/${selectedClient.user_id}`,
+                { current_step: selectedStep, user },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            if (response.data) {
+                showAlert({
+                    title: 'Client Moved Successfully!',
+                    text: 'The client has been moved to the further step.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+                getAllAssignedClients();
+                setApiStatus(apiStatusConstants.success);
+            } else {
+                // Handle the case where the response does not contain data
+                console.error('Unexpected response format:', response);
+                setApiStatus(apiStatusConstants.error);
+            }
+        } catch (error) {
+            // Handle request errors
+            console.error('Error:', error);
             showAlert({
-                title: 'Client Moved Successfully!',
-                text: 'The client has been moved to further step.',
-                icon: 'success',
+                title: 'Error',
+                text: 'An error occurred while moving the client. Please try again.',
+                icon: 'error',
                 confirmButtonText: 'OK',
             });
-            getAllAssignedClients();
-            setApiStatus(apiStatusConstants.success);
+            setApiStatus(apiStatusConstants.error);
         }
 
         // Reset available steps after the move
@@ -193,7 +218,7 @@ const AdminDashboard = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-
+                getAllAssignedClients()
                 setApiStatus(apiStatusConstants.success);
 
                 // Show success alert
@@ -217,6 +242,36 @@ const AdminDashboard = () => {
             }
         }
     };
+
+    const onAssignAll = async () => {
+        try {
+            setApiStatus(apiStatusConstants.inProgress)
+            const res = await axios.post(`${domain.domain}/staff-customer-assignments/auto-assign-clients`,{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
+            if(res){
+                showAlert({
+                    title: 'Clients Assigned Successfully!',
+                    text: 'The clients have been successfully assigned to staff members.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+                setApiStatus(apiStatusConstants.success)
+            }
+        } catch (error) {
+            console.error('Error assigning clients:', error);
+            showAlert({
+                title: 'Error Assigning Clients',
+                text: 'An error occurred while assigning clients.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+            setApiStatus(apiStatusConstants.failure)
+        }
+    };
+
 
     const renderClients = () => (
         <TableContainer className='shadow'>
@@ -323,8 +378,7 @@ const AdminDashboard = () => {
                                 <div className="dashboard-icon" style={{ color: value.color }}>{value.icon}</div>
                                 <div className="dashboard-text">
                                     <h4>{value.description}</h4>
-                                    {/* <p><strong>Total: </strong>{value.total.length}</p> */}
-                                   
+                                    <p><strong>Total: </strong>{value.total}</p>
                                 </div>
                             </DashboardItem>
                         </SectionCard>
@@ -332,7 +386,9 @@ const AdminDashboard = () => {
                 </DashboardContainer>
                 {selectedCard ? (
                     <DetailsContainer id="details-container">
-                        <h3>{data[selectedCard].description} Details:</h3>
+                        <div className=' p-3'>
+                            <H1>{data[selectedCard].description} Details:</H1>
+                        </div>
                         {selectedCard === 'Client Interview' && (
                             <p>
                                 This step involves scheduling and conducting a client interview to gather necessary information for further processing.
@@ -351,12 +407,15 @@ const AdminDashboard = () => {
                         )}
                     </DetailsContainer>
                 ) :
-                    <>
+                    <div className='bg-light'>
                         {clients.length > 0 && <div>
-                            <H1>Unassigned customers</H1>
+                            <div className='d-flex align-items-center justify-content-between bg-dark p-3'>
+                                <H1>Unassigned clients</H1>
+                                <button className='btn bg-success text-light' onClick={onAssignAll} title='Auto assign all to Scheduling'>Assign All</button>
+                            </div>
                             {renderComponents()}
                         </div>}
-                    </>
+                    </div>
                 }
             </MainContainer>
         </div>

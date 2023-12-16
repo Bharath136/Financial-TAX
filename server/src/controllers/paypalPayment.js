@@ -22,8 +22,8 @@ const createTaxReturnPayment = async (req, res) => {
                 payment_method: 'paypal',
             },
             redirect_urls: {
-                return_url: 'http://localhost:3000/tax-return/success', // Replace with your success URL for tax return
-                cancel_url: 'http://localhost:3000/tax-return/cancel', // Replace with your cancel URL for tax return
+                return_url: 'http://localhost:3000/tax-return/success',
+                cancel_url: 'http://localhost:3000/tax-return/cancel',
             },
             transactions: [{
                 item_list: {
@@ -61,6 +61,7 @@ const createTaxReturnPayment = async (req, res) => {
 const executeTaxReturnPayment = async (req, res) => {
     try {
         const { paymentId, payerId } = req.body;
+        console.log(req.body)
 
         const executeData = {
             payer_id: payerId,

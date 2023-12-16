@@ -395,27 +395,94 @@ const getUsersByCurrentStatus = async (req, res) => {
 
 
 // Update current_step by user_id
+// const updateCurrentStatusById = async (req, res) => {
+//     const id = req.params.id;
+//     const { current_step, user } = req.body;
+
+//     const updated_by = user.first_name
+//     const updated_on = new Date().toISOString(); // Convert to ISO format
+
+//     try {
+//         const query = `
+//             UPDATE user_logins
+//             SET current_step = $1, updated_by = $2, updated_on = $3
+//             WHERE user_id = $4;
+//         `;
+//         await client.query(query, [current_step, updated_by, updated_on, id]);
+
+//         res.send('Current Step updated successfully');
+//     } catch (error) {
+//         console.error('Error:', error);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+// };
+
+
+
+
+//  -------------  |||  --------------  //
+
+
+const assignClientToStaff = async ({ staff_id, client_id }) => {
+    const created_at = new Date().toISOString();
+    try {
+        const { rows } = await client.query('INSERT INTO staff_customer_assignments (staff_id, client_id, created_at) VALUES ($1, $2, $3) RETURNING *', [staff_id, client_id, created_at]);
+        // res.json(rows[0]);
+    } catch (error) {
+        console.error('Error creating assignment:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
 const updateCurrentStatusById = async (req, res) => {
-    const id = req.params.id;
+    const client_id = req.params.id;
     const { current_step, user } = req.body;
 
-    const updated_by = user.first_name
+    const updated_by = user.first_name;
     const updated_on = new Date().toISOString(); // Convert to ISO format
 
     try {
-        const query = `
-            UPDATE user_logins
-            SET current_step = $1, updated_by = $2, updated_on = $3
-            WHERE user_id = $4;
-        `;
-        await client.query(query, [current_step, updated_by, updated_on, id]);
+        if (current_step) {
+            // Check if any staff with the specified team is available
+            const availableStaffQuery = `
+                SELECT user_id
+                FROM user_logins
+                WHERE role = 'STAFF' AND staff_team = $1;
+            `;
+            const availableStaffResult = await client.query(availableStaffQuery, [current_step]);
+            const availableStaffIds = availableStaffResult.rows.map((row) => row.user_id);
 
-        res.send('Journey Status updated successfully');
+            if (availableStaffIds.length > 0) {
+                // Your logic to assign the specific client to an available staff member here
+                const staffId = availableStaffIds.pop(); // Assign to the next available staff
+
+                // Call your function to assign the client to staff here
+                await assignClientToStaff(staffId, client_id);
+
+                // Update the current step
+                const updateQuery = `
+                    UPDATE user_logins
+                    SET current_step = $1, updated_by = $2, updated_on = $3
+                    WHERE user_id = $4;
+                `;
+                await client.query(updateQuery, [current_step, updated_by, updated_on, client_id]);
+
+                res.send('Current Step updated successfully');
+            } else {
+                res.status(400).json({ error: `No staff with the ${current_step} team is available` });
+            }
+        } else {
+            res.send('Current Step updated successfully');
+        }
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+
+//  -------------  |||  --------------  //
+
 
 
 // Update staff_team by user_id
@@ -441,6 +508,8 @@ const updateStaffTeamById = async (req, res) => {
     }
 };
 
+
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -454,5 +523,5 @@ module.exports = {
     updateCurrentStatusById,
     updateStaffTeamById,
     getAllStaffUnAssignedClients,
-    editPassword
+    editPassword,
 };

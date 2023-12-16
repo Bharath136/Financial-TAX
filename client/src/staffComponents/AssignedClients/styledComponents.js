@@ -9,7 +9,7 @@ export const ClientListContainer = styled.div`
     margin-top: 10vh;
     padding: 1rem;
     background-color: var(--main-background);
-    height: 88vh;
+    height: 90vh;
 `
 
 export const H1 = styled.h1`

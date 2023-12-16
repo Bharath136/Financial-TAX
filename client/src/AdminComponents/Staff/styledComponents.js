@@ -7,6 +7,7 @@ export const StaffListContainer = styled.div`
     padding: 1rem;
     background-color: var(--main-background);
     height: 90vh;
+    overflow:auto;
 `
 
 export const H1 = styled.h1`
@@ -71,12 +72,14 @@ export const FilterSelect = styled.select`
 export const TableContainer = styled.div`
     background-color: var(--background-white);
     padding: 20px;
-    min-height:50vh;
+    padding-bottom:100px;
+    min-height:76vh;
+    overflow:auto;
 `
 
 export const Container = styled.div`
     width:100%;
-    overflow-x:auto;
+
 `
 
 export const Table = styled.table`

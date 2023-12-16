@@ -23,13 +23,13 @@ const apiStatusConstants = {
 };
 
 const dataOrder = [
-    'Schedule Interview',
-    'Tax Interview',
+    "Scheduling",
+    'TaxInterview',
     'Documents',
-    'Tax Preparation',
+    'TaxPreparation',
     'Review',
     'Payments',
-    'Client Review',
+    'ClientReview',
     'Filing',
     'Client Interview',
 ];
@@ -46,6 +46,7 @@ const StaffDashboard = () => {
     const [customerResponse, setCustomerResponse] = useState('');
     const [showSecretCodePopup, setShowSecretCodePopup] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [allClients, setAllClients] = useState([]);
 
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const token = localStorage.getItem('customerJwtToken');
@@ -56,6 +57,14 @@ const StaffDashboard = () => {
             const assignedClientsResponse = await axios.get(`${domain.domain}/user/staff-clients`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+
+            const allClients = await axios.get(`${domain.domain}/user/`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const filteredClients = allClients.data.filter(client => client.role === 'CUSTOMER');
+
+            setAllClients(filteredClients)
 
             if (assignedClientsResponse.status === 200) {
                 setApiStatus(apiStatusConstants.success);
@@ -83,27 +92,32 @@ const StaffDashboard = () => {
 
     }, [navigate]);
 
+    const calculateTotal = (clients, step) => {
+        const total = clients.filter((client) => client.current_step === step)
+        return total.length
+    };
+
     const colorMapping = {
-        'Schedule Interview': '#42A5F5',
-        'Tax Interview': '#FF7043',
+        Scheduling: '#42A5F5',
+        TaxInterview: '#FF7043',
         Documents: '#4CAF50',
-        'Tax Preparation': '#FFEB3B',
+        TaxPreparation: '#FFEB3B',
         Review: '#9C27B0',
         Payments: '#EF5350',
-        'Client Review': '#00E676',
+        ClientReview: '#00E676',
         Filing: '#FFC107',
-        'Client Interview': '#FF9800',
+        ClientInterview: '#FF9800',
     };
 
     const data = {
-        'Schedule Interview': { description: 'Schedule interview', icon: <FaCalendarAlt size={50} />, color: colorMapping['Schedule Interview'] },
-        'Tax Interview': { description: 'Complete tax interviews', icon: <FaClock size={50} />, color: colorMapping['Tax Interview'] },
-        Documents: { description: 'Submit required documents', icon: <FaFileAlt size={50} />, color: colorMapping.Documents },
-        'Tax Preparation': { description: 'Prepare tax documents', icon: <FaTasks size={50} />, color: colorMapping['Tax Preparation'] },
-        Review: { description: 'Review tax information', icon: <FaCheck size={50} />, color: colorMapping.Review },
-        Payments: { description: 'View payment details', icon: <FaMoneyBillAlt size={50} />, color: colorMapping.Payments },
-        'Client Review': { description: 'Review client feedback', icon: <FaClipboardList size={50} />, color: colorMapping['Client Review'] },
-        Filing: { description: 'Submit tax filings', icon: <FaFileAlt size={50} />, color: colorMapping.Filing },
+        Scheduling: { description: "Scheduling", total: calculateTotal(allClients, 'Scheduling'), icon: <FaCalendarAlt size={50} />, color: colorMapping["Scheduling"] },
+        TaxInterview: { description: 'TaxInterview', total: calculateTotal(allClients, 'TaxInterview'), icon: <FaClock size={50} />, color: colorMapping['TaxInterview'] },
+        Documents: { description: 'Documents', total: calculateTotal(allClients, 'Documents'), icon: <FaFileAlt size={50} />, color: colorMapping.Documents },
+        TaxPreparation: { description: 'TaxPreparation', total: calculateTotal(allClients, 'TaxPreparation'), icon: <FaTasks size={50} />, color: colorMapping['TaxPreparation'] },
+        Review: { description: 'Review', total: calculateTotal(allClients, 'Review'), icon: <FaCheck size={50} />, color: colorMapping.Review },
+        Payments: { description: 'Payments', total: calculateTotal(allClients, 'Payments'), icon: <FaMoneyBillAlt size={50} />, color: colorMapping.Payments },
+        ClientReview: { description: 'ClientReview', total: calculateTotal(allClients, 'ClientReview'), icon: <FaClipboardList size={50} />, color: colorMapping['ClientReview'] },
+        Filing: { description: 'Filing', total: calculateTotal(allClients, 'Filing'), icon: <FaFileAlt size={50} />, color: colorMapping.Filing },
     };
 
 
@@ -148,36 +162,60 @@ const StaffDashboard = () => {
         setSelectedClient(client);
 
         const currentStepIndex = dataOrder.indexOf(client.current_step);
-        const stepsAfterCurrent = dataOrder.slice(currentStepIndex + 1);
+        const stepsAfterCurrent = dataOrder.slice(currentStepIndex + 1, currentStepIndex + 2);
 
         setAvailableSteps(stepsAfterCurrent);
     };
 
-    const handleStepChange = async (selectedStep) => {
-        // Update the local state to reflect the change
-        setSelectedClient((prevClient) => ({
-            ...prevClient,
-            current_step: selectedStep,
-        }));
-        setApiStatus(apiStatusConstants.inProgress);
-
-        const response = await axios.post(`${domain.domain}/user/current-step/${selectedClient.user_id}`, { current_step: selectedStep, user }, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-        if (response) {
-            showAlert({
-                title: 'Client Moved Successfully!',
-                text: 'The client has been moved to further step.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-            });
-            getAllAssignedClients();
-            setApiStatus(apiStatusConstants.success);
-        }
-
-        // Reset available steps after the move
-        setAvailableSteps([]);
+    const message = (title, text, icon) => {
+        showAlert({
+            title: title || 'Error',
+            text: text || 'Failed to move the client.',
+            icon: icon || 'error',
+            confirmButtonText: 'OK',
+        });
     };
+
+    const handleStepChange = async (selectedStep) => {
+        try {
+            // Update the local state to reflect the change
+            setSelectedClient((prevClient) => ({
+                ...prevClient,
+                current_step: selectedStep,
+            }));
+            setApiStatus(apiStatusConstants.inProgress);
+
+            const response = await axios.post(
+                `${domain.domain}/user/current-step/${selectedClient.user_id}`,
+                { current_step: selectedStep, user },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            if (response.data.success) {
+                message('Client Moved Successfully!', 'The client has been moved to the next step.', 'success');
+                getAllAssignedClients();
+                setApiStatus(apiStatusConstants.success);
+                setIsAuthenticated(false);
+            } 
+            if(response.data.error) {
+                // Handle API error
+                message('Error', response.data.error, 'error');
+                setApiStatus(apiStatusConstants.failure);
+                setIsAuthenticated(false);
+            }
+
+            // Reset available steps after the move
+            setAvailableSteps([]);
+        } catch (error) {
+            console.error('Error moving client:', error);
+            setIsAuthenticated(false);
+            message('Error', 'An unexpected error occurred while moving the client.', 'error');
+            setApiStatus(apiStatusConstants.failure);
+        }
+    };
+
 
     const onChangeCustomerResponse = (e) => {
         setCustomerResponse(e.target.value)
@@ -342,6 +380,7 @@ const StaffDashboard = () => {
                                 <div className="dashboard-icon" style={{ color: value.color }}>{value.icon}</div>
                                 <div className="dashboard-text">
                                     <h4>{value.description}</h4>
+                                    <p><strong>Total: </strong>{value.total}</p>
                                 </div>
                             </DashboardItem>
                         </SectionCard>
@@ -355,6 +394,8 @@ const StaffDashboard = () => {
                         handleOpenClick={() => setShowSecretCodePopup(true)}
                         onChangeAccess={onChangeAccess}
                         myCode={user.secret_code}
+                        team={user.staff_team}
+                        selectedCard={selectedCard}
                     />
                 )}
 

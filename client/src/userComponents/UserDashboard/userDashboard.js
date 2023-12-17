@@ -71,7 +71,7 @@ const UserDashboard = () => {
         <div className='d-flex'>
             <Sidebar />
             <DashboardContainer>
-                <H1>Welcome <CurrentUser className="current-user">{currentUser}</CurrentUser></H1>
+                <H1>Welcome <CurrentUser className="current-user">{currentUser}</CurrentUser> <span style={{ fontSize: '16px' }}>(Current Step: {user.current_step ? user.current_step : "Null"})</span></H1>
                 <div className="intro-section">
                     <IntroText>
                         Embark on a hassle-free tax filing journey with us. Our user-friendly platform ensures a seamless experience

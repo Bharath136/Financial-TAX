@@ -94,63 +94,79 @@ const getAssignmentById = async (req, res) => {
 
 // Endpoint to assign clients to staff members
 const autoAssignClients = async (req, res) => {
+
     try {
-        // Find available staff
+        // Find available staff for a specific team
+        const team = req.body.team || 'Scheduling'; // Default to 'Scheduling' if not provided
         const availableStaffQuery = `
             SELECT user_id
             FROM user_logins
-            WHERE role = 'STAFF' AND staff_team = 'Scheduling';  -- Assuming staff_team is the criteria
+            WHERE role = 'STAFF' AND staff_team = $1
         `;
-        const availableStaffResult = await client.query(availableStaffQuery);
+        const availableStaffResult = await client.query(availableStaffQuery, [team]);
 
         // Find unassigned clients
         const unassignedClientsQuery = `
             SELECT user_id
             FROM user_logins
-            WHERE role = 'CUSTOMER' AND current_step IS NULL;  -- Assuming current_step is the criteria
+            WHERE role = 'CUSTOMER' AND current_step IS NULL
         `;
         const unassignedClientsResult = await client.query(unassignedClientsQuery);
 
         const availableStaffIds = availableStaffResult.rows.map((row) => row.user_id);
         const unassignedClientIds = unassignedClientsResult.rows.map((row) => row.user_id);
 
-        // Assign clients to staff members
-        let staffIndex = 0;
-
-        for (const clientId of unassignedClientIds) {
-            const staffId = availableStaffIds[staffIndex];
-
-            // Get the current timestamp
-            const createdAt = new Date();
-
-            // Insert assignment into staff_customer_assignments table
-            const insertAssignmentQuery = `
-                INSERT INTO staff_customer_assignments (staff_id, client_id, created_at)
-                VALUES ($1, $2, $3)
-            `;
-            await client.query(insertAssignmentQuery, [staffId, clientId, createdAt]);
-
-            staffIndex = (staffIndex + 1) % availableStaffIds.length;
+        // Check if there are available staff and unassigned clients
+        if (availableStaffIds.length === 0 || unassignedClientIds.length === 0) {
+            return res.status(404).json({ success: false, error: 'No available staff or unassigned clients found.' });
         }
 
+        // Start a database transaction
+        await client.query('BEGIN');
 
-        // // Update current_step to 'Scheduling' for the assigned clients
-        const updateClientStepQuery = `
-            UPDATE user_logins
-            SET current_step = 'Scheduling'
-            WHERE user_id = ANY($1)
-        `;
+        try {
+            // Assign clients to staff members
+            let staffIndex = 0;
 
-        // Use unassignedClientIds directly as an array
-        await client.query(updateClientStepQuery, [unassignedClientIds]);
+            for (const clientId of unassignedClientIds) {
+                const staffId = availableStaffIds[staffIndex];
 
+                // Get the current timestamp
+                const createdAt = new Date();
 
-        res.status(200).json({ success: true, message: 'Clients assigned and updated successfully' });
+                // Insert assignment into staff_customer_assignments table
+                const insertAssignmentQuery = `
+                    INSERT INTO staff_customer_assignments (staff_id, client_id, created_at)
+                    VALUES ($1, $2, $3)
+                `;
+                await client.query(insertAssignmentQuery, [staffId, clientId, createdAt]);
+
+                staffIndex = (staffIndex + 1) % availableStaffIds.length;
+            }
+
+            // Update current_step to the assigned team for the assigned clients
+            const updateClientStepQuery = `
+                UPDATE user_logins
+                SET current_step = $1
+                WHERE user_id = ANY($2)
+            `;
+            await client.query(updateClientStepQuery, [team, unassignedClientIds]);
+
+            // Commit the transaction
+            await client.query('COMMIT');
+
+            res.status(200).json({ success: true, message: 'Clients assigned and updated successfully' });
+        } catch (error) {
+            // Rollback the transaction in case of an error
+            await client.query('ROLLBACK');
+            throw error; // Rethrow the error for the outer catch block to handle
+        }
     } catch (error) {
         console.error('Error assigning clients:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
-    }
+    } 
 };
+
 
 
 

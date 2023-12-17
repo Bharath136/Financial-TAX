@@ -7,8 +7,21 @@ import AuthContext from '../../AuthContext/AuthContext';
 import showAlert from '../../SweetAlert/sweetalert';
 import authImage from '../../Assets/loginbg.png'
 import EyeButton from '../EyeButton/EyeButton';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+
+
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
 
 const Login = ({ setShowNav }) => {
+
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+    
+
     const initialFormFields = [
         { label: 'Email', name: 'email_address', type: 'email', placeholder: 'Email' },
         { label: 'Password', name: 'password', type: 'password', placeholder: 'Password' },
@@ -33,7 +46,7 @@ const Login = ({ setShowNav }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setApiStatus(apiStatusConstants.inProgress);
         try {
             const response = await axios.post(`${domain.domain}/user/login`, formData);
             localStorage.setItem('customerJwtToken', response.data.token);
@@ -60,71 +73,95 @@ const Login = ({ setShowNav }) => {
                 confirmButtonText: 'OK',
                 cancelButtonText: 'Cancel'
             });
+            setApiStatus(apiStatusConstants.success);
         } catch (error) {
             setErrorMsg(error.response?.data?.message || 'An error occurred during login.');
             console.error('Error:', error);
+            setApiStatus(apiStatusConstants.failure);
         }
     };
 
-    return (
-        <AuthContext.Consumer>
-            {(value) => {
-                const { changeLogin } = value;
-                return (
-                    <div className="container login-container d-flex">
-                        <div className="login-card shadow text-start">
-                            <h2 className="login-header">Login</h2>
-                            <p className='signup-description mt-3'>Don't have an account yet? <NavLink className='link' to='/signup'> Sign Up</NavLink></p>
-                            <form onSubmit={handleSubmit} className='form-container'>
-                                {initialFormFields.map((field, index) => (
-                                    <div className="mb-2 d-flex flex-column" key={index}>
-                                        <div className="d-flex justify-content-between">
-                                            <label htmlFor={field.name} className="form-label text-dark m-0">
-                                                {field.label}
-                                            </label>
-                                            {field.name === 'password' && (
-                                                <Link to="/forgot-password" className="link">
-                                                    Forgot password?
-                                                </Link>
-                                            )}
-                                        </div>
-                                        <div className="input-group w-100 " style={{ border: '1px solid grey', borderRadius: '4px', }}>
-                                            <input
-                                                type={field.type}
-                                                className="form-control"
-                                                style={{ border: 'none', borderRadius: '4px', outline: 'none' }}
-                                                id={field.name}
-                                                placeholder={field.placeholder}
-                                                name={field.name}
-                                                value={formData[field.name] || ''}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                            {field.name === 'password' && (
-                                                <EyeButton
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    isShowPassword={showPassword}
+
+    const renderComponents = () => {
+        switch (apiStatus) {
+            case apiStatusConstants.inProgress:
+                return <div style={{ marginTop: '300px' }}><SweetLoading /></div>;
+            case apiStatusConstants.failure:
+                return renderLoginForm();
+            case apiStatusConstants.success:
+                return renderLoginForm();
+            default:
+                return renderLoginForm();
+        }
+    };
+
+    
+
+    const renderLoginForm = () => {
+        return (
+            <AuthContext.Consumer>
+                {(value) => {
+                    const { changeLogin } = value;
+                    return (
+                        <div className="container login-container d-flex">
+                            <div className="login-card shadow text-start">
+                                <h2 className="login-header">Login</h2>
+                                <p className='signup-description mt-3'>Don't have an account yet? <NavLink className='link' to='/signup'> Sign Up</NavLink></p>
+                                <form onSubmit={handleSubmit} className='form-container'>
+                                    {initialFormFields.map((field, index) => (
+                                        <div className="mb-2 d-flex flex-column" key={index}>
+                                            <div className="d-flex justify-content-between">
+                                                <label htmlFor={field.name} className="form-label text-dark m-0">
+                                                    {field.label}
+                                                </label>
+                                                {field.name === 'password' && (
+                                                    <Link to="/forgot-password" className="link">
+                                                        Forgot password?
+                                                    </Link>
+                                                )}
+                                            </div>
+                                            <div className="input-group w-100 " style={{ border: '1px solid grey', borderRadius: '4px', }}>
+                                                <input
+                                                    type={field.type === 'password' ? (showPassword ? 'text' : 'password') : field.type}
+                                                    className="form-control"
+                                                    style={{ border: 'none', borderRadius: '4px', outline: 'none' }}
+                                                    id={field.name}
+                                                    placeholder={field.placeholder}
+                                                    name={field.name}
+                                                    value={formData[field.name] || ''}
+                                                    onChange={handleChange}
+                                                    required
                                                 />
-                                            )}
+                                                {field.name === 'password' && (
+                                                    <EyeButton
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        isShowPassword={showPassword}
+                                                    />
+                                                )}
+                                            </div>
                                         </div>
+                                    ))}
+                                    <div className='d-flex align-items-center mt-3 mb-3'>
+                                        <input style={{ width: '15px', height: '15px' }} id='remember' type='checkbox' />
+                                        <label htmlFor='remember' style={{ marginLeft: '10px' }}>Remember me</label>
                                     </div>
-                                ))}
-                                <div className='d-flex align-items-center mt-3 mb-3'>
-                                    <input style={{ width: '15px', height: '15px' }} id='remember' type='checkbox' />
-                                    <label htmlFor='remember' style={{ marginLeft: '10px' }}>Remember me</label>
-                                </div>
-                                <button type="submit" onClick={changeLogin} className="login-button w-100 mt-2">
-                                    Login
-                                </button>
-                                {errorMsg && <p className='text-danger'>{errorMsg}</p>}
-                            </form>
+                                    <button type="submit" onClick={changeLogin} className="login-button w-100 mt-2">
+                                        Login
+                                    </button>
+                                    {errorMsg && <p className='text-danger'>{errorMsg}</p>}
+                                </form>
+                            </div>
+                            <img src={authImage} alt='loginImage' className='img-fluid d-none d-md-block' />
                         </div>
-                        <img src={authImage} alt='loginImage' className='img-fluid d-none d-md-block' />
-                    </div>
-                );
-            }}
-        </AuthContext.Consumer>
-    );
+                    );
+                }}
+            </AuthContext.Consumer>
+        );
+    }
+
+    return renderComponents();
 };
+
+    
 
 export default Login;

@@ -29,6 +29,7 @@ import AdminDashboard from './AdminComponents/AdminDashboard/adminDashboard';
 import ForgotPassword from './components/ForgotPassword/forgotPassword';
 import FailurePage from './userComponents/FailurePage/FailurePage';
 import SuccessPage from './userComponents/SuccessPage/successPage';
+import ContactView from './AdminComponents/Messages/message';
 
 function App() {
   const [currentToken, setCurrentToken] = useState('');
@@ -93,6 +94,7 @@ function App() {
     { path: '/admin-staff', element: <ProtectedRoute Component={Staff} /> },
     { path: '/admin-client-tax-documents', element: <ProtectedRoute Component={ClientTaxDocuments} /> },
     { path: '/admin-add-staff', element: <ProtectedRoute Component={AddStaff} /> },
+    { path: '/admin/user-contact/info', element: <ProtectedRoute Component={ContactView} /> },
 
     // Not Found router
     { path: "*", element: <NotFound /> }

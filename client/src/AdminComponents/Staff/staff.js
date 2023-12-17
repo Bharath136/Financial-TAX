@@ -14,6 +14,7 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 // Assets
 import noClient from '../../Assets/no-customers.jpg'
 import { BiSearch } from 'react-icons/bi';
+import { MdFilterList } from 'react-icons/md';
 
 // Styled Components
 import {
@@ -29,8 +30,11 @@ import {
     TableContainer,
     Td,
     Th,
-    NoClientContainer
+    NoClientContainer,
+    FilterSelect
 } from './styledComponents';
+import ClientTable from './clientsTable';
+import { ViewButton } from '../Clients/styledComponents';
 
 
 // Constants for API status
@@ -67,6 +71,7 @@ const Staff = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [unassignedClients, setUnassignedClients] = useState([]);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+    const [selectedFilter, setFilterType] = useState('');
     const token = localStorage.getItem('customerJwtToken');
 
     // Handle search term change
@@ -223,6 +228,7 @@ const Staff = () => {
                     break;
             }
         }
+        setSelectedAction()
     };
 
     // Get client label
@@ -316,6 +322,7 @@ const Staff = () => {
                     confirmButtonText: 'Ok',
                 });
             }
+            setTeam()
         } catch (error) {
             console.error(error);
             setApiStatus(apiStatusConstants.error); // Set error status if there's an error
@@ -325,7 +332,25 @@ const Staff = () => {
                 icon: 'error',
                 confirmButtonText: 'Ok',
             });
+            setTeam()
         }
+    };
+
+
+    // Handle filter change
+    const handleFilterChange = (filterType) => {
+        setFilterType(filterType);
+
+        let filteredData = [];
+
+        if (filterType === 'assigned') {
+            filteredData = staffList.filter((staff) => staff.staff_team !== '' && staff.staff_team !== null);
+        } else if (filterType === 'unassigned') {
+            filteredData = staffList.filter((staff) => staff.staff_team === '' || staff.staff_team === null);
+        } else {
+            filteredData = staffList;
+        }
+        setFilteredStaff(filteredData);
     };
 
 
@@ -348,8 +373,28 @@ const Staff = () => {
                             />
                             <SearchButton onClick={onSearch}><BiSearch size={25} /></SearchButton>
                         </SearchBarContainer>
+                        <div>
+                            <label htmlFor="filterDropdown">
+                                <MdFilterList size={20} />
+                            </label>
+                            <FilterSelect
+                                id="filterDropdown"
+                                value={selectedFilter}
+                                onChange={(e) => handleFilterChange(e.target.value)}
+                            >
+                                <option value="">All Staff</option>
+                                <option value="assigned">Assigned Staff</option>
+                                <option value="unassigned">Unassigned Staff</option>
+                            </FilterSelect>
+                        </div>
                     </ClientsHeaderContainer>
+                    <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize:'14px' }} className='p-3 mt-2'>
+                        <strong>Note: </strong>
+                        <lable>Make sure that selecting a team should be done only once. Changing it repeatedly may cause issues for your website.</lable>
+                    </div>
+
                     <Container>
+                        {filteredStaff.length > 0 ?
                         <Table>
                             <thead>
                                 <tr>
@@ -372,7 +417,7 @@ const Staff = () => {
                                         <Td>{staff.email_address}</Td>
                                         {/* <Td>{staff.contact_number}</Td> */}
                                         {/* <Td>{staff.secret_code}</Td> */}
-                                        <Td>
+                                        {staff.staff_team ? <Td>{staff.staff_team}</Td> : <Td>
                                             <div className='d-flex'>
                                                 <Select
                                                     options={dataOrder.map((team) => ({
@@ -386,12 +431,12 @@ const Staff = () => {
                                                 />
                                                 <ExecuteButton
                                                     onClick={() => handleStaffTeamUpdate(staff.user_id)}
-                                                    disabled={!team.trim()}
+                                                    disabled={!team}
                                                 >
                                                     Add
                                                 </ExecuteButton>
                                             </div>
-                                        </Td>
+                                        </Td>}
                                         <Td>
                                             <div className='d-flex'>
                                                 <Select
@@ -405,7 +450,7 @@ const Staff = () => {
                                                 />
                                                 <ExecuteButton
                                                     onClick={() => handleAssign(staff.user_id)}
-                                                    disabled={!selectedAction || !selectedAction.trim()}
+                                                    disabled={!selectedAction }
                                                 >
                                                     Assign
                                                 </ExecuteButton>
@@ -413,11 +458,11 @@ const Staff = () => {
                                             </div>
                                         </Td>
                                         <Td>
-                                            <ExecuteButton
+                                            <ViewButton
                                                 onClick={() => getAssignedClients(staff.user_id)}
                                             >
                                                 View
-                                            </ExecuteButton>
+                                            </ViewButton>
                                         </Td>
                                         <Td>
                                             <div className='d-flex'>
@@ -437,30 +482,18 @@ const Staff = () => {
                                 ))}
                             </tbody>
                         </Table>
+                        :
+                            <NoClientContainer>
+                                <img src={noClient} alt='img' className='img-fluid' />
+                                <H1>No Staff Available!</H1>
+                                <p>Oops! It seems there are no staff Added here.</p>
+                            </NoClientContainer>}
                     </Container>
 
                     {viewAssignedClients && selectedStaff && <p className='mt-5'>Staff Member: {selectedStaff}</p>}
-                    {viewAssignedClients && assignedClients.length > 0 && <Table >
-
-                        <thead>
-                            <tr>
-                                <Th>ID</Th>
-                                <Th>Name</Th>
-                                <Th>Email</Th>
-                                <Th>Phone</Th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {assignedClients.map((client) => (
-                                <tr key={client.user_id} >
-                                    <Td>{client.user_id}</Td>
-                                    <Td>{client.first_name}</Td>
-                                    <Td>{client.email_address}</Td>
-                                    <Td>{client.contact_number}</Td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>}
+                    
+                        <ClientTable assignedClients={assignedClients} viewAssignedClients={viewAssignedClients} selectedStaff={selectedStaff} />
+                    
                     {viewAssignedClients && assignedClients.length === 0 && <p>No Clients Assigned</p>}
                 </TableContainer>
             default:

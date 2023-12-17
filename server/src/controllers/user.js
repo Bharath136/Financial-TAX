@@ -423,16 +423,24 @@ const getUsersByCurrentStatus = async (req, res) => {
 //  -------------  |||  --------------  //
 
 
-const assignClientToStaff = async ({ staff_id, client_id }) => {
+const assignClientToStaff = async (staff_id, client_id) => {
     const created_at = new Date().toISOString();
     try {
+        // Delete existing assignment for the client
+        await client.query('DELETE FROM staff_customer_assignments WHERE client_id = $1', [client_id]);
+
+        // Insert a new assignment
         const { rows } = await client.query('INSERT INTO staff_customer_assignments (staff_id, client_id, created_at) VALUES ($1, $2, $3) RETURNING *', [staff_id, client_id, created_at]);
-        // res.json(rows[0]);
+
+        // Return the newly created assignment
+        return rows[0];
     } catch (error) {
         console.error('Error creating assignment:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        // You might want to throw an error or handle it appropriately
+        throw new Error('Internal Server Error');
     }
 };
+
 
 const updateCurrentStatusById = async (req, res) => {
     const client_id = req.params.id;
@@ -467,7 +475,7 @@ const updateCurrentStatusById = async (req, res) => {
                 `;
                 await client.query(updateQuery, [current_step, updated_by, updated_on, client_id]);
 
-                res.send('Current Step updated successfully');
+                res.status(201).send('Current Step updated successfully');
             } else {
                 res.status(400).json({ error: `No staff with the ${current_step} team is available` });
             }
@@ -508,6 +516,44 @@ const updateStaffTeamById = async (req, res) => {
     }
 };
 
+const getMyStaffDetails = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const getClientQuery = `
+            SELECT * FROM staff_customer_assignments 
+            JOIN user_logins ON user_logins.user_id = staff_customer_assignments.client_id
+            WHERE staff_customer_assignments.client_id = $1
+        `;
+
+        const getClientResult = await client.query(getClientQuery, [id]);
+
+        // Check if there's a valid result
+        if (getClientResult.rows.length > 0) {
+            const staffId = getClientResult.rows[0].staff_id;
+
+            const getStaffQuery = `
+                SELECT * FROM user_logins WHERE user_id = $1
+            `;
+
+            const getStaffResult = await client.query(getStaffQuery, [staffId]);
+
+            // Check if there's a valid staff result
+            if (getStaffResult.rows.length > 0) {
+                res.json(getStaffResult.rows);
+            } else {
+                res.status(404).json({ error: 'Staff details not found.' });
+            }
+        } else {
+            res.status(404).json({ error: 'Client assignment not found.' });
+        }
+    } catch (error) {
+        console.error('Error fetching staff details:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
 
 
 module.exports = {
@@ -524,4 +570,5 @@ module.exports = {
     updateStaffTeamById,
     getAllStaffUnAssignedClients,
     editPassword,
+    getMyStaffDetails
 };

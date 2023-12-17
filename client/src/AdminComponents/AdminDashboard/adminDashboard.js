@@ -12,6 +12,7 @@ import EditModal from '../../SweetPopup/sweetPopup';
 import { CurrentUser, DashboardContainer, DashboardItem, DetailsContainer, MainContainer, SectionCard } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
 import { MdDelete } from "react-icons/md";
+import ClientTable from './clientTable';
 
 
 const apiStatusConstants = {
@@ -138,6 +139,7 @@ const AdminDashboard = () => {
                 });
             }
         }, 100);
+        setAvailableSteps([])
     };
 
     const handleEditClick = clientId => {
@@ -151,9 +153,8 @@ const AdminDashboard = () => {
 
     const handleMoveToClick = (client) => {
         setSelectedClient(client);
-
         const currentStepIndex = dataOrder.indexOf(client.current_step);
-        const stepsAfterCurrent = dataOrder.slice(currentStepIndex + 1);
+        const stepsAfterCurrent = dataOrder.slice(currentStepIndex + 1, currentStepIndex + 2);
 
         setAvailableSteps(stepsAfterCurrent);
     };
@@ -164,6 +165,9 @@ const AdminDashboard = () => {
             ...prevClient,
             current_step: selectedStep,
         }));
+
+        getAllAssignedClients();
+
         setApiStatus(apiStatusConstants.inProgress);
 
         try {
@@ -183,6 +187,7 @@ const AdminDashboard = () => {
                     confirmButtonText: 'OK',
                 });
                 getAllAssignedClients();
+                setAvailableSteps([])
                 setApiStatus(apiStatusConstants.success);
             } else {
                 // Handle the case where the response does not contain data
@@ -194,24 +199,23 @@ const AdminDashboard = () => {
             console.error('Error:', error);
             showAlert({
                 title: 'Error',
-                text: 'An error occurred while moving the client. Please try again.',
+                text: `No staff with the ${selectedStep} team is available. Please try again.`,
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
             setApiStatus(apiStatusConstants.error);
+            setAvailableSteps([])
         }
-
-        // Reset available steps after the move
-        setAvailableSteps([]);
     };
 
 
     // Handle staff deletion
     const onDeleteClient = async (id) => {
-        setApiStatus(apiStatusConstants.inProgress);
+        
 
         const isConfirmed = window.confirm('Are you sure you want to delete?');
         if (isConfirmed) {
+            setApiStatus(apiStatusConstants.inProgress);
             try {
                 await axios.delete(`${domain.domain}/user/${id}`, {
                     headers: {
@@ -240,10 +244,12 @@ const AdminDashboard = () => {
                     confirmButtonText: 'OK',
                 });
             }
+            getAllAssignedClients();
         }
     };
 
     const onAssignAll = async () => {
+        getAllAssignedClients();
         try {
             setApiStatus(apiStatusConstants.inProgress)
             const res = await axios.post(`${domain.domain}/staff-customer-assignments/auto-assign-clients`,{
@@ -264,7 +270,7 @@ const AdminDashboard = () => {
             console.error('Error assigning clients:', error);
             showAlert({
                 title: 'Error Assigning Clients',
-                text: 'An error occurred while assigning clients.',
+                text: 'There are no staff members to assigning clients.',
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
@@ -274,74 +280,7 @@ const AdminDashboard = () => {
 
 
     const renderClients = () => (
-        <TableContainer className='shadow'>
-            <Table>
-                <thead>
-                    <tr>
-                        <Th>ID</Th>
-                        <Th>Name</Th>
-                        <Th>Email</Th>
-                        <Th>Phone</Th>
-                        <Th>Actions</Th>
-                        <Th>Update</Th>
-                        <Th>Delete</Th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {clients.map(client => (
-                        <tr key={client.user_id}>
-                            <Td>{client.user_id}</Td>
-                            <Td>{client.first_name}</Td>
-                            <Td>{client.email_address}</Td>
-                            <Td>{client.contact_number}</Td>
-                            <Td>
-                                <ViewButton onClick={() => handleEditClick(client.user_id)}>
-                                    View Profile
-                                </ViewButton>
-                            </Td>
-                            <Td>
-                                <ViewButton onClick={() => handleMoveToClick(client)}>
-                                    Move To
-                                </ViewButton>
-                            </Td>
-                            <Td>
-                                <div className=' d-flex align-items-center justify-content-center'>
-                                    <button className='btn text-danger' onClick={() => onDeleteClient(client.user_id)} style={{ gap: '10px' }} title='Delete client'> Delete <MdDelete size={25} /></button>
-                                </div>
-                            </Td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
-
-            {selectedClient && availableSteps.length > 0 && (
-                <div className='d-flex align-items-center justify-content-end mt-4'>
-                    <label htmlFor="moveTo" className='m-2'><strong>Move To: </strong></label>
-                    <select
-                        id="moveTo"
-                        value=""
-                        className='p-2'
-                        onChange={(e) => handleStepChange(e.target.value)}
-                    >
-                        <option value="" disabled>Select an option</option>
-                        {availableSteps.map((step) => (
-                            <option key={step} value={step}>
-                                {step}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
-
-
-            <EditModal
-                isOpen={isEditModalOpen}
-                profileId={profileId}
-                onRequestClose={handleEditModalClose}
-                handleOpenClick={handleEditClick}
-                isEditable={false}
-            />
-        </TableContainer>
+        <ClientTable clients={clients} onDeleteClient={onDeleteClient} handleEditClick={handleEditClick} handleMoveToClick={handleMoveToClick} selectedClient={selectedClient} handleStepChange={handleStepChange} availableSteps={availableSteps} isEditModalOpen={isEditModalOpen} profileId={profileId} handleEditModalClose={handleEditModalClose} />
     );
 
     const renderComponents = () => {
@@ -414,6 +353,7 @@ const AdminDashboard = () => {
                                 <button className='btn bg-success text-light' onClick={onAssignAll} title='Auto assign all to Scheduling'>Assign All</button>
                             </div>
                             {renderComponents()}
+                            
                         </div>}
                     </div>
                 }

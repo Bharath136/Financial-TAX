@@ -9,31 +9,19 @@ import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 
-// Icons
-import { BiSearch } from 'react-icons/bi';
-import { MdFilterList } from 'react-icons/md';
-import { MdDelete } from "react-icons/md";
-
 // Assets
 import noClient from '../../Assets/no-customers.jpg'
 
 // Styled Components
 import {
     ClientListContainer,
-    ClientsHeaderContainer,
-    FilterSelect,
     H1,
     NoClientContainer,
-    SearchBar,
-    SearchBarContainer,
-    SearchButton,
-    Table,
     TableContainer,
-    Td,
-    Th,
-    ViewButton,
 } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
+import ClientTable from './clientTable';
+import ClientFilter from './clientFilter';
 
 
 // Constants for API status
@@ -170,36 +158,39 @@ const Clients = () => {
 
     // Handle staff deletion
     const onDeleteClient = async (id) => {
-        setApiStatus(apiStatusConstants.inProgress);
+        const userConfirmed = window.confirm("Are you sure you want to delete?");
+        if (userConfirmed){
+            setApiStatus(apiStatusConstants.inProgress);
 
-        try {
-            await axios.delete(`${domain.domain}/user/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            try {
+                await axios.delete(`${domain.domain}/user/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-            setApiStatus(apiStatusConstants.success);
-            // fetchData();
+                setApiStatus(apiStatusConstants.success);
+                // fetchData();
 
-            // Show success alert
-            showAlert({
-                title: 'Client Deleted Successfully!',
-                text: 'The client has been deleted successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-            });
-        } catch (error) {
-            console.error('Error Deleting Client:', error);
-            setApiStatus(apiStatusConstants.failure);
+                // Show success alert
+                showAlert({
+                    title: 'Client Deleted Successfully!',
+                    text: 'The client has been deleted successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            } catch (error) {
+                console.error('Error Deleting Client:', error);
+                setApiStatus(apiStatusConstants.failure);
 
-            // Show error alert
-            showAlert({
-                title: 'Error Deleting Client',
-                text: 'An error occurred while deleting the client member.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
+                // Show error alert
+                showAlert({
+                    title: 'Error Deleting Client',
+                    text: 'An error occurred while deleting the client member.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                });
+            }
         }
     };
 
@@ -214,70 +205,20 @@ const Clients = () => {
                 return <SweetLoading />
             case apiStatusConstants.success:
                 return <TableContainer className="shadow">
-                    <ClientsHeaderContainer>
-                        <SearchBarContainer>
-                            <SearchBar
-                                type="text"
-                                placeholder="Search client by N.., E.., P.."
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                            />
-                            <SearchButton onClick={onSearch} type='button'><BiSearch size={25} /></SearchButton>
-                        </SearchBarContainer>
-                        <div>
-                            <label htmlFor="filterDropdown">
-                                <MdFilterList size={20} />
-                            </label>
-                            <FilterSelect
-                                id="filterDropdown"
-                                value={selectedFilter}
-                                onChange={(e) => handleFilterChange(e.target.value)}
-                            >
-                                <option value="">All Clients</option>
-                                <option value="assigned">Assigned Clients</option>
-                                <option value="unassigned">Unassigned Clients</option>
-                            </FilterSelect>
-                        </div>
-                    </ClientsHeaderContainer>
-                    <Table>
-                        <thead>
-                            <tr>
-                                <Th>ID</Th>
-                                <Th>Name</Th>
-                                <Th>Email</Th>
-                                <Th>Phone</Th>
-                                <Th>Actions</Th>
-                                <Th>Delete</Th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredClients.map((client) => (
-                                <tr key={client.user_id}>
-                                    <Td>{client.user_id}</Td>
-                                    <Td>{client.first_name}</Td>
-                                    <Td>{client.email_address}</Td>
-                                    <Td>{client.contact_number}</Td>
-                                    <Td>
-                                        <ViewButton
-                                            onClick={() => {
-                                                handleEditClick();
-                                                setProfileId(client.user_id);
-                                            }}
-                                        >
-                                            View
-                                        </ViewButton>
-                                    </Td>
-                                    <Td>
-                                        <div className='d-flex align-items-center justify-content-center'>
-                                            <button type='button' onClick={() => onDeleteClient(client.user_id)} className='btn text-danger'>
-                                                <MdDelete size={25} />
-                                            </button>
-                                        </div>
-                                    </Td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
+                    <ClientFilter
+                        selectedFilter={selectedFilter}
+                        handleFilterChange={handleFilterChange}
+                        handleSearchChange={handleSearchChange}
+                        onSearch={onSearch}
+                        searchTerm={searchTerm}
+                    />
+                    <ClientTable
+                        clients={filteredClients}
+                        onDeleteClient={onDeleteClient}
+                        handleEditClick={handleEditClick}
+                        setProfileId={setProfileId}
+                    />
+
                 </TableContainer>
             default:
                 return null

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import domain from '../../domain/domain';
 
 import './sidebar.css';
 import {
@@ -8,6 +9,7 @@ import {
     // MdOutlineDarkMode,
     MdDashboardCustomize
 } from 'react-icons/md';
+import { RiContactsFill } from "react-icons/ri";
 import {
     BiSolidArrowToLeft,
     BiSolidArrowToRight,
@@ -23,6 +25,8 @@ import {
 } from 'react-icons/fa';
 import AuthContext from '../../AuthContext/AuthContext';
 import { IoPersonAddSharp } from "react-icons/io5";
+import EditModal from '../../SweetPopup/sweetPopup';
+import axios from 'axios';
 
 const menuItems = [
     { path: '/user-dashboard', label: 'Home', icon: <MdDashboardCustomize size={25} /> },
@@ -46,15 +50,16 @@ const adminMenuItems = [
     { path: '/admin-clients', label: 'Clients', icon: <FaUser size={25} /> },
     { path: '/admin-staff', label: 'Staff', icon: <FaUser size={25} /> },
     { path: '/admin-client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/admin-add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> }
+    { path: '/admin-add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> },
+    { path: '/admin/user-contact/info', label: 'Contacts', icon: <RiContactsFill  size={25}/>}
 ];
 
 const Sidebar = () => {
     const [activeMenuItems, setActiveMenuItems] = useState([]);
+    const user = JSON.parse(localStorage.getItem('currentUser'));
 
     useEffect(() => {
         const token = localStorage.getItem('customerJwtToken');
-        const user = JSON.parse(localStorage.getItem('currentUser'));
         if(token){
             if (user.role === 'ADMIN') {
                 setActiveMenuItems(adminMenuItems);
@@ -71,19 +76,40 @@ const Sidebar = () => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(location.pathname);
     const [currentUser, setCurrentUser] = useState('');
+    const [profileId, setProfileId] = useState(null)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     // const [isDarkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('currentUser'));
+        
         if (user) {
             setCurrentUser(user.first_name);
         }
         setActiveItem(location.pathname);
+
+        const getMyStaff = async () => {
+            try{
+                const response = await axios.get(`${domain.domain}/user/my-staff/details/${user.user_id}`)
+                setProfileId(response.data[0].user_id)
+            }catch(error){
+                console.log(error)
+            }
+        }
+        getMyStaff()
     }, [location.pathname]);
 
     // const onChangeMode = () => {
     //     setDarkMode(!isDarkMode);
     // };
+
+    const handleEditClick = () => {
+        setIsEditModalOpen(!isEditModalOpen);
+    };
+
+    const handleEditModalClose = () => {
+        setIsEditModalOpen(false);
+    };
 
     return (
         <AuthContext.Consumer>
@@ -138,6 +164,13 @@ const Sidebar = () => {
                                     Logout
                                 </Link>
                             </button>
+                            {user.role === 'CUSTOMER' && profileId &&
+                                <button className='btn d-flex align-items-center w-100' style={{ padding: hideSidebar && '14px ' }} onClick={handleEditClick} title='Profile'>
+                                    <FaUser className="text-dark" size={25} /> <Link className="logout-link" style={{ display: hideSidebar && 'none' }}>
+                                        My Staff
+                                    </Link>
+                                </button>
+                            }
                             {/* <button className='btn d-flex align-items-center w-100' style={{ padding: hideSidebar && '14px ' }} onClick={onChangeMode} title={`${isDarkMode ? 'Light Mode' : 'Dark Mode'}`}>
                                 {isDarkMode ? (
                                     <MdOutlineDarkMode className="text-dark" size={25} />
@@ -148,6 +181,14 @@ const Sidebar = () => {
                                     {isDarkMode ? 'Light Mode' : 'Dark Mode'}
                                 </Link>
                             </button> */}
+
+                            <EditModal
+                                isOpen={isEditModalOpen}
+                                profileId={profileId}
+                                onRequestClose={handleEditModalClose}
+                                handleOpenClick={handleEditClick}
+                                isEditable={false}
+                            />
                         </div>
                     </div>
                 );

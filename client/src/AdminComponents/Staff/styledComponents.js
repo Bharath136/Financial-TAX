@@ -11,7 +11,7 @@ export const StaffListContainer = styled.div`
 `
 
 export const H1 = styled.h1`
-    color: #3271f8;
+    color: var(--headings);
     font-weight: bolder;
     font-size: 26px;
     margin: 10px 0;

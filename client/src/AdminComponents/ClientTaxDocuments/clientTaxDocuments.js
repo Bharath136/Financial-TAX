@@ -1,6 +1,5 @@
 // Libraries
 import React, { useEffect, useState } from 'react';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
 import axios from 'axios';
 
 // Components
@@ -18,20 +17,16 @@ import noDoc from '../../Assets/no-documents.jpg';
 import {
     ClientDocumentContainer,
     ClientTaxDocumentsHeaderContainer,
-    ClientsHeaderContainer,
     CtaSection,
     Description,
-    DocumentName,
-    DocumentTable,
     DocumentTableContainer,
     H1,
     NoDocuments,
-    Select,
-    Td,
-    Th
 } from './styledComponents';
 import { useNavigate } from 'react-router-dom';
 import SweetLoading from '../../SweetLoading/SweetLoading';
+import DocumentTableComponent from './documentTable';
+import ClientTaxDocumentHeader from './documentHeader';
 
 // Constants for API status
 const apiStatusConstants = {
@@ -58,7 +53,7 @@ const ClientTaxDocuments = () => {
             const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents`, {
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
-            if(response.status === 200){
+            if (response.status === 200) {
                 setDocuments(response.data);
                 setFilteredDocuments(response.data);
                 setApiStatus(apiStatusConstants.success)
@@ -75,14 +70,14 @@ const ClientTaxDocuments = () => {
             headers: { Authorization: `Bearer ${accessToken}` }
         });
 
-        if(response.status === 200){
+        if (response.status === 200) {
             const filteredClients = response.data.filter((client) => {
                 return client.role === 'CUSTOMER';
             });
             setClients(filteredClients);
             setApiStatus(apiStatusConstants.success)
         }
-        
+
     };
 
     // Format date and time
@@ -122,7 +117,7 @@ const ClientTaxDocuments = () => {
 
     useEffect(() => {
         // Redirect users based on role
-        if(user){
+        if (user) {
             if (user.role === 'STAFF') {
                 navigate('/staff-dashboard');
             } else if (user.role === 'CUSTOMER') {
@@ -203,78 +198,15 @@ const ClientTaxDocuments = () => {
     };
 
     const successRender = () => {
-        return(
+        return (
             <CtaSection className="shadow">
                 <DocumentTableContainer >
                     <ClientTaxDocumentsHeaderContainer>
                         <H1>Uploaded Documents</H1>
-                        <ClientsHeaderContainer>
-                            <label><strong>Filter by client</strong></label>
-                            <Select
-                                id="clientSelect"
-                                name="clientSelect"
-                                value={selectedClient}
-                                onChange={handleClientChange}
-                                required
-                            >
-                                <option value="">All clients</option>
-                                {clients.map(client => (
-                                    <option key={client.user_id} value={client.user_id}>
-                                        {client.first_name}
-                                    </option>
-                                ))}
-                            </Select>
-                        </ClientsHeaderContainer>
+                        <ClientTaxDocumentHeader clients={clients} selectedClient={selectedClient} handleClientChange={handleClientChange} />
                     </ClientTaxDocumentsHeaderContainer>
                     {filteredDocuments.length > 0 ? (
-                        <DocumentTable >
-                            <thead>
-                                <tr>
-                                    <Th>Document</Th>
-                                    <Th>Date & Time</Th>
-                                    <Th>Review Status</Th>
-                                    <Th>Change Status</Th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredDocuments.map((document) => (
-                                    <tr key={document.document_id}>
-                                        <Td>
-                                            <div className='d-flex flex-column'>
-                                                <a
-                                                    href={`${domain.domain}/customer-tax-document/download/${document.document_id}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    download
-                                                    onClick={(e) => handleDownloadClick(document)}
-                                                >
-                                                    {renderDocumentThumbnail(document)}
-                                                </a>
-                                                <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
-                                            </div>
-                                        </Td>
-                                        <Td>{formatDateTime(document.created_on)}</Td>
-                                        <Td style={{
-                                            color:
-                                                document.review_status === 'Pending' ? 'orange' :
-                                                    document.review_status === 'Rejected' ? 'red' :
-                                                        document.review_status === 'Reviewed' ? 'green' :
-                                                            'inherit'
-                                        }}><strong>{document.review_status}</strong>
-                                        </Td>
-                                        <Td>
-                                            <DropdownButton id={`dropdown-button-${document.document_id}`} title="Change" variant="warning">
-                                                {['Pending', 'Reviewed', 'Rejected'].map((statusOption) => (
-                                                    <Dropdown.Item key={statusOption} onClick={() => onChangeDocumentStatus(document.document_id, statusOption)}>
-                                                        {statusOption}
-                                                    </Dropdown.Item>
-                                                ))}
-                                            </DropdownButton>
-                                        </Td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </DocumentTable>
+                        <DocumentTableComponent onChangeDocumentStatus={onChangeDocumentStatus} documents={documents} formatDateTime={formatDateTime} handleDownloadClick={handleDownloadClick} renderDocumentThumbnail={renderDocumentThumbnail} />
                     ) : (
                         <div>No Documents uploaded by this client</div>
                     )}
@@ -284,9 +216,9 @@ const ClientTaxDocuments = () => {
     }
 
     const onRenderComponents = () => {
-        switch(apiStatus){
+        switch (apiStatus) {
             case apiStatusConstants.inProgress:
-                return <SweetLoading/>
+                return <SweetLoading />
             case apiStatusConstants.success:
                 return successRender()
             case apiStatusConstants.failure:
@@ -304,15 +236,15 @@ const ClientTaxDocuments = () => {
                 <Description >
                     Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
                 </Description>
-                {documents.length > 0 ? 
+                {documents.length > 0 ?
                     onRenderComponents()
-                 : (
-                    <NoDocuments>
-                        <img src={noDoc} alt='no-doc' className='img-fluid' />
-                        <H1>No Documents!</H1>
-                        <label>No documents have been uploaded by the client. Please upload relevant documents to proceed.</label>
-                    </NoDocuments>
-                )}
+                    : (
+                        <NoDocuments>
+                            <img src={noDoc} alt='no-doc' className='img-fluid' />
+                            <H1>No Documents!</H1>
+                            <label>No documents have been uploaded by the client. Please upload relevant documents to proceed.</label>
+                        </NoDocuments>
+                    )}
             </ClientDocumentContainer>
         </div>
     );

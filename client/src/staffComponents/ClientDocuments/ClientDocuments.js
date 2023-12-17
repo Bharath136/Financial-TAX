@@ -285,6 +285,7 @@ const ClientDocuments = () => {
                             </thead>
                             <tbody>
                                 {filteredDocuments.map((document) => (
+                                    
                                     <tr key={document.document_id}>
                                         <Td title='Download'>
                                             <div className='d-flex flex-column'> <a
@@ -330,8 +331,8 @@ const ClientDocuments = () => {
                                         <Td><ViewButton type="button" onClick={() => handleGetComments(document)} className="view-button button">
                                             View
                                         </ViewButton></Td>
-                                    </tr>
-                                ))}
+                                    </tr> 
+                                    ))}
                             </tbody>
                         </DocumentTable>
                         {showComments && (

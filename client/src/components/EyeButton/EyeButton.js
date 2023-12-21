@@ -6,7 +6,7 @@ const EyeButton = ({ onClick, isShowPassword }) => {
     return (
         <button
             type="button"
-            className="btn eye-button"
+            className="btn eye-button m-0"
             style={{ backgroundColor: 'transparent', outline: 'none', border: 'none' }}
             onClick={onClick}
         >

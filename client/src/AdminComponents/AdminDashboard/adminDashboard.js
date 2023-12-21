@@ -1,17 +1,14 @@
-// import './staffDashboard.css';
-import Sidebar from '../../userComponents/SideBar/sidebar';
+
 import { useEffect, useState } from 'react';
 import { FaCalendarAlt, FaClock, FaFileAlt, FaTasks, FaClipboardList, FaMoneyBillAlt, FaCheck } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import domain from '../../domain/domain';
 import noClient from '../../Assets/no-customers.jpg'
-import { H1, NoClientContainer, Table, TableContainer, Td, Th, ViewButton } from '../../staffComponents/AssignedClients/styledComponents';
+import { H1, NoClientContainer } from '../../staffComponents/AssignedClients/styledComponents';
 import SweetLoading from '../../SweetLoading/SweetLoading';
-import EditModal from '../../SweetPopup/sweetPopup';
 import { CurrentUser, DashboardContainer, DashboardItem, DetailsContainer, MainContainer, SectionCard } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
-import { MdDelete } from "react-icons/md";
 import ClientTable from './clientTable';
 
 
@@ -82,9 +79,9 @@ const AdminDashboard = () => {
         if (user) {
             setCurrentUser(user.first_name);
             if (user.role === 'ADMIN') {
-                navigate('/admin-dashboard');
+                navigate('/admin/dashboard');
             } else if (user.role === 'CUSTOMER') {
-                navigate('/user-dashboard');
+                navigate('/user/dashboard');
             }
         }
 

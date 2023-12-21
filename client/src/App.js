@@ -137,7 +137,7 @@
 
 
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Header from './components/Header/header';
 import Login from './components/Login/login';
 import Register from './components/Register/register';
@@ -200,17 +200,37 @@ function App() {
 
   const routes = [
     { path: '/', element: <Landingpage /> },
-    { path: '/login', element: <Login setShowNav={setShowNav} /> },
-    { path: '/forgot-password', element: <ForgotPassword setShowNav={setShowNav} /> },
-    { path: '/signup', element: <Register /> },
+    { path: '/accounts/login', element: <Login setShowNav={setShowNav} /> },
+    { path: '/accounts/forgot-password', element: <ForgotPassword setShowNav={setShowNav} /> },
+    { path: '/accounts/signup', element: <Register /> },
     { path: '/about', element: <About /> },
     { path: '/services', element: <Services /> },
     { path: '/contact', element: <Contact /> },
-    { path: '/user/*', element: <UserSection /> },
-    { path: '/staff/*', element: <StaffSection /> },
-    { path: '/admin/*', element: <AdminSection /> },
-    { path: '*', element: <NotFound /> },
+    {
+      path: '/user/*',
+      element: <UserSection />,
+      children: [
+        { path: '*', element: <NotFound /> } // Handle bad paths within UserSection
+      ]
+    },
+    {
+      path: '/staff/*',
+      element: <StaffSection />,
+      children: [
+        { path: '*', element: <NotFound /> } // Handle bad paths within StaffSection
+      ]
+    },
+    {
+      path: '/admin/*',
+      element: <AdminSection />,
+      children: [
+        { path: '*', element: <NotFound /> } // Handle bad paths within AdminSection
+      ]
+    },
+    { path: '*', element: <NotFound /> } // Catch-all for unmatched routes
   ];
+
+
 
   const onLogin = () => {
     const userToken = localStorage.getItem('customerJwtToken');
@@ -245,9 +265,14 @@ function App() {
 }
 
 function UserSection() {
+  // const navigate = useNavigate();
+
+  // const isRouteMatch = !!navigate()?.routes?.find(route => route.matched);
+
   return (
     <div className='d-flex'>
-      <Sidebar/>
+      {/* {isRouteMatch && <Sidebar />} */}
+      <Sidebar />
       <Routes>
         <Route path="dashboard" element={<ProtectedRoute Component={UserDashboard} />} />
         <Route path="tax-interview" element={<ProtectedRoute Component={TaxInterview} />} />
@@ -257,6 +282,7 @@ function UserSection() {
         <Route path="make-payment" element={<ProtectedRoute Component={MakePayment} />} />
         <Route path="tax-return/success" element={<ProtectedRoute Component={SuccessPage} />} />
         <Route path="tax-return/failure/:id" element={<ProtectedRoute Component={FailurePage} />} />
+        <Route path= '*' element={<NotFound />} />
       </Routes>
     </div>
   );
@@ -264,25 +290,31 @@ function UserSection() {
 
 function StaffSection() {
   return (
-    <Routes>
-      <Route path="dashboard" element={<ProtectedRoute Component={StaffDashboard} />} />
-      <Route path="assigned-clients" element={<ProtectedRoute Component={AssignedClientList} />} />
-      <Route path="tax-documents" element={<ProtectedRoute Component={ClientDocuments} />} />
-      <Route path="customer-tax-return" element={<ProtectedRoute Component={TaxReturnDocument} />} />
-    </Routes>
+    <div className='d-flex'>
+      <Sidebar/>
+      <Routes>
+        <Route path="dashboard" element={<ProtectedRoute Component={StaffDashboard} />} />
+        <Route path="assigned-clients" element={<ProtectedRoute Component={AssignedClientList} />} />
+        <Route path="tax-documents" element={<ProtectedRoute Component={ClientDocuments} />} />
+        <Route path="customer-tax-return" element={<ProtectedRoute Component={TaxReturnDocument} />} />
+      </Routes>
+    </div>
   );
 }
 
 function AdminSection() {
   return (
-    <Routes>
-      <Route path="dashboard" element={<ProtectedRoute Component={AdminDashboard} />} />
-      <Route path="clients" element={<ProtectedRoute Component={Clients} />} />
-      <Route path="staff" element={<ProtectedRoute Component={Staff} />} />
-      <Route path="client-tax-documents" element={<ProtectedRoute Component={ClientTaxDocuments} />} />
-      <Route path="add-staff" element={<ProtectedRoute Component={AddStaff} />} />
-      <Route path="user-contact/info" element={<ProtectedRoute Component={ContactView} />} />
-    </Routes>
+    <div className='d-flex'>
+    <Sidebar/>
+      <Routes>
+        <Route path="dashboard" element={<ProtectedRoute Component={AdminDashboard} />} />
+        <Route path="clients" element={<ProtectedRoute Component={Clients} />} />
+        <Route path="staff" element={<ProtectedRoute Component={Staff} />} />
+        <Route path="client-tax-documents" element={<ProtectedRoute Component={ClientTaxDocuments} />} />
+        <Route path="add-staff" element={<ProtectedRoute Component={AddStaff} />} />
+        <Route path="user-contact/info" element={<ProtectedRoute Component={ContactView} />} />
+      </Routes>
+    </div>
   );
 }
 

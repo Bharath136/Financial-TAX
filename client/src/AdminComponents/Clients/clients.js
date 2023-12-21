@@ -5,7 +5,6 @@ import axios from 'axios';
 
 // Components
 import domain from '../../domain/domain';
-import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 
@@ -54,9 +53,9 @@ const Clients = () => {
         // Redirect based on user role
         if(user){
             if (user.role === 'STAFF') {
-                navigate('/staff-dashboard')
+                navigate('/staff/dashboard')
             } else if (user.role === 'CUSTOMER') {
-                navigate('/user-dashboard')
+                navigate('/user/dashboard')
             }
         }
 

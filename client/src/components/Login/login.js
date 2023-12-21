@@ -106,7 +106,7 @@ const Login = ({ setShowNav }) => {
                         <div className=" login-container d-flex">
                             <div className="login-card text-start">
                                 <h2 className="login-header">Login</h2>
-                                <p className='signup-description mt-3'>Don't have an account yet? <NavLink className='link' to='/signup'> Sign Up</NavLink></p>
+                                <p className='signup-description mt-3'>Don't have an account yet? <NavLink className='link' to='/accounts/signup'> Sign Up</NavLink></p>
                                 <form onSubmit={handleSubmit} className='form-container'>
                                     {initialFormFields.map((field, index) => (
                                         <div className="mb-2 d-flex flex-column" key={index}>
@@ -115,12 +115,12 @@ const Login = ({ setShowNav }) => {
                                                     {field.label}
                                                 </label>
                                                 {field.name === 'password' && (
-                                                    <Link to="/forgot-password" className="link">
+                                                    <Link to="/accounts/forgot-password" className="link">
                                                         Forgot password?
                                                     </Link>
                                                 )}
                                             </div>
-                                            <div className="input-group w-100 " style={{ border: '1px solid grey', borderRadius: '4px', }}>
+                                            <div className="input-group w-100" style={{ border: '1px solid grey', borderRadius: '4px', }}>
                                                 <input
                                                     type={field.type === 'password' ? (showPassword ? 'text' : 'password') : field.type}
                                                     className="form-control"

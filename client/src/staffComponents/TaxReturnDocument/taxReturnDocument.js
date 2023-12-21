@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import domain from '../../domain/domain';
-// import { MdDelete } from 'react-icons/md';
-import Sidebar from '../../userComponents/SideBar/sidebar';
 import { ButtonContainer, CtaSection, DocumentImage, DocumentTable, DocumentTableContainer, DragDropArea, Form, H1, InputField, InputFieldsContainer, InputFieldsSubContainer, Select, TaxDescription, TaxDocumentContainer, Td, Th, UploadButton } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
 import { DocumentName, Lable } from '../../userComponents/CommentDocument/styledComponents';
@@ -12,6 +10,7 @@ import pdf from '../../Assets/PDF_file_icon.svg.png'
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
 import { useNavigate } from 'react-router-dom';
+import formatDateTime from '../../FormatDateTime/DateTime';
 
 const TaxReturnDocument = () => {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -28,9 +27,9 @@ const TaxReturnDocument = () => {
     useEffect(() => {
         if (currentUser) {
             if (currentUser.role === 'ADMIN') {
-                navigate('/admin-dashboard')
+                navigate('/admin/dashboard')
             } else if (currentUser.role === 'CUSTOMER') {
-                navigate('/user-dashboard')
+                navigate('/user/dashboard')
             }
         }
         getAllAssignedClients();
@@ -40,7 +39,6 @@ const TaxReturnDocument = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
-        console.log(data);
     };
 
 
@@ -220,12 +218,6 @@ const TaxReturnDocument = () => {
         }
     };
 
-
-    const formatDateTime = (dateTimeString) => {
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        return new Date(dateTimeString).toLocaleString('en-US', options);
-    };
-
     const onDeleteDocument = async (id) => {
         // setApiStatus(apiStatusConstants.inProgress)
         const result = window.confirm("Are you sure you want to delete this document?");
@@ -330,7 +322,7 @@ const TaxReturnDocument = () => {
                             <thead>
                                 <tr>
                                     <Th>Document</Th>
-                                    <Th>Date & Time</Th>
+                                    <Th>Date</Th>
                                     <Th>Payment Amount</Th>
                                     <Th>Payment Status</Th>
                                     <Th>Delete</Th>
@@ -341,7 +333,6 @@ const TaxReturnDocument = () => {
                                     <tr key={document.taxreturn_id}>
                                         <Td>
                                             <div className='d-flex flex-column'>
-                                                {/* <div className='d-flex align-items-center justify-content-center'> */}
                                                 <a
                                                     href={`${domain.domain}/tax-return-document/download/${document.taxreturn_id}`}
                                                     target="_blank"
@@ -351,8 +342,6 @@ const TaxReturnDocument = () => {
                                                 >
                                                     {renderDocumentThumbnail(document)}
                                                 </a>
-                                                {/* <FaDownload size={25} />
-                                                    </div> */}
                                                 <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
                                             </div>
 
@@ -366,15 +355,6 @@ const TaxReturnDocument = () => {
                                                             'inherit'
                                         }}><strong>{document.payment_status}</strong></Td>
                                         <Td>{document.payment_amount}</Td>
-                                        {/* <Td style={{
-                                                color:
-                                                    document.review_status === 'Pending' ? 'orange' :
-                                                        document.review_status === 'Rejected' ? 'red' :
-                                                            document.review_status === 'Reviewed' ? 'green' :
-                                                                'inherit'
-                                            }}>
-                                                <strong>{document.review_status}</strong>
-                                            </Td> */}
 
                                         <Td>
                                             <DeleteButton title='delete document' onClick={() => onDeleteDocument(document.taxreturn_id)}>

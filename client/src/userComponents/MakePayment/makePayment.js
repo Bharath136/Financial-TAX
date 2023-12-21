@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Sidebar from '../SideBar/sidebar';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import domain from '../../domain/domain';
@@ -120,7 +119,6 @@ const MakePayment = () => {
     try {
       setLoading(true);
 
-      // Pass paymentId and payerId as query parameters
       const response = await axios.get(`${domain.domain}/paypal/execute-payment`, {
         params: {
           paymentId: paymentId,
@@ -129,8 +127,6 @@ const MakePayment = () => {
       });
 
       console.log('Payment executed successfully:', response.data.payment);
-      // Optionally provide feedback to the user on successful payment execution
-      // You can display a success message or navigate to a success page.
     } catch (error) {
       console.error('Error executing payment:', error);
       setError('Failed to execute payment. Please try again.'); // Set error message
@@ -146,9 +142,9 @@ const MakePayment = () => {
   useEffect(() => {
     if (user) {
       if (user.role === 'ADMIN') {
-        navigate('/admin-dashboard')
+        navigate('/admin/dashboard')
       } else if (user.role === 'STAFF') {
-        navigate('/staff-dashboard')
+        navigate('/staff/dashboard')
       }
     }
   }, [navigate]);
@@ -197,7 +193,7 @@ const MakePayment = () => {
             )}
           </button>
         )}
-        {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message if there is an error */}
+        {error && <p style={{ color: 'red' }}>{error}</p>} 
       </PaymentForm>
     </PaymentSectionContainer>
   );

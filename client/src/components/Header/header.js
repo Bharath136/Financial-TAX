@@ -119,7 +119,7 @@ const Header = ({ setShowNav }) => {
                                                 
                                             ))}
 
-                                            <NavLink to='/login' className="auth-button ml-2 d-flex align-items-center pl-2 pr-2 pt-0 pb-0">
+                                            <NavLink to='/accounts/login' className="auth-button ml-2 d-flex align-items-center pl-2 pr-2 pt-0 pb-0">
                                                 <BiLogIn /><span className="nav-span">Login</span>
                                             </NavLink>
                                         </Nav>

@@ -4,7 +4,6 @@ import axios from 'axios';
 
 // Components
 import domain from '../../domain/domain';
-import Sidebar from '../../userComponents/SideBar/sidebar';
 import showAlert from '../../SweetAlert/sweetalert';
 
 // Assets
@@ -27,6 +26,7 @@ import { useNavigate } from 'react-router-dom';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import DocumentTableComponent from './documentTable';
 import ClientTaxDocumentHeader from './documentHeader';
+import formatDateTime from '../../FormatDateTime/DateTime';
 
 // Constants for API status
 const apiStatusConstants = {
@@ -80,18 +80,6 @@ const ClientTaxDocuments = () => {
 
     };
 
-    // Format date and time
-    const formatDateTime = (dateTimeString) =>
-        new Date(dateTimeString).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        });
-
     // Handle document status change
     const onChangeDocumentStatus = async (id, status) => {
         setApiStatus(apiStatusConstants.inProgress)
@@ -119,9 +107,9 @@ const ClientTaxDocuments = () => {
         // Redirect users based on role
         if (user) {
             if (user.role === 'STAFF') {
-                navigate('/staff-dashboard');
+                navigate('/staff/dashboard');
             } else if (user.role === 'CUSTOMER') {
-                navigate('/user-dashboard');
+                navigate('/user/dashboard');
             }
         }
         // Fetch documents and clients

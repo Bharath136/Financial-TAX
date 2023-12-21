@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
 import domain from '../../domain/domain';
 import { ClientListContainer, H1, NoClientContainer, Table, TableContainer, Td, Th, ViewButton } from './styledComponents';
@@ -28,9 +27,9 @@ const AssignedClientList = () => {
     useEffect(() => {
         if(currentUser){
             if (currentUser.role === 'ADMIN') {
-                navigate('/admin-dashboard')
+                navigate('/admin/dashboard')
             } else if (currentUser.role === 'CUSTOMER') {
-                navigate('/user-dashboard')
+                navigate('/user/dashboard')
             }
         }
         const getAllAssignedClients = async () => {

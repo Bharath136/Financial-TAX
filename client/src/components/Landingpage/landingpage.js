@@ -300,7 +300,7 @@ const Landingpage = () => {
     useEffect(() => {
         const token = localStorage.getItem('customerJwtToken')
         if (token) {
-            navigate('/user-dashboard')
+            navigate('/user/dashboard')
         }
     })
 

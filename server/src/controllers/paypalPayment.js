@@ -62,8 +62,7 @@ const createTaxReturnPayment = async (req, res) => {
 // Execute the tax return payment
 const executeTaxReturnPayment = async (req, res) => {
     try {
-        const { paymentId, payerId } = req.query;
-        console.log(req.query)
+        const { paymentId, payerId } = req.query; 
 
         const executeData = {
             payer_id: payerId,

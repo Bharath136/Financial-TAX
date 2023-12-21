@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import domain from '../../domain/domain';
@@ -45,69 +45,83 @@ const ReturnHomeButton = styled.button`
   }
 `;
 
+const Button = styled.button`
+  background-color: #ffc439; /* PayPal yellow */
+    color: #003087; /* PayPal blue */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+`
+
+const Loader = styled.div`
+`
+
 const SuccessPage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        // Check the payment status or any other relevant condition
-        // and redirect the user accordingly
-        const paymentSuccessful = true; // Replace with your actual condition
+  const [showReturnButton, setShowReturnButton] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-        if (!paymentSuccessful) {
-            // Redirect to the failure route
-            navigate('/tax-return/failure');
-        }
-    }, [navigate]);
+  useEffect(() => {
+    const paymentSuccessful = true; 
 
-    const handleReturnHome = () => {
-        // Navigate to the home page or any other desired route
-        navigate('/');
-    };
+    if (!paymentSuccessful) {
+      navigate('/tax-return/failure');
+    }
+  }, [navigate]);
+
+  const handleReturnHome = () => {
+    navigate('/');
+  };
 
   const handleExecutePayment = async () => {
     try {
-
-      // Extract payerId and paymentId from the current URL
+      setLoading(true);
       const params = new URLSearchParams(window.location.search);
       const payerId = params.get('PayerID');
       const paymentId = params.get('paymentId');
 
-      // Check if both payerId and paymentId are available
       if (!payerId || !paymentId) {
         throw new Error('PayerID or paymentId not found in the URL');
       }
 
-      // Pass payerId and paymentId as query parameters
-      const response = await axios.get(`${domain.domain }/paypal/execute-payment`, {
+      const response = await axios.get(`${domain.domain}/paypal/execute-payment`, {
         params: {
           paymentId: paymentId,
           payerId: payerId,
         },
       });
+      setShowReturnButton(true)
 
       console.log('Payment executed successfully:', response.data.payment);
-      // Optionally provide feedback to the user on successful payment execution
-      // You can display a success message or navigate to a success page.
     } catch (error) {
       console.error('Error executing payment:', error);
-    } 
+    }
   };
 
-    return (
-        <PaymentContainer>
-            <PaymentContent>
-                <SuccessHeading>Payment Successful!</SuccessHeading>
-                <SuccessParagraph>
-                    Thank you for your payment. Your tax return has been processed successfully.
-                </SuccessParagraph>
-                {/* <ReturnHomeButton onClick={handleReturnHome}>Return Home</ReturnHomeButton> */}
-          <button onClick={handleExecutePayment}  className='w-100'>
-            
+  return (
+    <PaymentContainer>
+      <PaymentContent>
+        <SuccessHeading>Payment Successful!</SuccessHeading>
+        <SuccessParagraph>
+          Thank you for your payment. Your tax return has been processed successfully.
+        </SuccessParagraph>
+        {showReturnButton ? <ReturnHomeButton onClick={handleReturnHome}>Return Home</ReturnHomeButton> :
+          <Button onClick={handleExecutePayment} disabled={loading} className='w-100'>
+            {loading ? (
+              <div className="spinner-border text-primary" role="status">
+                <span className="sr-only"></span>
+              </div>
+            ) : (
               'Execute Payment'
-          </button>
-            </PaymentContent>
-        </PaymentContainer>
-    );
+            )}
+          </Button>}
+      </PaymentContent>
+    </PaymentContainer>
+  );
 };
 
 export default SuccessPage;

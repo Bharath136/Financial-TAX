@@ -108,7 +108,6 @@ const createTaxReturnDocument = async (req, res, next) => {
                 new Date(),
                 new Date(),
             ];
-
             const result = await client.query(documentQuery, values);
             res.status(201).json({ message: 'Document created successfully.', taxreturn_id: result.rows[0].taxreturn_id });
         } catch (error) {

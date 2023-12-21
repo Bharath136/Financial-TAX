@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import axios from 'axios';
 import domain from '../../domain/domain';
-import Sidebar from '../../userComponents/SideBar/sidebar';
 import showAlert from '../../SweetAlert/sweetalert';
 import pdf from '../../Assets/PDF_file_icon.svg.png'
 import doc from '../../Assets/doc.png';
@@ -13,6 +12,7 @@ import noDocuments from '../../Assets/no-documents.jpg'
 import { MdDelete } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { ClientTaxDocumentsHeaderContainer, ClientsHeaderContainer, Select } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
+import formatDateTime from '../../FormatDateTime/DateTime';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -70,19 +70,6 @@ const ClientDocuments = () => {
 
     };
 
-    const formatDateTime = (dateTimeString) => {
-        const options = {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        };
-        return new Date(dateTimeString).toLocaleString('en-US', options);
-    };
-
     const onChangeDocumentStatus = async (id, status) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -109,9 +96,9 @@ const ClientDocuments = () => {
     useEffect(() => {
         if (user) {
             if (user.role === 'ADMIN') {
-                navigate('/admin-dashboard')
+                navigate('/admin/dashboard')
             } else if (user.role === 'CUSTOMER') {
-                navigate('/user-dashboard')
+                navigate('/user/dashboard')
             }
         }
         fetchDocuments();
@@ -277,7 +264,7 @@ const ClientDocuments = () => {
                             <thead>
                                 <tr>
                                     <Th>Document</Th>
-                                    <Th>Date & Time</Th>
+                                    <Th>Date</Th>
                                     <Th>Review Status</Th>
                                     <Th>Change Status</Th>
                                     <Th>Comments</Th>

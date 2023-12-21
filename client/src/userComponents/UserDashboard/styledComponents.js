@@ -8,9 +8,15 @@ const DashboardContainer = styled.div`
     background-color: var(--main-background);
     width: 100%;
 `
+const CardsContainer = styled.div`
+    display:flex;
+    align-items:flex-start;
+    flex-wrap:wrap;
+`
 const StepCard = styled.div`
     display: flex;
-    align-items: center;
+    align-items: space-between;
+    justify-content:space-between;
     border: 1px solid var(--border);
     background-color: var(--background-white);
     border-radius: 8px;
@@ -20,6 +26,8 @@ const StepCard = styled.div`
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     padding: 20px;
+    min-height:180px;
+    flex:1;
 
     &:hover {
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -28,17 +36,19 @@ const StepCard = styled.div`
 
 const CardBody = styled.div`
     padding: 5px;
+    flex:1;
 `;
 
 const CardTitle = styled.h2`
     font-size: 1.2rem;
     margin-bottom: 10px;
     color: var(--accent-background);
+    flex:1;
 `;
 
 const CardText = styled.p`
     color: grey;
-    margin-bottom: 15px;
+    flex:1;
 `;
 
 const ArrowIcon = styled.div`
@@ -58,7 +68,7 @@ const H1 = styled.h1`
 `
 
 const CurrentUser = styled.span`
-    color: green;
+    color: var(--accent-background);
 `
 
 const Shadow = styled.div`
@@ -67,10 +77,10 @@ const Shadow = styled.div`
 
 const IntroText = styled.p`
     font-size:18px;
-    color:#232636;
+    color:grey;
     @media screen and (max-width:768px){
         font-size:14px;
     }
 `
 
-export { StepCard, CardBody, CardTitle, CardText, ArrowIcon, StepDetails, DashboardContainer, H1, CurrentUser, Shadow, IntroText };
+export { CardsContainer, StepCard, CardBody, CardTitle, CardText, ArrowIcon, StepDetails, DashboardContainer, H1, CurrentUser, Shadow, IntroText };

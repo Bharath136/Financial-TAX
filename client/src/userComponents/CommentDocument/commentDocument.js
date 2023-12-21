@@ -46,6 +46,7 @@ import {
     DocumentName,
     EmptyDocumentContainer,
 } from './styledComponents';
+import formatDateTime from '../../FormatDateTime/DateTime';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -77,9 +78,9 @@ const CommentDocument = () => {
         // Redirect if user is admin or staff
         if (user) {
             if (user.role === 'ADMIN') {
-                navigate('/admin-dashboard');
+                navigate('/admin/dashboard');
             } else if (user.role === 'STAFF') {
-                navigate('/staff-dashboard');
+                navigate('/staff/dashboard');
             }
         }
 
@@ -191,11 +192,6 @@ const CommentDocument = () => {
         }
     };
 
-    // Function to format date and time
-    const formatDateTime = (dateTimeString) => {
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        return new Date(dateTimeString).toLocaleString('en-US', options);
-    };
 
     // Function to handle form input changes
     const handleChange = (e) => {

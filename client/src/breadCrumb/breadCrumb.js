@@ -11,31 +11,31 @@ const BreadCrumb = () => {
             name: 'Tax Interview',
             step: 1,
             description: 'Complete your tax interview to provide necessary information.',
-            link: '/tax-interview'
+            link: '/user/tax-interview'
         },
         {
             name: 'Upload Document',
             step: 2,
             description: 'Upload the required documents for tax filing.',
-            link: '/upload-document'
+            link: '/user/upload-document'
         },
         {
             name: 'Add Comment',
             step: 3,
             description: 'Add comments if needed to provide additional details.',
-            link: '/comment-to-document'  
+            link: '/user/comment-to-document'  
         },
         {
             name: 'Tax Return Review',
             step: 4,
             description: 'Review your tax return for accuracy and completeness.',
-            link: '/tax-return-review',
+            link: '/user/tax-return-review',
         },
         {
             name: 'Payments',
             step: 5,
             description: 'Complete the payment process for your tax filing.',
-            link: '/make-payment',
+            link: '/user/make-payment',
         },
     ];
 

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import domain from '../../domain/domain';
 import axios from 'axios';
 import showAlert from '../../SweetAlert/sweetalert';
-import Sidebar from '../../userComponents/SideBar/sidebar';
 import { AddStaffButton, AddStaffCard, AddStaffContainer, AddStaffHeader, ButtonContainer, FormLabel, MarginBottom2 } from './styledComponents.js';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,9 +23,9 @@ const AddStaff = () => {
     useEffect(() => {
         if (currentUser) {
             if (currentUser.role === 'STAFF') {
-                navigate('/staff-dashboard')
+                navigate('/staff/dashboard')
             } else if (currentUser.role === 'CUSTOMER') {
-                navigate('/user-dashboard')
+                navigate('/user/dashboard')
             }
         }
     }, [currentUser, navigate])

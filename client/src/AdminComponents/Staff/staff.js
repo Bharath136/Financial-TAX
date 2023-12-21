@@ -6,7 +6,6 @@ import Select from 'react-select';
 
 // Components
 import domain from '../../domain/domain';
-import Sidebar from '../../userComponents/SideBar/sidebar';
 import EditModal from '../../SweetPopup/sweetPopup';
 import showAlert from '../../SweetAlert/sweetalert';
 import SweetLoading from '../../SweetLoading/SweetLoading';
@@ -142,9 +141,9 @@ const Staff = () => {
         // Redirect based on user role
         if (user) {
             if (user.role === 'STAFF') {
-                navigate('/staff-dashboard')
+                navigate('/staff/dashboard')
             } else if (user.role === 'CUSTOMER') {
-                navigate('/user-dashboard')
+                navigate('/user/dashboard')
             }
         }
         fetchData();

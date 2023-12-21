@@ -13,6 +13,8 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
             });
         }
 
+        console.log(new Date())
+
         // Store additional information about the uploaded file
         const fileInfo = {
             filename: req.file.filename,
@@ -217,7 +219,7 @@ const updateDocumentReviewStatus = async (req, res) => {
         review_status
     } = req.body
 
-    const updatedOn = new Date().toISOString();
+    const updatedOn = new Date();
 
     try {
         const updatedUserQuery = 'SELECT * FROM user_logins WHERE user_id = $1';

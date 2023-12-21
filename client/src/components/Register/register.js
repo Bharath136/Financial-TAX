@@ -89,7 +89,7 @@ const Register = () => {
                     <img src={authImage} alt='loginImage' className='img-fluid d-none d-md-block' />
                     <div className="register-card text-start">
                         <h2 className="register-header">Register</h2>
-                        <p className='signup-description mt-3'>Already have an account? <NavLink className='link' to='/login'> Sign In</NavLink></p>
+                        <p className='signup-description mt-3'>Already have an account? <NavLink className='link' to='/accounts/login'> Sign In</NavLink></p>
                         <form onSubmit={handleSubmit} className='form-container'>
                             {initialFormFields.map((field, index) => (
                                 <div className="mb-2 d-flex flex-column" key={index}>

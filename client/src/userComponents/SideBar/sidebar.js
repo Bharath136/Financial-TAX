@@ -58,18 +58,6 @@ const Sidebar = () => {
     const [activeMenuItems, setActiveMenuItems] = useState([]);
     const user = JSON.parse(localStorage.getItem('currentUser'));
 
-    useEffect(() => {
-        const token = localStorage.getItem('customerJwtToken');
-        if(token){
-            if (user.role === 'ADMIN') {
-                setActiveMenuItems(adminMenuItems);
-            } else if (user.role === 'STAFF') {
-                setActiveMenuItems(staffMenuItems);
-            } else {
-                setActiveMenuItems(menuItems);
-            }
-        }
-    }, []);
 
     const navigate = useNavigate();
 
@@ -81,7 +69,7 @@ const Sidebar = () => {
     // const [isDarkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+        
         
         if (user) {
             setCurrentUser(user.first_name);
@@ -96,7 +84,20 @@ const Sidebar = () => {
                 console.log(error)
             }
         }
+
         getMyStaff()
+        const token = localStorage.getItem('customerJwtToken');
+        if (token) {
+           if(user){
+               if (user.role === 'ADMIN') {
+                   setActiveMenuItems(adminMenuItems);
+               } else if (user.role === 'STAFF') {
+                   setActiveMenuItems(staffMenuItems);
+               } else {
+                   setActiveMenuItems(menuItems);
+               }
+           }
+        }
     }, [location.pathname]);
 
     // const onChangeMode = () => {
@@ -118,7 +119,7 @@ const Sidebar = () => {
 
                 const onLogout = () => {
                     changeRole();
-                    navigate('/login');
+                    navigate('/accounts/login');
                 };
 
                 const toggleSidebar = () => {
@@ -164,7 +165,7 @@ const Sidebar = () => {
                                     Logout
                                 </Link>
                             </button>
-                            {user.role === 'CUSTOMER' && profileId &&
+                            {user && user.role === 'CUSTOMER' && profileId &&
                                 <button className='btn d-flex align-items-center w-100' style={{ padding: hideSidebar && '14px ' }} onClick={handleEditClick} title='Profile'>
                                     <FaUser className="text-dark" size={25} /> <Link className="logout-link" style={{ display: hideSidebar && 'none' }}>
                                         My Staff

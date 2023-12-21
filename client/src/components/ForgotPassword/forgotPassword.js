@@ -76,7 +76,7 @@ const ForgotPassword = () => {
 
     return (
         <div className="container forgot-password-container">
-            <div className="forgot-password-card shadow text-start">
+            <div className="forgot-password-card text-start">
                 <h2 className="forgot-password-header mb-4">Forgot Password</h2>
                 <form onSubmit={handleResetPassword} className="form-container">
                     <div className="mb-2 d-flex flex-column">

@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import formatDateTime from '../../FormatDateTime/DateTime';
 
 // Components
-import Sidebar from '../SideBar/sidebar';
 import BreadCrumb from '../../breadCrumb/breadCrumb';
 import domain from '../../domain/domain';
 import { message } from '../../components/Footer/footer';
@@ -16,8 +16,6 @@ import pdf from '../../Assets/PDF_file_icon.svg.png';
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png';
 
-// Icons
-import { MdDelete } from 'react-icons/md';
 
 // Styled Components
 import {
@@ -37,7 +35,6 @@ import {
     Form,
     Th,
     Td,
-    DeleteButton,
     DocumentName,
     Lable,
     Select
@@ -68,9 +65,9 @@ const UploadDocument = () => {
     useEffect(() => {
         if (user) {
             if (user.role === 'ADMIN') {
-                navigate('/admin-dashboard')
+                navigate('/admin/dashboard')
             } else if (user.role === 'STAFF') {
-                navigate('/staff-dashboard')
+                navigate('/staff/dashboard')
             }
         }
         fetchDocuments();
@@ -182,30 +179,7 @@ const UploadDocument = () => {
         { label: 'Year', name: 'financial_year', type: 'number', placeholder: 'Ex:- 2023' },
     ];
 
-    // Function to format date and time
-    const formatDateTime = (dateTimeString) => {
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        return new Date(dateTimeString).toLocaleString('en-US', options);
-    };
-
-    // Event handler for document deletion
-    const onDeleteDocument = async (id) => {
-        setApiStatus(apiStatusConstants.inProgress)
-        const result = window.confirm("Are you sure you want to delete this document?");
-        if (result) {
-            try {
-                await axios.delete(`${domain.domain}/customer-tax-document/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-                setApiStatus(apiStatusConstants.success)
-                setDocuments((prevDocuments) => prevDocuments.filter(document => document.document_id !== id));
-            } catch (error) {
-                console.error('Error deleting document:', error.message);
-            }
-        }
-    };
+    
 
     // Event handler for document download
     const handleDownloadClick = async (document) => {
@@ -321,7 +295,6 @@ const UploadDocument = () => {
                                         <Th>Document</Th>
                                         <Th>Date & Time</Th>
                                         <Th>Review Status</Th>
-                                        <Th>Delete</Th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -345,11 +318,6 @@ const UploadDocument = () => {
                                             <Td>{formatDateTime(document.created_on)}</Td>
                                             <Td className={`status-${document.review_status.toLowerCase()}`}>
                                                 <strong>{document.review_status}</strong>
-                                            </Td>
-                                            <Td>
-                                                <DeleteButton title='delete document' onClick={() => onDeleteDocument(document.document_id)}>
-                                                    {<MdDelete size={25} className='text-danger' />}
-                                                </DeleteButton>
                                             </Td>
                                         </tr>
                                     ))}

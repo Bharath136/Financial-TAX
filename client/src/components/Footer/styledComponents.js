@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const SiteFooter = styled.div`
-  background-color: #6a5acd;
+  background-color: #2c3e50;
   color: #fff;
 `;
 
@@ -57,7 +57,7 @@ export const Address = styled.address`
 `;
 
 export const CopyRightSection = styled.div`
-  background-color: #5829a3;
+  background-color: #233445;
   width:100%;
   padding: 4rem;
   text-align: center;
@@ -70,7 +70,7 @@ export const MessageContainer = styled.div`
   margin-top: 5rem;
   padding: 3rem;
   text-align: center;
-  background-color:#1f2338;
+  background-color:#1f2336;
   border-radius:8px;
 `;
 

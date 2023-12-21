@@ -14,6 +14,13 @@
     opacity: 0.9;
     padding: 30px;
     border-radius: .2rem;
+    box-shadow: 0px 0px 30px rgb(221, 221, 221);
+}
+    
+@media screen and (max-width:768px) {
+    .register-card {
+        box-shadow: none;
+    }
 }
 
 .register-header {

@@ -85,9 +85,9 @@ const Register = () => {
     const renderRegistrationForm = () => {
         return (
             <div className='register-main-container'>
-                <div className="container register-container d-flex">
+                <div className="register-container d-flex">
                     <img src={authImage} alt='loginImage' className='img-fluid d-none d-md-block' />
-                    <div className="register-card shadow text-start">
+                    <div className="register-card text-start">
                         <h2 className="register-header">Register</h2>
                         <p className='signup-description mt-3'>Already have an account? <NavLink className='link' to='/login'> Sign In</NavLink></p>
                         <form onSubmit={handleSubmit} className='form-container'>

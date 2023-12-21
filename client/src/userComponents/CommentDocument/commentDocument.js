@@ -75,7 +75,7 @@ const CommentDocument = () => {
     // useEffect for initial data fetching
     useEffect(() => {
         // Redirect if user is admin or staff
-        if(user){
+        if (user) {
             if (user.role === 'ADMIN') {
                 navigate('/admin-dashboard');
             } else if (user.role === 'STAFF') {
@@ -117,8 +117,8 @@ const CommentDocument = () => {
 
     // Function to handle submitting a comment
     const handleCommentSubmit = async () => {
-        
-        if (!formData.comment || !formData.financial_year ) {
+
+        if (!formData.comment || !formData.financial_year) {
             setErrorMsg('Please fill in all required fields.');
             return;
         }
@@ -373,7 +373,7 @@ const CommentDocument = () => {
                                         <SendButton
                                             type="button"
                                             onClick={handleCommentSubmit}
-                                            // disabled={!formData.comment?.trim()}
+                                        // disabled={!formData.comment?.trim()}
                                         >
                                             Send Comment
                                         </SendButton>
@@ -470,18 +470,15 @@ const CommentDocument = () => {
 
 
     return (
-        <div className="d-flex">
-            <Sidebar />
-            <CommentDocumentContainer>
-                <BreadCrumb />
-                <H1>Comment on Document</H1>
-                <CommentDescription>
-                    Welcome to our Comment Document service! Add comments to the documents for your tax return process.
-                </CommentDescription>
-                {documents.length > 0 ? renderComponents() : EmptyDocumentsState()}
-                {message}
-            </CommentDocumentContainer>
-        </div>
+        <CommentDocumentContainer>
+            <BreadCrumb />
+            <H1>Comment on Document</H1>
+            <CommentDescription>
+                Welcome to our Comment Document service! Add comments to the documents for your tax return process.
+            </CommentDescription>
+            {documents.length > 0 ? renderComponents() : EmptyDocumentsState()}
+            {message}
+        </CommentDocumentContainer>
     );
 };
 

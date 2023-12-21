@@ -199,8 +199,8 @@ const StaffDashboard = () => {
                 getAllAssignedClients();
                 setApiStatus(apiStatusConstants.success);
                 setIsAuthenticated(false);
-            } 
-            if(response.data.error) {
+            }
+            if (response.data.error) {
                 // Handle API error
                 message('Error', response.data.error, 'error');
                 setApiStatus(apiStatusConstants.failure);
@@ -279,75 +279,72 @@ const StaffDashboard = () => {
     };
 
     return (
-        <div className='d-flex'>
-            <Sidebar />
-            <MainContainer>
-                <h2>Welcome <CurrentUser>{currentUser} </CurrentUser><span style={{fontSize:'18px', color:'grey'}}>(Team: {user.staff_team ? user.staff_team : "Your Not a team member"})</span></h2>
-                <DashboardContainer>
-                    {Object.entries(data).map(([key, value]) => (
-                        <SectionCard
-                            key={key}
-                            onClick={() => handleCardClick(key)}
-                            className={selectedCard === key ? 'selected' : ''}
-                            style={{
-                                transform: selectedCard === key ? 'scale(1.06)' : 'initial',
-                                borderBottom: selectedCard === key ? `6px solid ${value.color}` : '1px solid blue',
-                            }}
-                        >
+        <MainContainer>
+            <h2>Welcome <CurrentUser>{currentUser} </CurrentUser><span style={{ fontSize: '18px', color: 'grey' }}>(Team: {user.staff_team ? user.staff_team : "Your Not a team member"})</span></h2>
+            <DashboardContainer>
+                {Object.entries(data).map(([key, value]) => (
+                    <SectionCard
+                        key={key}
+                        onClick={() => handleCardClick(key)}
+                        className={selectedCard === key ? 'selected' : ''}
+                        style={{
+                            transform: selectedCard === key ? 'scale(1.06)' : 'initial',
+                            borderBottom: selectedCard === key ? `6px solid ${value.color}` : '1px solid blue',
+                        }}
+                    >
 
-                            <DashboardItem title={value.description} >
-                                <div className="dashboard-icon" style={{ color: value.color }}>{value.icon}</div>
-                                <div className="dashboard-text">
-                                    <h4>{value.description}</h4>
-                                    <p><strong>Total: </strong>{value.total}</p>
-                                </div>
-                            </DashboardItem>
-                        </SectionCard>
-                    ))}
-                </DashboardContainer>
+                        <DashboardItem title={value.description} >
+                            <div className="dashboard-icon" style={{ color: value.color }}>{value.icon}</div>
+                            <div className="dashboard-text">
+                                <h4>{value.description}</h4>
+                                <p><strong>Total: </strong>{value.total}</p>
+                            </div>
+                        </DashboardItem>
+                    </SectionCard>
+                ))}
+            </DashboardContainer>
 
-                {showSecretCodePopup && (
-                    <SecretCode
-                        isOpen={showSecretCodePopup}
-                        onRequestClose={() => setShowSecretCodePopup(false)}
-                        handleOpenClick={() => setShowSecretCodePopup(true)}
-                        onChangeAccess={onChangeAccess}
-                        myCode={user.secret_code}
-                        team={user.staff_team}
-                        selectedCard={selectedCard}
-                    />
-                )}
+            {showSecretCodePopup && (
+                <SecretCode
+                    isOpen={showSecretCodePopup}
+                    onRequestClose={() => setShowSecretCodePopup(false)}
+                    handleOpenClick={() => setShowSecretCodePopup(true)}
+                    onChangeAccess={onChangeAccess}
+                    myCode={user.secret_code}
+                    team={user.staff_team}
+                    selectedCard={selectedCard}
+                />
+            )}
 
-                {selectedCard ? (
-                    <DetailsContainer id="details-container">
-                        <h3>{data[selectedCard].description} Details:</h3>
-                        {selectedCard === 'Client Interview' && (
-                            <p>
-                                This step involves scheduling and conducting a client interview to gather necessary information for further processing.
-                            </p>
-                        )}
-                        {clients.length > 0 ? (
-                            <>
-                                {renderComponents()}
-                            </>
-                        ) : (
-                            <NoClientContainer>
-                                <img src={noClient} alt='img' className='img-fluid' />
-                                <H1>No Clients Assigned</H1>
-                                <p>Oops! It seems there are no clients assigned to you.</p>
-                            </NoClientContainer>
-                        )}
-                    </DetailsContainer>
-                ) :
-                    <>
-                        {clients.length > 0 && <div>
-                            <H1>All customers</H1>
+            {selectedCard ? (
+                <DetailsContainer id="details-container">
+                    <h3>{data[selectedCard].description} Details:</h3>
+                    {selectedCard === 'Client Interview' && (
+                        <p>
+                            This step involves scheduling and conducting a client interview to gather necessary information for further processing.
+                        </p>
+                    )}
+                    {clients.length > 0 ? (
+                        <>
                             {renderComponents()}
-                        </div>}
-                    </>
-                }
-            </MainContainer>
-        </div>
+                        </>
+                    ) : (
+                        <NoClientContainer>
+                            <img src={noClient} alt='img' className='img-fluid' />
+                            <H1>No Clients Assigned</H1>
+                            <p>Oops! It seems there are no clients assigned to you.</p>
+                        </NoClientContainer>
+                    )}
+                </DetailsContainer>
+            ) :
+                <>
+                    {clients.length > 0 && <div>
+                        <H1>All customers</H1>
+                        {renderComponents()}
+                    </div>}
+                </>
+            }
+        </MainContainer>
     );
 };
 

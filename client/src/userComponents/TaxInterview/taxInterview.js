@@ -222,19 +222,16 @@ const TaxInterview = () => {
 
     // Return JSX for the component
     return (
-        <div className='d-flex'>
-            <Sidebar />
-            <TaxInterviewContainer >
-                <BreadCrumb />
-                <H1>Tax Interview</H1>
-                <TaxDescription>
-                    Welcome to our Tax Interview service! Download the tax notes below, and upload the necessary tax documents to get started on your tax return process.
-                </TaxDescription>
+        <TaxInterviewContainer >
+            <BreadCrumb />
+            <H1>Tax Interview</H1>
+            <TaxDescription>
+                Welcome to our Tax Interview service! Download the tax notes below, and upload the necessary tax documents to get started on your tax return process.
+            </TaxDescription>
 
-                {documents.length > 0 ? renderComponents() : EmptyDocumentsState()}
-                {showFooter && message}
-            </TaxInterviewContainer>
-        </div>
+            {documents.length > 0 ? renderComponents() : EmptyDocumentsState()}
+            {showFooter && message}
+        </TaxInterviewContainer>
     );
 }
 

@@ -5,6 +5,7 @@
     min-height: 10vh;
     background-color: rgb(255, 255, 255);
     border-bottom: 1px solid var(--border);
+    opacity: 0.9;
 }
 
 .navbar-image {
@@ -27,7 +28,6 @@
 }
 
 .logo-text {
-    font-family: 'Bree Serif';
     font-style: italic;
     font-weight: bold;
     color: var(--accent-background);
@@ -124,4 +124,7 @@
     color: aliceblue;
     margin-right: 10px;
     cursor: pointer;
-}
+} 
+
+
+

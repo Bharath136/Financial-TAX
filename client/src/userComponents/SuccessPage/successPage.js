@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import domain from '../../domain/domain';
+import axios from 'axios';
 
 // Styled components
 const PaymentContainer = styled.div`
@@ -8,6 +10,7 @@ const PaymentContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
+  width:100%;
 `;
 
 const PaymentContent = styled.div`
@@ -61,6 +64,35 @@ const SuccessPage = () => {
         navigate('/');
     };
 
+  const handleExecutePayment = async () => {
+    try {
+
+      // Extract payerId and paymentId from the current URL
+      const params = new URLSearchParams(window.location.search);
+      const payerId = params.get('PayerID');
+      const paymentId = params.get('paymentId');
+
+      // Check if both payerId and paymentId are available
+      if (!payerId || !paymentId) {
+        throw new Error('PayerID or paymentId not found in the URL');
+      }
+
+      // Pass payerId and paymentId as query parameters
+      const response = await axios.get(`${domain.domain }/paypal/execute-payment`, {
+        params: {
+          paymentId: paymentId,
+          payerId: payerId,
+        },
+      });
+
+      console.log('Payment executed successfully:', response.data.payment);
+      // Optionally provide feedback to the user on successful payment execution
+      // You can display a success message or navigate to a success page.
+    } catch (error) {
+      console.error('Error executing payment:', error);
+    } 
+  };
+
     return (
         <PaymentContainer>
             <PaymentContent>
@@ -68,7 +100,11 @@ const SuccessPage = () => {
                 <SuccessParagraph>
                     Thank you for your payment. Your tax return has been processed successfully.
                 </SuccessParagraph>
-                <ReturnHomeButton onClick={handleReturnHome}>Return Home</ReturnHomeButton>
+                {/* <ReturnHomeButton onClick={handleReturnHome}>Return Home</ReturnHomeButton> */}
+          <button onClick={handleExecutePayment}  className='w-100'>
+            
+              'Execute Payment'
+          </button>
             </PaymentContent>
         </PaymentContainer>
     );

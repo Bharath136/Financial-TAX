@@ -227,8 +227,7 @@ const Clients = () => {
 
     // Return JSX for the component
     return (
-        <div className="d-flex">
-            <Sidebar />
+        <>
             <ClientListContainer>
                 <H1>Clients</H1>
 
@@ -249,7 +248,7 @@ const Clients = () => {
                 handleOpenClick={handleEditClick}
                 isEditable={true}
             />
-        </div>
+        </>
     );
 };
 

@@ -126,7 +126,7 @@ const UploadDocument = () => {
             return;
         }
 
-        
+
         try {
             setApiStatus(apiStatusConstants.inProgress)
             const formData = new FormData();
@@ -273,7 +273,7 @@ const UploadDocument = () => {
                                             name={field.name}
                                             value={data[field.name] || ''}
                                             onChange={handleChange}
-                                            
+
                                         >
                                             <option value="">{field.placeholder}</option>
                                             {field.options.map(type => (
@@ -289,7 +289,7 @@ const UploadDocument = () => {
                                             name={field.name}
                                             value={data[field.name] || ''}
                                             onChange={handleChange}
-                                            
+
                                         />
                                     )}
                                 </InputFieldsSubContainer>
@@ -367,19 +367,16 @@ const UploadDocument = () => {
 
     // Return the JSX for the component
     return (
-        <div className='d-flex'>
-            <Sidebar />
-            <TaxInterviewContainer onDragOver={handleDragOver} onDrop={handleDrop}>
-                <BreadCrumb />
-                <H1>Upload Tax Document</H1>
-                <TaxDescription>
-                    Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
-                </TaxDescription>
+        <TaxInterviewContainer onDragOver={handleDragOver} onDrop={handleDrop}>
+            <BreadCrumb />
+            <H1>Upload Tax Document</H1>
+            <TaxDescription>
+                Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
+            </TaxDescription>
 
-                {renderComponents()}
-                {message}
-            </TaxInterviewContainer>
-        </div>
+            {renderComponents()}
+            {message}
+        </TaxInterviewContainer>
     );
 }
 

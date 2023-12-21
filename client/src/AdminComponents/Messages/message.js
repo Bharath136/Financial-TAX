@@ -114,36 +114,33 @@ const ContactView = () => {
     };
 
     return (
-        <div className="d-flex">
-            <Sidebar />
-            <Container>
-                <H1>Contact Details and Messages</H1>
-                {loading ? (
-                    <p>Loading...</p>
-                ) : contacts.length === 0 ? (
-                    <NoContactsMessage>No messages available.</NoContactsMessage>
-                ) : (
-                    contacts.map((contact) => (
-                        <ContactCard key={contact.id}>
-                            <ContactName>{contact.name}</ContactName>
-                            <ContactDetails>
-                                <ContactInfo>
-                                    <strong>Email:</strong> {contact.email_address}
-                                </ContactInfo>
-                                <ContactInfo>
-                                    <strong>Mobile Number:</strong> {contact.mobile_number || 'N/A'}
-                                </ContactInfo>
-                                <ContactInfo>
-                                    <strong>ID:</strong> {contact.id}
-                                </ContactInfo>
-                            </ContactDetails>
-                            <Message>{contact.message}</Message>
-                            <DeleteButton onClick={() => handleDeleteContact(contact.id)}>Delete</DeleteButton>
-                        </ContactCard>
-                    ))
-                )}
-            </Container>
-        </div>
+        <Container>
+            <H1>Contact Details and Messages</H1>
+            {loading ? (
+                <p>Loading...</p>
+            ) : contacts.length === 0 ? (
+                <NoContactsMessage>No messages available.</NoContactsMessage>
+            ) : (
+                contacts.map((contact) => (
+                    <ContactCard key={contact.id}>
+                        <ContactName>{contact.name}</ContactName>
+                        <ContactDetails>
+                            <ContactInfo>
+                                <strong>Email:</strong> {contact.email_address}
+                            </ContactInfo>
+                            <ContactInfo>
+                                <strong>Mobile Number:</strong> {contact.mobile_number || 'N/A'}
+                            </ContactInfo>
+                            <ContactInfo>
+                                <strong>ID:</strong> {contact.id}
+                            </ContactInfo>
+                        </ContactDetails>
+                        <Message>{contact.message}</Message>
+                        <DeleteButton onClick={() => handleDeleteContact(contact.id)}>Delete</DeleteButton>
+                    </ContactCard>
+                ))
+            )}
+        </Container>
     );
 };
 

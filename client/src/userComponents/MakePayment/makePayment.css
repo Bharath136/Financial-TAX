@@ -5,5 +5,5 @@
     width: 100%;
     text-align: start;
     overflow: auto;
-    background-color: var(--cc-page-background);
+    background-color: var(--main-background);
 }

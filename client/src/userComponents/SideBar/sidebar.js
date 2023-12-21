@@ -29,28 +29,28 @@ import EditModal from '../../SweetPopup/sweetPopup';
 import axios from 'axios';
 
 const menuItems = [
-    { path: '/user-dashboard', label: 'Home', icon: <MdDashboardCustomize size={25} /> },
-    { path: '/tax-interview', label: 'Tax Interview', icon: <FaUser size={25} /> },
-    { path: '/upload-document', label: 'Upload Document', icon: <FaFileUpload size={25} /> },
-    { path: '/comment-to-document', label: 'Add Comment', icon: <FaComments size={25} /> },
-    { path: '/tax-return-review', label: 'Taxreturn Review', icon: <HiDocumentDuplicate size={25} /> },
-    { path: '/make-payment', label: 'Payments', icon: <MdPayments size={25} /> },
+    { path: '/user/dashboard', label: 'Home', icon: <MdDashboardCustomize size={25} /> },
+    { path: '/user/tax-interview', label: 'Tax Interview', icon: <FaUser size={25} /> },
+    { path: '/user/upload-document', label: 'Upload Document', icon: <FaFileUpload size={25} /> },
+    { path: '/user/comment-to-document', label: 'Add Comment', icon: <FaComments size={25} /> },
+    { path: '/user/tax-return-review', label: 'Taxreturn Review', icon: <HiDocumentDuplicate size={25} /> },
+    { path: '/user/make-payment', label: 'Payments', icon: <MdPayments size={25} /> },
     // { path: '/my-tax-documents', label: 'Documents', icon: <FaFileAlt size={25} /> },
 ];
 
 const staffMenuItems = [
-    { path: '/staff-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
-    { path: '/staff-assigned-clients', label: 'Clients', icon: <FaUser size={25} /> },
-    { path: '/staff-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/staff-customer-tax-return', label: 'Tax Return', icon: <FaCheck size={25} /> }
+    { path: '/staff/dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
+    { path: '/staff/assigned-clients', label: 'Clients', icon: <FaUser size={25} /> },
+    { path: '/staff/tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
+    { path: '/staff/customer-tax-return', label: 'Tax Return', icon: <FaCheck size={25} /> }
 ];
 
 const adminMenuItems = [
-    { path: '/admin-dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
-    { path: '/admin-clients', label: 'Clients', icon: <FaUser size={25} /> },
-    { path: '/admin-staff', label: 'Staff', icon: <FaUser size={25} /> },
-    { path: '/admin-client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
-    { path: '/admin-add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> },
+    { path: '/admin/dashboard', label: 'Dashboard', icon: <MdDashboardCustomize size={25} /> },
+    { path: '/admin/clients', label: 'Clients', icon: <FaUser size={25} /> },
+    { path: '/admin/staff', label: 'Staff', icon: <FaUser size={25} /> },
+    { path: '/admin/client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
+    { path: '/admin/add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> },
     { path: '/admin/user-contact/info', label: 'Contacts', icon: <RiContactsFill  size={25}/>}
 ];
 

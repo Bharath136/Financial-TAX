@@ -26,7 +26,7 @@ const TaxReturnDocument = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(currentUser){
+        if (currentUser) {
             if (currentUser.role === 'ADMIN') {
                 navigate('/admin-dashboard')
             } else if (currentUser.role === 'CUSTOMER') {
@@ -87,7 +87,7 @@ const TaxReturnDocument = () => {
         if (!data.document_name || !data.document_type || !data.financial_year || !selectedFile) {
             setErrorMsg('Please fill in all required fields and select a file to upload.');
             return;
-        }else{
+        } else {
             setErrorMsg("")
         }
 
@@ -178,7 +178,7 @@ const TaxReturnDocument = () => {
                     name={field.name}
                     value={data[field.name] || ''}
                     onChange={handleChange}
-                    
+
                 >
                     <option value="">{field.placeholder}</option>
                     {field.options.map(type => (
@@ -194,7 +194,7 @@ const TaxReturnDocument = () => {
                     name={field.name}
                     value={selectedClient}
                     onChange={handleClientChange}
-                    
+
                 >
                     <option value="">Select a client</option>
                     {myClients.map(client => (
@@ -288,87 +288,85 @@ const TaxReturnDocument = () => {
 
 
     return (
-        <div className='d-flex'>
-            <Sidebar />
-            <TaxDocumentContainer className="tax-interview-container" onDragOver={handleDragOver} onDrop={handleDrop}>
-                <H1>Upload Tax Return Document</H1>
-                <TaxDescription className='tax-description'>
-                    Welcome to our Tax Return service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
-                </TaxDescription>
-                <CtaSection className='cta-section shadow'>
-                    <H1>Enter Tax Return Document Details Below</H1>
-                    <Form onSubmit={handleFileUpload}>
-                        <InputFieldsContainer className="row">
-                            {initialFormFields.map((field, index) => (
-                                <InputFieldsSubContainer className="col-lg-4 col-md-6 col-sm-12" key={index}>
-                                    <Lable htmlFor={field.name}>
-                                        <strong>{field.label}</strong>
-                                    </Lable>
-                                    {renderInputFields(field)}
-                                </InputFieldsSubContainer>
-                            ))}
-                        </InputFieldsContainer>
-                        <input type="file" onChange={handleFileChange} name='documents' style={{ display: 'none' }} />
-                        <DragDropArea onClick={() => document.querySelector('input[type="file"]').click()}>
-                            <p>Drag & Drop or Click to Upload</p>
-                            <DocumentImage src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" />
-                        </DragDropArea>
-                        {errorMsg && <p className='text-danger'>{errorMsg}</p>}
-                        {selectedFile && (
-                            <div style={{ backgroundColor:'#cdddf7',padding:"20px", marginBottom:'20px'}}>
-                                <p className='m-0'>Selected File: {selectedFile.name}</p>
-                            </div>
-                        )}
-                        <ButtonContainer>
-                            <UploadButton type='submit'>Upload Tax Documents</UploadButton>
-                        </ButtonContainer>
-                    </Form>
-                    
+        <TaxDocumentContainer className="tax-interview-container" onDragOver={handleDragOver} onDrop={handleDrop}>
+            <H1>Upload Tax Return Document</H1>
+            <TaxDescription className='tax-description'>
+                Welcome to our Tax Return service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
+            </TaxDescription>
+            <CtaSection className='cta-section shadow'>
+                <H1>Enter Tax Return Document Details Below</H1>
+                <Form onSubmit={handleFileUpload}>
+                    <InputFieldsContainer className="row">
+                        {initialFormFields.map((field, index) => (
+                            <InputFieldsSubContainer className="col-lg-4 col-md-6 col-sm-12" key={index}>
+                                <Lable htmlFor={field.name}>
+                                    <strong>{field.label}</strong>
+                                </Lable>
+                                {renderInputFields(field)}
+                            </InputFieldsSubContainer>
+                        ))}
+                    </InputFieldsContainer>
+                    <input type="file" onChange={handleFileChange} name='documents' style={{ display: 'none' }} />
+                    <DragDropArea onClick={() => document.querySelector('input[type="file"]').click()}>
+                        <p>Drag & Drop or Click to Upload</p>
+                        <DocumentImage src='https://www.computerhope.com/jargon/d/doc.png' alt="Document" />
+                    </DragDropArea>
+                    {errorMsg && <p className='text-danger'>{errorMsg}</p>}
+                    {selectedFile && (
+                        <div style={{ backgroundColor: '#cdddf7', padding: "20px", marginBottom: '20px' }}>
+                            <p className='m-0'>Selected File: {selectedFile.name}</p>
+                        </div>
+                    )}
+                    <ButtonContainer>
+                        <UploadButton type='submit'>Upload Tax Documents</UploadButton>
+                    </ButtonContainer>
+                </Form>
 
-                    {documents.length > 0 && (
-                        <DocumentTableContainer>
-                            <H1>Uploaded Tax Return Documents</H1>
-                            <DocumentTable>
-                                <thead>
-                                    <tr>
-                                        <Th>Document</Th>
-                                        <Th>Date & Time</Th>
-                                        <Th>Payment Amount</Th>
-                                        <Th>Payment Status</Th>
-                                        <Th>Delete</Th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {documents.map((document) => (
-                                        <tr key={document.taxreturn_id}>
-                                            <Td>
-                                                <div className='d-flex flex-column'>
-                                                    {/* <div className='d-flex align-items-center justify-content-center'> */}
-                                                    <a
-                                                        href={`${domain.domain}/tax-return-document/download/${document.taxreturn_id}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        download
-                                                        onClick={(e) => handleDownloadClick(document)}
-                                                    >
-                                                        {renderDocumentThumbnail(document)}
-                                                    </a>
-                                                    {/* <FaDownload size={25} />
+
+                {documents.length > 0 && (
+                    <DocumentTableContainer>
+                        <H1>Uploaded Tax Return Documents</H1>
+                        <DocumentTable>
+                            <thead>
+                                <tr>
+                                    <Th>Document</Th>
+                                    <Th>Date & Time</Th>
+                                    <Th>Payment Amount</Th>
+                                    <Th>Payment Status</Th>
+                                    <Th>Delete</Th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {documents.map((document) => (
+                                    <tr key={document.taxreturn_id}>
+                                        <Td>
+                                            <div className='d-flex flex-column'>
+                                                {/* <div className='d-flex align-items-center justify-content-center'> */}
+                                                <a
+                                                    href={`${domain.domain}/tax-return-document/download/${document.taxreturn_id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    download
+                                                    onClick={(e) => handleDownloadClick(document)}
+                                                >
+                                                    {renderDocumentThumbnail(document)}
+                                                </a>
+                                                {/* <FaDownload size={25} />
                                                     </div> */}
-                                                    <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
-                                                </div>
+                                                <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
+                                            </div>
 
-                                            </Td>
-                                            <Td>{formatDateTime(document.created_on)}</Td>
-                                            <Td style={{
-                                                color:
-                                                    document.payment_status === 'Pending' ? 'orange' :
-                                                        document.payment_status === 'Rejected' ? 'red' :
-                                                            document.payment_status === 'Reviewed' ? 'green' :
-                                                                'inherit'
-                                            }}><strong>{document.payment_status}</strong></Td>
-                                            <Td>{document.payment_amount}</Td>
-                                            {/* <Td style={{
+                                        </Td>
+                                        <Td>{formatDateTime(document.created_on)}</Td>
+                                        <Td style={{
+                                            color:
+                                                document.payment_status === 'Pending' ? 'orange' :
+                                                    document.payment_status === 'Rejected' ? 'red' :
+                                                        document.payment_status === 'Reviewed' ? 'green' :
+                                                            'inherit'
+                                        }}><strong>{document.payment_status}</strong></Td>
+                                        <Td>{document.payment_amount}</Td>
+                                        {/* <Td style={{
                                                 color:
                                                     document.review_status === 'Pending' ? 'orange' :
                                                         document.review_status === 'Rejected' ? 'red' :
@@ -377,21 +375,20 @@ const TaxReturnDocument = () => {
                                             }}>
                                                 <strong>{document.review_status}</strong>
                                             </Td> */}
-                                            
-                                            <Td>
-                                                <DeleteButton title='delete document' onClick={() => onDeleteDocument(document.taxreturn_id)}>
-                                                    {<MdDelete size={25} className='text-danger' />}
-                                                </DeleteButton>
-                                            </Td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </DocumentTable>
-                        </DocumentTableContainer>
-                    )}
-                </CtaSection>
-            </TaxDocumentContainer>
-        </div>
+
+                                        <Td>
+                                            <DeleteButton title='delete document' onClick={() => onDeleteDocument(document.taxreturn_id)}>
+                                                {<MdDelete size={25} className='text-danger' />}
+                                            </DeleteButton>
+                                        </Td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </DocumentTable>
+                    </DocumentTableContainer>
+                )}
+            </CtaSection>
+        </TaxDocumentContainer>
     );
 }
 

@@ -22,8 +22,8 @@ const createTaxReturnPayment = async (req, res) => {
                 payment_method: 'paypal',
             },
             redirect_urls: {
-                return_url: 'http://localhost:3000/tax-return/success',
-                cancel_url: 'http://localhost:3000/tax-return/cancel',
+                return_url: 'http://localhost:3000/user/tax-return/success',
+                cancel_url: 'http://localhost:3000/user/tax-return/cancel',
             },
             transactions: [{
                 item_list: {
@@ -48,7 +48,8 @@ const createTaxReturnPayment = async (req, res) => {
                 res.status(500).json({ error: `Failed to create tax return payment: ${error.message}` });
             } else {
                 const approvalUrl = payment.links.find(link => link.rel === 'approval_url').href;
-                res.json({ approvalUrl });
+                const paymentId = payment.id; // Extract payment ID
+                res.json({ approvalUrl, paymentId });
             }
         });
     } catch (error) {
@@ -57,11 +58,12 @@ const createTaxReturnPayment = async (req, res) => {
     }
 };
 
+
 // Execute the tax return payment
 const executeTaxReturnPayment = async (req, res) => {
     try {
-        const { paymentId, payerId } = req.body;
-        console.log(req.body)
+        const { paymentId, payerId } = req.query;
+        console.log(req.query)
 
         const executeData = {
             payer_id: payerId,
@@ -79,6 +81,7 @@ const executeTaxReturnPayment = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 module.exports = {
     createTaxReturnPayment,

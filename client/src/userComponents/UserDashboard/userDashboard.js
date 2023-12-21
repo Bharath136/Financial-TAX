@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../SideBar/sidebar';
 // import { FaFileAlt, FaClock, FaCheck, FaMoneyBillAlt, FaClipboardList } from 'react-icons/fa';
-import {  FaUser, FaFileUpload, FaComment, FaClipboardCheck, FaMoneyBillAlt } from "react-icons/fa";
+import { FaUser, FaFileUpload, FaComment, FaClipboardCheck, FaMoneyBillAlt } from "react-icons/fa";
 
 import { FaAnglesRight } from "react-icons/fa6";
 import { Link, useNavigate } from 'react-router-dom';
@@ -24,7 +24,7 @@ const UserDashboard = () => {
             }
             setCurrentUser(user.first_name);
         }
-    }, [user,navigate]);
+    }, [user, navigate]);
 
     const steps = [
         {
@@ -68,43 +68,40 @@ const UserDashboard = () => {
 
 
     return (
-        <div className='d-flex'>
-            <Sidebar />
-            <DashboardContainer>
-                <H1>Welcome <CurrentUser className="current-user">{currentUser}</CurrentUser> <span style={{ fontSize: '16px' }}>(Current Step: {user.current_step ? user.current_step : "Null"})</span></H1>
-                <div className="intro-section">
-                    <IntroText>
-                        Embark on a hassle-free tax filing journey with us. Our user-friendly platform ensures a seamless experience
-                        as you navigate through the various steps. Take control of your financial responsibilities and complete your
-                        tax filing effortlessly in 5 simple steps.
-                    </IntroText>
-                </div>
+        <DashboardContainer>
+            <H1>Welcome <CurrentUser className="current-user">{currentUser}</CurrentUser> <span style={{ fontSize: '16px' }}>(Current Step: {user.current_step ? user.current_step : "Null"})</span></H1>
+            <div className="intro-section">
+                <IntroText>
+                    Embark on a hassle-free tax filing journey with us. Our user-friendly platform ensures a seamless experience
+                    as you navigate through the various steps. Take control of your financial responsibilities and complete your
+                    tax filing effortlessly in 5 simple steps.
+                </IntroText>
+            </div>
 
-                <div className='container p-0 m-0'>
-                    <div className='row'>
-                        {steps.map((step) => (
-                            <div key={step.step} className='col-12 col-lg-4 col-md-6'>
-                                <StepCard>
-                                    <CardBody>
-                                        <CardTitle>
-                                            {step.icon} {step.name}
-                                        </CardTitle>
-                                        <CardText>{step.description}</CardText>
-                                        <StepDetails>
-                                            <div>Step: {step.step}</div>
-                                            <Link to={step.link}>
-                                                Continue <FaAnglesRight />
-                                            </Link>
-                                        </StepDetails>
-                                    </CardBody>
-                                </StepCard>
-                            </div>
-                        ))}
-                    </div>
+            <div className='container p-0 m-0'>
+                <div className='row'>
+                    {steps.map((step) => (
+                        <div key={step.step} className='col-12 col-lg-4 col-md-6'>
+                            <StepCard>
+                                <CardBody>
+                                    <CardTitle>
+                                        {step.icon} {step.name}
+                                    </CardTitle>
+                                    <CardText>{step.description}</CardText>
+                                    <StepDetails>
+                                        <div>Step: {step.step}</div>
+                                        <Link to={step.link}>
+                                            Continue <FaAnglesRight />
+                                        </Link>
+                                    </StepDetails>
+                                </CardBody>
+                            </StepCard>
+                        </div>
+                    ))}
                 </div>
-                {message}
-            </DashboardContainer>
-        </div>
+            </div>
+            {message}
+        </DashboardContainer>
     );
 };
 

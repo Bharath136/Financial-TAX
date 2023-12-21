@@ -108,8 +108,7 @@ const AssignedClientList = () => {
     };
 
     return (
-        <div className='d-flex'>
-            <Sidebar />
+        <>
             <ClientListContainer>
                 <H1>Clients</H1>
                 {myClients.length > 0 ? renderComponents() :
@@ -127,7 +126,7 @@ const AssignedClientList = () => {
                 handleOpenClick={handleEditClick}
                 isEditable={false}
             />
-        </div>
+        </>
     );
 };
 

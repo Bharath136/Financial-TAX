@@ -1,9 +1,9 @@
 import React from 'react';
-import './about.css';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Footer from '../Footer/footer';
+import './about.css'; // Make sure to import your CSS file
 
 const About = () => {
     const sliderSettings = {
@@ -47,7 +47,7 @@ const About = () => {
         <div>
             <div id="about" className="about-container">
                 <div className="container">
-                    <h2 style={{color:`var(--headings)`}} className="section-title mb-5">ABOUT US</h2>
+                    <h2 className="section-title mb-5">ABOUT US</h2>
                     <div className="row">
                         <div className="col-lg-6 text-secondary text-start">
                             <h2 className="section-title">About Our Financial Tax System</h2>
@@ -71,7 +71,7 @@ const About = () => {
                                         <img
                                             src={image.src}
                                             alt={image.alt}
-                                            style={{ width: '100%', maxHeight: '500px' }}
+                                            className="slider-image"
                                         />
                                     </div>
                                 ))}
@@ -80,7 +80,7 @@ const About = () => {
                     </div>
                 </div>
             </div>
-            <Footer/>
+            <Footer />
         </div>
     );
 };

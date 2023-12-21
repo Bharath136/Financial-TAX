@@ -107,7 +107,7 @@ const ClientDocuments = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(user){
+        if (user) {
             if (user.role === 'ADMIN') {
                 navigate('/admin-dashboard')
             } else if (user.role === 'CUSTOMER') {
@@ -116,7 +116,7 @@ const ClientDocuments = () => {
         }
         fetchDocuments();
         fetchClients();
-    }, []);
+    }, [navigate]);
 
     const handleDownloadClick = async (document) => {
         try {
@@ -198,7 +198,7 @@ const ClientDocuments = () => {
             showAlert({ title: 'Comment Deleted Successfully!', icon: 'success', confirmButtonText: 'Ok' });
         } catch (error) {
             console.error('Error deleting comment:', error);
-        } 
+        }
     };
 
     const onChangeCommentStatus = async (id, statusOption) => {
@@ -211,11 +211,11 @@ const ClientDocuments = () => {
                     headers: { Authorization: `Bearer ${accessToken}` },
                 }
             );
-            if(response.status === 200){
+            if (response.status === 200) {
                 setApiStatus(apiStatusConstants.success);
                 handleGetComments(selectedDocument);
                 showAlert({ title: 'Comment Status Updated Successfully!', icon: 'success', confirmButtonText: 'Ok' });
-            }else{
+            } else {
                 setApiStatus(apiStatusConstants.failure);
             }
         } catch (error) {
@@ -285,7 +285,7 @@ const ClientDocuments = () => {
                             </thead>
                             <tbody>
                                 {filteredDocuments.map((document) => (
-                                    
+
                                     <tr key={document.document_id}>
                                         <Td title='Download'>
                                             <div className='d-flex flex-column'> <a
@@ -331,8 +331,8 @@ const ClientDocuments = () => {
                                         <Td><ViewButton type="button" onClick={() => handleGetComments(document)} className="view-button button">
                                             View
                                         </ViewButton></Td>
-                                    </tr> 
-                                    ))}
+                                    </tr>
+                                ))}
                             </tbody>
                         </DocumentTable>
                         {showComments && (
@@ -413,24 +413,21 @@ const ClientDocuments = () => {
         }
     }
     return (
-        <div className="d-flex">
-            <Sidebar />
-            <ClientDocumentContainer >
-                <H1>Tax Documents</H1>
-                <Description >
-                    Welcome to our Tax Interview service! Download the tax notes below, fill in
-                    the required information, and upload the necessary tax documents to get
-                    started on your tax return process.
-                </Description>
-                {documents.length > 0 ? renderComponents() : 
-                    <NoDocumentsContainer>
-                        <img src={noDocuments} alt='img' className='img-fluid' />
-                        <H1>No Clients Assigned</H1>
-                        <p>Oops! It seems there are no clients assigned to you.</p>
-                    </NoDocumentsContainer>
-                }
-            </ClientDocumentContainer>
-        </div>
+        <ClientDocumentContainer >
+            <H1>Tax Documents</H1>
+            <Description >
+                Welcome to our Tax Interview service! Download the tax notes below, fill in
+                the required information, and upload the necessary tax documents to get
+                started on your tax return process.
+            </Description>
+            {documents.length > 0 ? renderComponents() :
+                <NoDocumentsContainer>
+                    <img src={noDocuments} alt='img' className='img-fluid' />
+                    <H1>No Clients Assigned</H1>
+                    <p>Oops! It seems there are no clients assigned to you.</p>
+                </NoDocumentsContainer>
+            }
+        </ClientDocumentContainer>
     );
 };
 

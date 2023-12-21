@@ -140,7 +140,7 @@ const Staff = () => {
 
     useEffect(() => {
         // Redirect based on user role
-        if(user){
+        if (user) {
             if (user.role === 'STAFF') {
                 navigate('/staff-dashboard')
             } else if (user.role === 'CUSTOMER') {
@@ -388,101 +388,101 @@ const Staff = () => {
                             </FilterSelect>
                         </div>
                     </ClientsHeaderContainer>
-                    <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize:'14px' }} className='p-3 mt-2'>
+                    <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize: '14px' }} className='p-3 mt-2'>
                         <strong>Note: </strong>
                         <lable>Make sure that selecting a team should be done only once. Changing it repeatedly may cause issues for your website.</lable>
                     </div>
 
                     <Container>
                         {filteredStaff.length > 0 ?
-                        <Table>
-                            <thead>
-                                <tr>
-                                    {/* <Th>ID</Th> */}
-                                    <Th>Name</Th>
-                                    <Th>Email</Th>
-                                    {/* <Th>Phone</Th> */}
-                                    {/* <Th>Secret Code</Th> */}
-                                    <Th>Select Team</Th>
-                                    <Th>Assign Clients</Th>
-                                    <Th>Assigned Clients</Th>
-                                    <Th>Profile Actions</Th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredStaff.map((staff) => (
-                                    <tr key={staff.user_id}>
-                                        {/* <Td>{staff.user_id}</Td> */}
-                                        <Td>{staff.first_name}</Td>
-                                        <Td>{staff.email_address}</Td>
-                                        {/* <Td>{staff.contact_number}</Td> */}
-                                        {/* <Td>{staff.secret_code}</Td> */}
-                                        {staff.staff_team ? <Td>{staff.staff_team}</Td> : <Td>
-                                            <div className='d-flex'>
-                                                <Select
-                                                    options={dataOrder.map((team) => ({
-                                                        value: team,
-                                                        label: team,
-                                                        data: team,
-                                                    }))}
-                                                    onChange={handleTeamChange}
-                                                    placeholder="Select Team"
-                                                    required
-                                                />
-                                                <ExecuteButton
-                                                    onClick={() => handleStaffTeamUpdate(staff.user_id)}
-                                                    disabled={!team}
-                                                >
-                                                    Add
-                                                </ExecuteButton>
-                                            </div>
-                                        </Td>}
-                                        <Td>
-                                            <div className='d-flex'>
-                                                <Select
-                                                    options={unassignedClients.map((client) => ({
-                                                        value: client.user_id,
-                                                        label: getClientLabel(client),
-                                                        data: client,
-                                                    }))}
-                                                    onChange={handleActionChange}
-                                                    placeholder="Select Client"
-                                                />
-                                                <ExecuteButton
-                                                    onClick={() => handleAssign(staff.user_id)}
-                                                    disabled={!selectedAction }
-                                                >
-                                                    Assign
-                                                </ExecuteButton>
-
-                                            </div>
-                                        </Td>
-                                        <Td>
-                                            <ViewButton
-                                                onClick={() => getAssignedClients(staff.user_id)}
-                                            >
-                                                View
-                                            </ViewButton>
-                                        </Td>
-                                        <Td>
-                                            <div className='d-flex'>
-                                                <Select
-                                                    options={actionOptions}
-                                                    onChange={handleActionChange}
-                                                    placeholder="Select Action"
-                                                />
-                                                <ExecuteButton
-                                                    onClick={() => handleExecuteAction(staff.user_id)}
-                                                >
-                                                    Execute
-                                                </ExecuteButton>
-                                            </div>
-                                        </Td>
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        {/* <Th>ID</Th> */}
+                                        <Th>Name</Th>
+                                        <Th>Email</Th>
+                                        {/* <Th>Phone</Th> */}
+                                        {/* <Th>Secret Code</Th> */}
+                                        <Th>Select Team</Th>
+                                        <Th>Assign Clients</Th>
+                                        <Th>Assigned Clients</Th>
+                                        <Th>Profile Actions</Th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                        :
+                                </thead>
+                                <tbody>
+                                    {filteredStaff.map((staff) => (
+                                        <tr key={staff.user_id}>
+                                            {/* <Td>{staff.user_id}</Td> */}
+                                            <Td>{staff.first_name}</Td>
+                                            <Td>{staff.email_address}</Td>
+                                            {/* <Td>{staff.contact_number}</Td> */}
+                                            {/* <Td>{staff.secret_code}</Td> */}
+                                            {staff.staff_team ? <Td>{staff.staff_team}</Td> : <Td>
+                                                <div className='d-flex'>
+                                                    <Select
+                                                        options={dataOrder.map((team) => ({
+                                                            value: team,
+                                                            label: team,
+                                                            data: team,
+                                                        }))}
+                                                        onChange={handleTeamChange}
+                                                        placeholder="Select Team"
+                                                        required
+                                                    />
+                                                    <ExecuteButton
+                                                        onClick={() => handleStaffTeamUpdate(staff.user_id)}
+                                                        disabled={!team}
+                                                    >
+                                                        Add
+                                                    </ExecuteButton>
+                                                </div>
+                                            </Td>}
+                                            <Td>
+                                                <div className='d-flex'>
+                                                    <Select
+                                                        options={unassignedClients.map((client) => ({
+                                                            value: client.user_id,
+                                                            label: getClientLabel(client),
+                                                            data: client,
+                                                        }))}
+                                                        onChange={handleActionChange}
+                                                        placeholder="Select Client"
+                                                    />
+                                                    <ExecuteButton
+                                                        onClick={() => handleAssign(staff.user_id)}
+                                                        disabled={!selectedAction}
+                                                    >
+                                                        Assign
+                                                    </ExecuteButton>
+
+                                                </div>
+                                            </Td>
+                                            <Td>
+                                                <ViewButton
+                                                    onClick={() => getAssignedClients(staff.user_id)}
+                                                >
+                                                    View
+                                                </ViewButton>
+                                            </Td>
+                                            <Td>
+                                                <div className='d-flex'>
+                                                    <Select
+                                                        options={actionOptions}
+                                                        onChange={handleActionChange}
+                                                        placeholder="Select Action"
+                                                    />
+                                                    <ExecuteButton
+                                                        onClick={() => handleExecuteAction(staff.user_id)}
+                                                    >
+                                                        Execute
+                                                    </ExecuteButton>
+                                                </div>
+                                            </Td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                            :
                             <NoClientContainer>
                                 <img src={noClient} alt='img' className='img-fluid' />
                                 <H1>No Staff Available!</H1>
@@ -491,9 +491,9 @@ const Staff = () => {
                     </Container>
 
                     {viewAssignedClients && selectedStaff && <p className='mt-5'>Staff Member: {selectedStaff}</p>}
-                    
-                        <ClientTable assignedClients={assignedClients} viewAssignedClients={viewAssignedClients} selectedStaff={selectedStaff} />
-                    
+
+                    <ClientTable assignedClients={assignedClients} viewAssignedClients={viewAssignedClients} selectedStaff={selectedStaff} />
+
                     {viewAssignedClients && assignedClients.length === 0 && <p>No Clients Assigned</p>}
                 </TableContainer>
             default:
@@ -502,8 +502,7 @@ const Staff = () => {
     }
 
     return (
-        <div className="d-flex">
-            <Sidebar />
+        <>
             <StaffListContainer>
                 <H1>Staff</H1>
                 {staffList.length > 0 ? renderComponents() :
@@ -522,7 +521,7 @@ const Staff = () => {
                 handleOpenClick={handleEditClick}
                 isEditable={true}
             />
-        </div>
+        </>
     );
 };
 

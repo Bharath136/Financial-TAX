@@ -22,14 +22,14 @@ const AddStaff = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(currentUser){
+        if (currentUser) {
             if (currentUser.role === 'STAFF') {
                 navigate('/staff-dashboard')
             } else if (currentUser.role === 'CUSTOMER') {
                 navigate('/user-dashboard')
             }
         }
-    },[currentUser,navigate])
+    }, [currentUser, navigate])
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,7 +39,7 @@ const AddStaff = () => {
         e.preventDefault();
         const currentUser = JSON.parse(localStorage.getItem('currentUser'))
 
-        const newFormData = {...formData, created_by:currentUser.first_name}
+        const newFormData = { ...formData, created_by: currentUser.first_name }
         try {
             await axios.post(`${domain.domain}/user/add-staff`, newFormData, {
                 headers: {
@@ -60,44 +60,40 @@ const AddStaff = () => {
 
 
     return (
-        <div className='d-flex'>
-        <Sidebar/>
-            <AddStaffContainer>
-                <AddStaffCard className='shadow'>
-                    <AddStaffHeader >Add Staff</AddStaffHeader>
-                    <form onSubmit={handleSubmit}>
-                        <div className='row'>
-                            {initialFormFields.map((field, index) => (
-                                <div className='col-12 col-md-6' key={index}>
-                                    <MarginBottom2 >
-                                        <FormLabel htmlFor={field.name} >
-                                            <strong>{field.label}</strong>
-                                        </FormLabel>
-                                        <input
-                                            type={field.type}
-                                            className="p-2 text-dark" style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
-                                            id={field.name}
-                                            placeholder={field.placeholder}
-                                            name={field.name}
-                                            value={formData[field.name] || ''}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </MarginBottom2>
-                                </div>
-                            ))}
-                        </div>
-                        <ButtonContainer>
-                            <AddStaffButton type="submit">
-                                Add Staff
-                            </AddStaffButton>
-                        </ButtonContainer>
+        <AddStaffContainer>
+            <AddStaffCard className='shadow'>
+                <AddStaffHeader >Add Staff</AddStaffHeader>
+                <form onSubmit={handleSubmit}>
+                    <div className='row'>
+                        {initialFormFields.map((field, index) => (
+                            <div className='col-12 col-md-6' key={index}>
+                                <MarginBottom2 >
+                                    <FormLabel htmlFor={field.name} >
+                                        <strong>{field.label}</strong>
+                                    </FormLabel>
+                                    <input
+                                        type={field.type}
+                                        className="p-2 text-dark" style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
+                                        id={field.name}
+                                        placeholder={field.placeholder}
+                                        name={field.name}
+                                        value={formData[field.name] || ''}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </MarginBottom2>
+                            </div>
+                        ))}
+                    </div>
+                    <ButtonContainer>
+                        <AddStaffButton type="submit">
+                            Add Staff
+                        </AddStaffButton>
+                    </ButtonContainer>
 
-                    </form>
-                </AddStaffCard>
-
-            </AddStaffContainer>
-        </div>
+                </form>
+            </AddStaffCard>
+        </AddStaffContainer>
     );
 };
 

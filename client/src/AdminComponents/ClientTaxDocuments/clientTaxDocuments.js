@@ -229,24 +229,21 @@ const ClientTaxDocuments = () => {
     }
 
     return (
-        <div className="d-flex">
-            <Sidebar />
-            <ClientDocumentContainer >
-                <H1>Tax Documents</H1>
-                <Description >
-                    Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
-                </Description>
-                {documents.length > 0 ?
-                    onRenderComponents()
-                    : (
-                        <NoDocuments>
-                            <img src={noDoc} alt='no-doc' className='img-fluid' />
-                            <H1>No Documents!</H1>
-                            <label>No documents have been uploaded by the client. Please upload relevant documents to proceed.</label>
-                        </NoDocuments>
-                    )}
-            </ClientDocumentContainer>
-        </div>
+        <ClientDocumentContainer >
+            <H1>Tax Documents</H1>
+            <Description >
+                Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
+            </Description>
+            {documents.length > 0 ?
+                onRenderComponents()
+                : (
+                    <NoDocuments>
+                        <img src={noDoc} alt='no-doc' className='img-fluid' />
+                        <H1>No Documents!</H1>
+                        <label>No documents have been uploaded by the client. Please upload relevant documents to proceed.</label>
+                    </NoDocuments>
+                )}
+        </ClientDocumentContainer>
     );
 };
 

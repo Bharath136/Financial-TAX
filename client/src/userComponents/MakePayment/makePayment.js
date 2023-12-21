@@ -15,6 +15,7 @@ const PaymentSectionContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background-color:var(--main-background);
 `;
 
 const PaymentForm = styled.div`
@@ -88,6 +89,7 @@ const MakePayment = () => {
   const user = JSON.parse(localStorage.getItem('currentUser'));
   const [approvalUrl, setApprovalUrl] = useState('');
   const [paymentId, setPaymentId] = useState('');
+  const [payerId, setPayerId] = useState('');
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); // New state for error handling
@@ -100,9 +102,10 @@ const MakePayment = () => {
         amount: parseFloat(amount),
       });
 
-      const { approvalUrl, paymentId } = response.data;
+      const { approvalUrl, paymentId, payerId } = response.data;
       setApprovalUrl(approvalUrl);
       setPaymentId(paymentId);
+      setPayerId(payerId)
     } catch (error) {
       console.error('Error creating payment:', error);
       setError('Failed to create payment. Please try again.'); // Set error message
@@ -111,12 +114,18 @@ const MakePayment = () => {
     }
   };
 
+
+
   const handleExecutePayment = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(`${domain.domain}/paypal/execute-payment`, {
-        paymentId,
-        payerId: user.user_id,
+
+      // Pass paymentId and payerId as query parameters
+      const response = await axios.get(`${domain.domain}/paypal/execute-payment`, {
+        params: {
+          paymentId: paymentId,
+          payerId: payerId,
+        },
       });
 
       console.log('Payment executed successfully:', response.data.payment);
@@ -129,6 +138,8 @@ const MakePayment = () => {
       setLoading(false);
     }
   };
+
+
 
   const navigate = useNavigate();
 
@@ -147,51 +158,48 @@ const MakePayment = () => {
   };
 
   return (
-    <div className='d-flex'>
-    <Sidebar/>
-      <PaymentSectionContainer>
-        <PaymentForm>
-          <img src={PayPalLogo} alt="PayPal Logo" style={{ width: '200px' }} />
-          <label>
-            Enter Amount:
-            <input
-              type="number"
-              placeholder='Enter your tax amount'
-              value={amount}
-              onChange={onChangeAmount}
-            />
-          </label>
-          {approvalUrl ? (
-            <>
-              <p>Payment created successfully!</p>
-              <a href={approvalUrl} target="_blank" rel="noopener noreferrer">
-                Click here to approve the payment
-              </a>
-              <button onClick={handleExecutePayment} disabled={loading} className='w-100'>
-                {loading ? (
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="sr-only"></span>
-                  </div>
-                ) : (
-                  'Execute Payment'
-                )}
-              </button>
-            </>
-          ) : (
-            <button onClick={handleCreatePayment} disabled={loading} className='w-100'>
+    <PaymentSectionContainer>
+      <PaymentForm>
+        <img src={PayPalLogo} alt="PayPal Logo" style={{ width: '200px' }} />
+        <label>
+          Enter Amount:
+          <input
+            type="number"
+            placeholder='Enter your tax amount'
+            value={amount}
+            onChange={onChangeAmount}
+          />
+        </label>
+        {approvalUrl ? (
+          <>
+            <p>Payment created successfully!</p>
+            <a href={approvalUrl} target="_blank" rel="noopener noreferrer">
+              Click here to approve the payment
+            </a>
+            <button onClick={handleExecutePayment} disabled={loading} className='w-100'>
               {loading ? (
                 <div className="spinner-border text-primary" role="status">
                   <span className="sr-only"></span>
                 </div>
               ) : (
-                'Create Payment'
+                'Execute Payment'
               )}
             </button>
-          )}
-          {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message if there is an error */}
-        </PaymentForm>
-      </PaymentSectionContainer>
-    </div>
+          </>
+        ) : (
+          <button onClick={handleCreatePayment} disabled={loading} className='w-100'>
+            {loading ? (
+              <div className="spinner-border text-primary" role="status">
+                <span className="sr-only"></span>
+              </div>
+            ) : (
+              'Create Payment'
+            )}
+          </button>
+        )}
+        {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message if there is an error */}
+      </PaymentForm>
+    </PaymentSectionContainer>
   );
 };
 

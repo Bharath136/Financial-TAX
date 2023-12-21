@@ -53,14 +53,14 @@ const Login = ({ setShowNav }) => {
             const user = response.data.user;
             localStorage.setItem('currentUser', JSON.stringify(user));
             setShowNav(false)
-            let destination = '/user-dashboard';
+            let destination = '/user/dashboard';
             let successMessage = 'User Login Successful! Welcome to Financiltax User Portal. Explore your tax-related information and manage your profile.';
 
             if (user.role === 'ADMIN') {
-                destination = '/admin-dashboard';
+                destination = '/admin/dashboard';
                 successMessage = 'Admin Login Successful! Welcome to Financiltax Admin Portal. You have access to advanced administrative features.';
             } else if (user.role === 'STAFF') {
-                destination = '/staff-dashboard';
+                destination = '/staff/dashboard';
                 successMessage = 'Staff Login Successful! Welcome to Financiltax Staff Portal. You can manage client-related tasks and documents.';
             }
 
@@ -103,8 +103,8 @@ const Login = ({ setShowNav }) => {
                 {(value) => {
                     const { changeLogin } = value;
                     return (
-                        <div className="container login-container d-flex">
-                            <div className="login-card shadow text-start">
+                        <div className=" login-container d-flex">
+                            <div className="login-card text-start">
                                 <h2 className="login-header">Login</h2>
                                 <p className='signup-description mt-3'>Don't have an account yet? <NavLink className='link' to='/signup'> Sign Up</NavLink></p>
                                 <form onSubmit={handleSubmit} className='form-container'>

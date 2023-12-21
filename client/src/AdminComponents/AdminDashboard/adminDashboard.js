@@ -59,12 +59,12 @@ const AdminDashboard = () => {
             });
 
             const filteredClients = allClients.data.filter(client => client.role === 'CUSTOMER');
-           
+
             setAllClients(filteredClients)
 
             if (assignedClientsResponse.status === 200) {
                 setApiStatus(apiStatusConstants.success);
-               
+
                 const filteredClients = assignedClientsResponse.data.filter(client => client.role === 'CUSTOMER');
                 setClients(filteredClients);
             }
@@ -78,7 +78,7 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         getAllAssignedClients();
-        
+
         if (user) {
             setCurrentUser(user.first_name);
             if (user.role === 'ADMIN') {
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
     };
 
     const data = {
-        Scheduling: { description: "Scheduling",total: calculateTotal(allClients, 'Scheduling'), icon: <FaCalendarAlt size={50} />, color: colorMapping["Scheduling"] },
+        Scheduling: { description: "Scheduling", total: calculateTotal(allClients, 'Scheduling'), icon: <FaCalendarAlt size={50} />, color: colorMapping["Scheduling"] },
         TaxInterview: { description: 'TaxInterview', total: calculateTotal(allClients, 'TaxInterview'), icon: <FaClock size={50} />, color: colorMapping['TaxInterview'] },
         Documents: { description: 'Documents', total: calculateTotal(allClients, 'Documents'), icon: <FaFileAlt size={50} />, color: colorMapping.Documents },
         TaxPreparation: { description: 'TaxPreparation', total: calculateTotal(allClients, 'TaxPreparation'), icon: <FaTasks size={50} />, color: colorMapping['TaxPreparation'] },
@@ -211,7 +211,7 @@ const AdminDashboard = () => {
 
     // Handle staff deletion
     const onDeleteClient = async (id) => {
-        
+
 
         const isConfirmed = window.confirm('Are you sure you want to delete?');
         if (isConfirmed) {
@@ -252,12 +252,12 @@ const AdminDashboard = () => {
         getAllAssignedClients();
         try {
             setApiStatus(apiStatusConstants.inProgress)
-            const res = await axios.post(`${domain.domain}/staff-customer-assignments/auto-assign-clients`,{
-                headers:{
-                    Authorization:`Bearer ${token}`
+            const res = await axios.post(`${domain.domain}/staff-customer-assignments/auto-assign-clients`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
             });
-            if(res){
+            if (res) {
                 showAlert({
                     title: 'Clients Assigned Successfully!',
                     text: 'The clients have been successfully assigned to staff members.',
@@ -297,68 +297,65 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div className='d-flex'>
-            <Sidebar />
-            <MainContainer>
-                <h2>Welcome <CurrentUser>{currentUser}</CurrentUser></h2>
-                <DashboardContainer>
-                    {Object.entries(data).map(([key, value]) => (
-                        <SectionCard
-                            key={key}
-                            onClick={() => handleCardClick(key)}
-                            className={selectedCard === key ? 'selected' : ''}
-                            style={{
-                                transform: selectedCard === key ? 'scale(1.06)' : 'initial',
-                                borderBottom: selectedCard === key ? `6px solid ${value.color}` : '1px solid blue',
-                            }}
-                        >
+        <MainContainer>
+            <h2>Welcome <CurrentUser>{currentUser}</CurrentUser></h2>
+            <DashboardContainer>
+                {Object.entries(data).map(([key, value]) => (
+                    <SectionCard
+                        key={key}
+                        onClick={() => handleCardClick(key)}
+                        className={selectedCard === key ? 'selected' : ''}
+                        style={{
+                            transform: selectedCard === key ? 'scale(1.06)' : 'initial',
+                            borderBottom: selectedCard === key ? `6px solid ${value.color}` : '1px solid blue',
+                        }}
+                    >
 
-                            <DashboardItem title={value.description} >
-                                <div className="dashboard-icon" style={{ color: value.color }}>{value.icon}</div>
-                                <div className="dashboard-text">
-                                    <h4>{value.description}</h4>
-                                    <p><strong>Total: </strong>{value.total}</p>
-                                </div>
-                            </DashboardItem>
-                        </SectionCard>
-                    ))}
-                </DashboardContainer>
-                {selectedCard ? (
-                    <DetailsContainer id="details-container">
-                        <div className=' p-3'>
-                            <H1>{data[selectedCard].description} Details:</H1>
-                        </div>
-                        {selectedCard === 'Client Interview' && (
-                            <p>
-                                This step involves scheduling and conducting a client interview to gather necessary information for further processing.
-                            </p>
-                        )}
-                        {clients.length > 0 ? (
-                            <>
-                                {renderComponents()}
-                            </>
-                        ) : (
-                            <NoClientContainer>
-                                <img src={noClient} alt='img' className='img-fluid' />
-                                <H1>No Clients Assigned</H1>
-                                <p>Oops! It seems there are no clients assigned to you.</p>
-                            </NoClientContainer>
-                        )}
-                    </DetailsContainer>
-                ) :
-                    <div className='bg-light'>
-                        {clients.length > 0 && <div>
-                            <div className='d-flex align-items-center justify-content-between bg-dark p-3'>
-                                <H1>Unassigned clients</H1>
-                                <button className='btn bg-success text-light' onClick={onAssignAll} title='Auto assign all to Scheduling'>Assign All</button>
+                        <DashboardItem title={value.description} >
+                            <div className="dashboard-icon" style={{ color: value.color }}>{value.icon}</div>
+                            <div className="dashboard-text">
+                                <h4>{value.description}</h4>
+                                <p><strong>Total: </strong>{value.total}</p>
                             </div>
-                            {renderComponents()}
-                            
-                        </div>}
+                        </DashboardItem>
+                    </SectionCard>
+                ))}
+            </DashboardContainer>
+            {selectedCard ? (
+                <DetailsContainer id="details-container">
+                    <div className=' p-3'>
+                        <H1>{data[selectedCard].description} Details:</H1>
                     </div>
-                }
-            </MainContainer>
-        </div>
+                    {selectedCard === 'Client Interview' && (
+                        <p>
+                            This step involves scheduling and conducting a client interview to gather necessary information for further processing.
+                        </p>
+                    )}
+                    {clients.length > 0 ? (
+                        <>
+                            {renderComponents()}
+                        </>
+                    ) : (
+                        <NoClientContainer>
+                            <img src={noClient} alt='img' className='img-fluid' />
+                            <H1>No Clients Assigned</H1>
+                            <p>Oops! It seems there are no clients assigned to you.</p>
+                        </NoClientContainer>
+                    )}
+                </DetailsContainer>
+            ) :
+                <div className='bg-light'>
+                    {clients.length > 0 && <div>
+                        <div className='d-flex align-items-center justify-content-between bg-dark p-3'>
+                            <H1>Unassigned clients</H1>
+                            <button className='btn bg-success text-light' onClick={onAssignAll} title='Auto assign all to Scheduling'>Assign All</button>
+                        </div>
+                        {renderComponents()}
+
+                    </div>}
+                </div>
+            }
+        </MainContainer>
     );
 };
 

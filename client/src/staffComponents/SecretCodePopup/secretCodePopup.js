@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { ViewButton } from '../AssignedClients/styledComponents';
 
-const SecretCode = ({ isOpen, onRequestClose, onChangeAccess, myCode,team, selectedCard }) => {
+const SecretCode = ({ isOpen, onRequestClose, onChangeAccess, myCode, team, selectedCard }) => {
     const [secretCode, setSecretCode] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -14,8 +14,8 @@ const SecretCode = ({ isOpen, onRequestClose, onChangeAccess, myCode,team, selec
             backgroundColor: '#ffffff',
         },
         overlay: {
-            backgroundColor: 'rgba(128, 128, 140, 0.75)', 
-            backdropFilter: 'blur(3px)', 
+            backgroundColor: 'rgba(128, 128, 140, 0.75)',
+            backdropFilter: 'blur(3px)',
         },
     };
 
@@ -25,15 +25,11 @@ const SecretCode = ({ isOpen, onRequestClose, onChangeAccess, myCode,team, selec
     };
 
     const handleSubmit = () => {
-        if (team === selectedCard) {
-            if (secretCode === myCode) {
-                onChangeAccess();
-                onRequestClose();
-            } else {
-                setErrorMsg('Incorrect code. Please double-check and try again.');
-            }
+        if (secretCode === myCode) {
+            onChangeAccess();
+            onRequestClose();
         } else {
-            setErrorMsg('You are not a team member. Please double-check and try again.');
+            setErrorMsg('Incorrect code. Please double-check and try again.');
         }
     };
 

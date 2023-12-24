@@ -13,7 +13,6 @@ import SecretCode from '../SecretCodePopup/secretCodePopup';
 import ClientTable from './clientTable';
 
 
-
 const apiStatusConstants = {
     initial: 'INITIAL',
     success: 'SUCCESS',
@@ -155,13 +154,11 @@ const StaffDashboard = () => {
     };
 
     const handleMoveToClick = (client) => {
-
-        // Show the Secret Code popup when Move To is clicked
         setShowSecretCodePopup(true);
         setSelectedClient(client);
 
         const currentStepIndex = dataOrder.indexOf(client.current_step);
-        const stepsAfterCurrent = dataOrder.slice(currentStepIndex + 1, currentStepIndex + 2);
+        const stepsAfterCurrent = dataOrder.slice(currentStepIndex + 1);
 
         setAvailableSteps(stepsAfterCurrent);
     };
@@ -191,19 +188,13 @@ const StaffDashboard = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-
-            if (response.data.success) {
+            if(response){
                 message('Client Moved Successfully!', 'The client has been moved to the next step.', 'success');
                 getAllAssignedClients();
                 setApiStatus(apiStatusConstants.success);
                 setIsAuthenticated(false);
             }
-            if (response.data.error) {
-                // Handle API error
-                message('Error', response.data.error, 'error');
-                setApiStatus(apiStatusConstants.failure);
-                setIsAuthenticated(false);
-            }
+            
 
             // Reset available steps after the move
             setAvailableSteps([]);
@@ -216,8 +207,9 @@ const StaffDashboard = () => {
     };
 
 
-    const onChangeCustomerResponse = (e) => {
+    const onChangeCustomerResponse = (e,client) => {
         setCustomerResponse(e.target.value)
+        setSelectedClient(client)
     }
 
     const onSendResponse = async (client) => {
@@ -260,7 +252,8 @@ const StaffDashboard = () => {
     };
 
     const renderClients = () => (
-        <ClientTable clients={clients} onChangeCustomerResponse={onChangeCustomerResponse} customerResponse={customerResponse} onSendResponse={onSendResponse} handleEditClick={handleEditClick} handleMoveToClick={handleMoveToClick} selectedClient={selectedClient} handleStepChange={handleStepChange} availableSteps={availableSteps} isEditModalOpen={isEditModalOpen} profileId={profileId} handleEditModalClose={handleEditModalClose} />
+        
+        <ClientTable clients={clients} isAuthenticated={isAuthenticated} onChangeCustomerResponse={onChangeCustomerResponse} customerResponse={customerResponse} onSendResponse={onSendResponse} handleEditClick={handleEditClick} handleMoveToClick={handleMoveToClick} selectedClient={selectedClient} handleStepChange={handleStepChange} availableSteps={availableSteps} isEditModalOpen={isEditModalOpen} profileId={profileId} handleEditModalClose={handleEditModalClose} />
     );
 
     const renderComponents = () => {
@@ -278,7 +271,7 @@ const StaffDashboard = () => {
 
     return (
         <MainContainer>
-            <h2>Welcome <CurrentUser>{currentUser} </CurrentUser><span style={{ fontSize: '18px', color: 'grey' }}>(Team: {user.staff_team ? user.staff_team : "Your Not a team member"})</span></h2>
+            <h2>Welcome <CurrentUser>{currentUser} </CurrentUser><p style={{ fontSize: '18px', color: 'grey' }}>(Team: {user.staff_team ? user.staff_team : "Your Not a team member"})</p></h2>
             <DashboardContainer>
                 {Object.entries(data).map(([key, value]) => (
                     <SectionCard

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import domain from '../../domain/domain';
-
-// Import the PayPal logo SVG
 import PayPalLogo from '../../Assets/PayPal.svg.png';
 
 const PaymentSectionContainer = styled.div`
@@ -14,7 +12,7 @@ const PaymentSectionContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color:var(--main-background);
+  background-color: var(--main-background);
 `;
 
 const PaymentForm = styled.div`
@@ -27,27 +25,27 @@ const PaymentForm = styled.div`
 
   h2 {
     margin-bottom: 20px;
-    color: #003087; /* Updated text color to white */
+    color: #003087;
   }
 
   label {
     display: block;
     margin-bottom: 10px;
-    color: #003087; /* Updated text color to white */
+    color: #003087;
   }
 
   input {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px solid #003087; /* Updated border color to white */
+    border: 1px solid #003087;
     border-radius: 4px;
     box-sizing: border-box;
   }
 
   button {
-    background-color: #ffc439; /* PayPal yellow */
-    color: #003087; /* PayPal blue */
+    background-color: #ffc439;
+    color: #003087;
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
@@ -69,7 +67,7 @@ const PaymentForm = styled.div`
   }
 
   a {
-    color: #003087; /* Updated text color to white */
+    color: #003087;
     text-decoration: none;
     font-weight: bold;
 
@@ -79,43 +77,58 @@ const PaymentForm = styled.div`
   }
 
   img {
-    width: 50px; /* Adjust the width of the PayPal logo */
+    width: 50px;
     margin-bottom: 20px;
   }
 `;
 
 const MakePayment = () => {
   const user = JSON.parse(localStorage.getItem('currentUser'));
+  const token = localStorage.getItem('customerJwtToken');
   const [approvalUrl, setApprovalUrl] = useState('');
   const [paymentId, setPaymentId] = useState('');
   const [payerId, setPayerId] = useState('');
-  const [amount, setAmount] = useState('');
+  const [selectedDoc, setSelectedDoc] = useState({});
+  // const [amount, setAmount] = useState(selectedDoc?.payment_amount || '');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); // New state for error handling
+  const [error, setError] = useState(null);
 
-  const handleCreatePayment = async () => {
+  const { id } = useParams();
+
+  const getTaxReturnDocumentDetails = async () => {
+    try {
+      const response = await axios.get(`${domain.domain}/tax-return-document/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setSelectedDoc(response.data.documents[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createPayment = async () => {
     try {
       setLoading(true);
       const response = await axios.post(`${domain.domain}/paypal/create-payment`, {
         user: user,
-        amount: parseFloat(amount),
+        amount: selectedDoc.payment_amount,
       });
 
       const { approvalUrl, paymentId, payerId } = response.data;
       setApprovalUrl(approvalUrl);
       setPaymentId(paymentId);
-      setPayerId(payerId)
+      setPayerId(payerId);
     } catch (error) {
       console.error('Error creating payment:', error);
-      setError('Failed to create payment. Please try again.'); // Set error message
+      setError('Failed to create payment. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-
-
-  const handleExecutePayment = async () => {
+  const executePayment = async () => {
     try {
       setLoading(true);
 
@@ -123,18 +136,21 @@ const MakePayment = () => {
         params: {
           paymentId: paymentId,
           payerId: payerId,
+          userId: user.user_id,
+          paymentAmount: selectedDoc.payment_amount,
+          updatedBy: user.first_name,
+          taxReturnId: selectedDoc.taxreturn_id,
         },
       });
 
       console.log('Payment executed successfully:', response.data.payment);
     } catch (error) {
       console.error('Error executing payment:', error);
-      setError('Failed to execute payment. Please try again.'); // Set error message
+      setError('Failed to execute payment. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
 
 
   const navigate = useNavigate();
@@ -142,16 +158,17 @@ const MakePayment = () => {
   useEffect(() => {
     if (user) {
       if (user.role === 'ADMIN') {
-        navigate('/admin/dashboard')
+        navigate('/admin/dashboard');
       } else if (user.role === 'STAFF') {
-        navigate('/staff/dashboard')
+        navigate('/staff/dashboard');
       }
+      getTaxReturnDocumentDetails();
     }
   }, [navigate]);
 
-  const onChangeAmount = (event) => {
-    setAmount(event.target.value);
-  };
+  // const onChangeAmount = (event) => {
+  //   setAmount(event.target.value);
+  // };
 
   return (
     <PaymentSectionContainer>
@@ -161,9 +178,9 @@ const MakePayment = () => {
           Enter Amount:
           <input
             type="number"
-            placeholder='Enter your tax amount'
-            value={amount}
-            onChange={onChangeAmount}
+            placeholder="Enter your tax amount"
+            value={selectedDoc.payment_amount}
+            // onChange={onChangeAmount}
           />
         </label>
         {approvalUrl ? (
@@ -172,7 +189,7 @@ const MakePayment = () => {
             <a href={approvalUrl} target="_blank" rel="noopener noreferrer">
               Click here to approve the payment
             </a>
-            <button onClick={handleExecutePayment} disabled={loading} className='w-100'>
+            <button onClick={executePayment} disabled={loading} className="w-100">
               {loading ? (
                 <div className="spinner-border text-primary" role="status">
                   <span className="sr-only"></span>
@@ -183,7 +200,7 @@ const MakePayment = () => {
             </button>
           </>
         ) : (
-          <button onClick={handleCreatePayment} disabled={loading} className='w-100'>
+          <button onClick={createPayment} disabled={loading} className="w-100">
             {loading ? (
               <div className="spinner-border text-primary" role="status">
                 <span className="sr-only"></span>
@@ -193,7 +210,7 @@ const MakePayment = () => {
             )}
           </button>
         )}
-        {error && <p style={{ color: 'red' }}>{error}</p>} 
+        {error && <p style={{ color: 'red' }}>{error}</p>}
       </PaymentForm>
     </PaymentSectionContainer>
   );

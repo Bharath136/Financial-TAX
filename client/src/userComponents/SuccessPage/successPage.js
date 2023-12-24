@@ -10,7 +10,9 @@ const PaymentContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  width:100%;
+  width: 100%;
+  padding: 20px;
+  background-color:var(--main-background);
 `;
 
 const PaymentContent = styled.div`
@@ -20,6 +22,9 @@ const PaymentContent = styled.div`
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  @media screen and (min-width:768px){
+    width:500px;
+  }
 `;
 
 const SuccessHeading = styled.h1`
@@ -34,30 +39,37 @@ const SuccessParagraph = styled.p`
 const ReturnHomeButton = styled.button`
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #3498db; /* Blue color */
+  background-color: var(--accent-background); /* Blue color */
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color: #2980b9; /* Darker blue color on hover */
+    background-color: var(--button-hover); /* Darker blue color on hover */
   }
 `;
 
 const Button = styled.button`
   background-color: #ffc439; /* PayPal yellow */
-    color: #003087; /* PayPal blue */
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    position: relative;
-`
+  color: #003087; /* PayPal blue */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+`;
 
-const Loader = styled.div`
-`
+const InProgressHeading = styled.h1`
+  color: #ffc439; /* Green color */
+`;
+
+const InProgressParagraph = styled.p`
+  margin-top: 10px;
+  color: #333;
+`;
+
 
 const SuccessPage = () => {
   const navigate = useNavigate();
@@ -66,7 +78,7 @@ const SuccessPage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const paymentSuccessful = true; 
+    const paymentSuccessful = true;
 
     if (!paymentSuccessful) {
       navigate('/tax-return/failure');
@@ -74,15 +86,15 @@ const SuccessPage = () => {
   }, [navigate]);
 
   const handleReturnHome = () => {
-    navigate('/');
+    navigate('/user/dashboard');
   };
 
   const handleExecutePayment = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams(window.location.search);
-      const payerId = params.get('PayerID');
-      const paymentId = params.get('paymentId');
+      const payerId = params.get('PayerID') ?? '';
+      const paymentId = params.get('paymentId') ?? '';
 
       if (!payerId || !paymentId) {
         throw new Error('PayerID or paymentId not found in the URL');
@@ -90,11 +102,11 @@ const SuccessPage = () => {
 
       const response = await axios.get(`${domain.domain}/paypal/execute-payment`, {
         params: {
-          paymentId: paymentId,
-          payerId: payerId,
+          paymentId,
+          payerId,
         },
       });
-      setShowReturnButton(true)
+      setShowReturnButton(true);
 
       console.log('Payment executed successfully:', response.data.payment);
     } catch (error) {
@@ -105,11 +117,24 @@ const SuccessPage = () => {
   return (
     <PaymentContainer>
       <PaymentContent>
-        <SuccessHeading>Payment Successful!</SuccessHeading>
-        <SuccessParagraph>
-          Thank you for your payment. Your tax return has been processed successfully.
-        </SuccessParagraph>
-        {showReturnButton ? <ReturnHomeButton onClick={handleReturnHome}>Return Home</ReturnHomeButton> :
+        {!showReturnButton ? (
+          <>
+            <InProgressHeading>Payment in Progress</InProgressHeading>
+            <InProgressParagraph>
+              Your payment is being processed. Please click below execute button to complete the transaction.
+            </InProgressParagraph>
+          </>
+        ) : (
+          <>
+            <SuccessHeading>Payment Successful!</SuccessHeading>
+            <SuccessParagraph>
+              Thank you for your payment. Your tax return has been processed successfully.
+            </SuccessParagraph>
+          </>
+        )}
+        {showReturnButton ? (
+          <ReturnHomeButton onClick={handleReturnHome}>Return Home</ReturnHomeButton>
+        ) : (
           <Button onClick={handleExecutePayment} disabled={loading} className='w-100'>
             {loading ? (
               <div className="spinner-border text-primary" role="status">
@@ -118,7 +143,8 @@ const SuccessPage = () => {
             ) : (
               'Execute Payment'
             )}
-          </Button>}
+          </Button>
+        )}
       </PaymentContent>
     </PaymentContainer>
   );

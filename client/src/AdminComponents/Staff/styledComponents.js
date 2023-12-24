@@ -79,7 +79,7 @@ export const TableContainer = styled.div`
 
 export const Container = styled.div`
     width:100%;
-
+    overflow:auto;
 `
 
 export const Table = styled.table`

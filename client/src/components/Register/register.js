@@ -66,7 +66,7 @@ const Register = () => {
             const response = await axios.post(`${domain.domain}/user/register`, formData);
 
             if (response) {
-                navigate('/login');
+                navigate('/accounts/login');
                 showAlert({
                     title: 'Registration Successful!',
                     text: "Welcome to our financial tax app. Let's log in and explore!",

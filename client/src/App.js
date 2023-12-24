@@ -1,143 +1,5 @@
-// import React, { useEffect, useState } from 'react';
-// import { BrowserRouter, Routes, Route, useMatch } from 'react-router-dom';
-// import Header from './components/Header/header';
-// import Login from './components/Login/login';
-// import Register from './components/Register/register';
-// import About from './components/About/about';
-// import Services from './components/Services/services';
-// import Contact from './components/Contact/contact';
-// import CommentDocument from './userComponents/CommentDocument/commentDocument';
-// import MySummary from './userComponents/TaxreturnReview/taxreturnReview';
-// import MakePayment from './userComponents/MakePayment/makePayment';
-// import TaxInterview from './userComponents/TaxInterview/taxInterview';
-// import Landingpage from './components/Landingpage/landingpage';
-// import ProtectedRoute from './userComponents/ProtectedRoute/protectedRoute';
-// import AuthContext from './AuthContext/AuthContext';
-// import showAlert from './SweetAlert/sweetalert';
-// import StaffDashboard from './staffComponents/StaffDashboard/staffDashboard';
-// import UserDashboard from './userComponents/UserDashboard/userDashboard';
-// import AssignedClientList from './staffComponents/AssignedClients/assignedClients';
-// import ClientDocuments from './staffComponents/ClientDocuments/ClientDocuments';
-// import TaxReturnDocument from './staffComponents/TaxReturnDocument/taxReturnDocument';
-// import Clients from './AdminComponents/Clients/clients';
-// import Staff from './AdminComponents/Staff/staff';
-// import ClientTaxDocuments from './AdminComponents/ClientTaxDocuments/clientTaxDocuments';
-// import NotFound from './NotFound/notFound';
-// import AddStaff from './AdminComponents/AddStaff/addStaff';
-// import UploadDocument from './userComponents/UploadDocument/uploadDocument';
-// import AdminDashboard from './AdminComponents/AdminDashboard/adminDashboard';
-// import ForgotPassword from './components/ForgotPassword/forgotPassword';
-// import FailurePage from './userComponents/FailurePage/FailurePage';
-// import SuccessPage from './userComponents/SuccessPage/successPage';
-// import ContactView from './AdminComponents/Messages/message';
-
-// function App() {
-//   const [currentToken, setCurrentToken] = useState('');
-//   const [hideSidebar, setHideSidebar] = useState(false);
-//   const [showNav,setShowNav] = useState(true)
-
-//   useEffect(() => {
-//     const userToken = localStorage.getItem('customerJwtToken');
-//     setCurrentToken(userToken);
-//   }, [currentToken]);
-
-//   const onLogout = async () => {
-//     const popup = {
-//       title: 'Logout Successful!',
-//       text: 'You have successfully logged out. Thank you for using our financial tax app!',
-//       icon: 'success',
-//       confirmButtonText: 'OK'
-//     };
-//     setShowNav(true)
-//     showAlert(popup);
-//     localStorage.removeItem('customerJwtToken')
-//     localStorage.removeItem('currentUser')
-//     setCurrentToken('');
-//   };
-
-
-//   const onHideSidebar = () => {
-//     setHideSidebar(!hideSidebar)
-//   }
-
-
-//   const routes = [
-//     // Landing components 
-//     { path: '/', element: <Landingpage /> },
-//     { path: '/login', element: <Login setShowNav={setShowNav} /> },
-//     { path: '/forgot-password', element: <ForgotPassword setShowNav={setShowNav} /> },
-//     { path: '/signup', element: <Register /> },
-//     { path: '/about', element: <About /> },
-//     { path: '/services', element: <Services /> },
-//     { path: '/contact', element: <Contact /> },
-
-//     // Register user components
-//     { path: '/user-dashboard', element: <ProtectedRoute Component={UserDashboard} /> },
-//     { path: '/tax-interview', element: <ProtectedRoute Component={TaxInterview} /> },
-//     { path: '/upload-document', element: <ProtectedRoute Component={UploadDocument} /> },
-//     { path: '/comment-to-document', element: <ProtectedRoute Component={CommentDocument} /> },
-//     { path: '/tax-return-review', element: <ProtectedRoute Component={MySummary} /> },
-//     { path: '/make-payment', element: <ProtectedRoute Component={MakePayment} /> },
-//     { path: '/tax-return/success', element: <ProtectedRoute Component={SuccessPage}/>},
-//     { path: '/tax-return/failure/:id', element: <ProtectedRoute Component={FailurePage} /> },
-
-
-//     //Staff components
-//     { path: '/staff-dashboard', element: <ProtectedRoute Component={StaffDashboard}  /> },
-//     { path: '/staff-assigned-clients', element: <ProtectedRoute Component={AssignedClientList} /> },
-//     { path: '/staff-tax-documents', element: <ProtectedRoute Component={ClientDocuments} /> },
-//     { path: '/staff-customer-tax-return', element: <ProtectedRoute Component={TaxReturnDocument}  />},
-
-//      //admin components
-//     { path: '/admin-dashboard', element: <ProtectedRoute Component={AdminDashboard} /> },
-//     { path: '/admin-clients', element: <ProtectedRoute Component={Clients} /> },
-//     { path: '/admin-staff', element: <ProtectedRoute Component={Staff} /> },
-//     { path: '/admin-client-tax-documents', element: <ProtectedRoute Component={ClientTaxDocuments} /> },
-//     { path: '/admin-add-staff', element: <ProtectedRoute Component={AddStaff} /> },
-//     { path: '/admin/user-contact/info', element: <ProtectedRoute Component={ContactView} /> },
-
-//     // Not Found router
-//     { path: "*", element: <NotFound /> }
-//   ];
-
-//   const onLogin = () => {
-//     // Trigger re-render by updating the userToken state
-//     const userToken = localStorage.getItem('customerJwtToken');
-
-
-//     setCurrentToken(userToken);
-//   };
-
-
-//   return (
-//     <div className="App">
-//       <BrowserRouter>
-//         <AuthContext.Provider value={{
-//           hideSidebar,
-//           showNav,
-//           changeSidebar: onHideSidebar,
-//           changeRole: onLogout,
-//           changeLogin: onLogin,
-//         }}>
-//           <Header setShowNav={setShowNav} />
-//           <Routes>
-//             {routes.map(({ path, element }, index) => (
-//               <Route key={index} path={path} element={element} />
-//             ))}
-//           </Routes>
-//         </AuthContext.Provider>
-//       </BrowserRouter>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-
-
-
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/header';
 import Login from './components/Login/login';
 import Register from './components/Register/register';
@@ -169,6 +31,8 @@ import FailurePage from './userComponents/FailurePage/FailurePage';
 import SuccessPage from './userComponents/SuccessPage/successPage';
 import ContactView from './AdminComponents/Messages/message';
 import Sidebar from './userComponents/SideBar/sidebar';
+import PaymentDetails from './AdminComponents/Payments/payments';
+import MyPaymentDetails from './userComponents/MyPayments/myPayments';
 
 function App() {
   const [currentToken, setCurrentToken] = useState('');
@@ -279,9 +143,10 @@ function UserSection() {
         <Route path="upload-document" element={<ProtectedRoute Component={UploadDocument} />} />
         <Route path="comment-to-document" element={<ProtectedRoute Component={CommentDocument} />} />
         <Route path="tax-return-review" element={<ProtectedRoute Component={MySummary} />} />
-        <Route path="make-payment" element={<ProtectedRoute Component={MakePayment} />} />
+        <Route path="make-payment/:id" element={<ProtectedRoute Component={MakePayment} />} />
+        <Route path="my-payments" element={<ProtectedRoute Component={MyPaymentDetails} />} />
         <Route path="tax-return/success" element={<ProtectedRoute Component={SuccessPage} />} />
-        <Route path="tax-return/failure/:id" element={<ProtectedRoute Component={FailurePage} />} />
+        <Route path="tax-return/failure" element={<ProtectedRoute Component={FailurePage} />} />
         <Route path= '*' element={<NotFound />} />
       </Routes>
     </div>
@@ -312,6 +177,7 @@ function AdminSection() {
         <Route path="staff" element={<ProtectedRoute Component={Staff} />} />
         <Route path="client-tax-documents" element={<ProtectedRoute Component={ClientTaxDocuments} />} />
         <Route path="add-staff" element={<ProtectedRoute Component={AddStaff} />} />
+        <Route path="payments" element={<ProtectedRoute Component={PaymentDetails} />} />
         <Route path="user-contact/info" element={<ProtectedRoute Component={ContactView} />} />
       </Routes>
     </div>

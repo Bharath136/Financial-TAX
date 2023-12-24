@@ -36,6 +36,21 @@ const ClientTable = ({ clients, onDeleteClient, handleMoveToClick, handleEditCli
                                 </ViewButton>
                             </Td>
                             <Td>
+                                {selectedClient && selectedClient.user_id === client.user_id && availableSteps.length > 0 && (
+                                    <select
+                                        id="moveTo"
+                                        value=""
+                                        className='p-2'
+                                        onChange={(e) => handleStepChange(e.target.value)}
+                                    >
+                                        <option value="" disabled>Select an option</option>
+                                        {availableSteps.map((step) => (
+                                            <option key={step} value={step}>
+                                                {step}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
                                 <ViewButton onClick={() => handleMoveToClick(client)}>
                                     Move To
                                 </ViewButton>
@@ -50,24 +65,7 @@ const ClientTable = ({ clients, onDeleteClient, handleMoveToClick, handleEditCli
                 </tbody>
 
             </Table>
-            {selectedClient && availableSteps.length > 0 && (
-                <div className='d-flex align-items-center justify-content-end mt-4'>
-                    <label htmlFor="moveTo" className='m-2'><strong>Move To: </strong></label>
-                    <select
-                        id="moveTo"
-                        value=""
-                        className='p-2'
-                        onChange={(e) => handleStepChange(e.target.value)}
-                    >
-                        <option value="" disabled>Select an option</option>
-                        {availableSteps.map((step) => (
-                            <option key={step} value={step}>
-                                {step}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
+
 
 
             <EditModal

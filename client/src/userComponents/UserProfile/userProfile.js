@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import domain from '../../domain/domain';
 import showAlert from '../../SweetAlert/sweetalert';
-import './userProfile.css'; // Import your CSS file for styling
-import { Td, th } from '../../staffComponents/AssignedClients/styledComponents';
+import './userProfile.css'; 
+import ClientTaxDocuments from '../../AdminComponents/ClientTaxDocuments/clientTaxDocuments';
+import ResponseDisplay from '../Response/rensponse';
+import { H1 } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
 
-const UserProfile = ({ isOpen, profileId, isEditable }) => {
+const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [userData, setUserData] = useState({});
     const [editedData, setEditedData] = useState({});
+    const [responseData, setCustomerResponse] = useState([]);
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const token = localStorage.getItem('customerJwtToken');
 
     const handleEditClick = () => {
         setIsEditing(!isEditing);
@@ -20,8 +25,20 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
         setEditedData((prevData) => ({ ...prevData, [name]: value }));
     };
 
+    const getCustomerResponse = async () => {
+        try{
+            const response = await axios.get(`${domain.domain}/user/customer-response/${profileId}`,{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            })
+            setCustomerResponse(response.data)
+        }catch(error){
+            console.log(error)
+        }
+    }
+
     const handleGetUserProfile = async () => {
-        const token = localStorage.getItem('customerJwtToken');
 
         try {
             const response = await axios.get(`${domain.domain}/user/${profileId}`, {
@@ -37,13 +54,14 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
 
     useEffect(() => {
         handleGetUserProfile();
+        getCustomerResponse()
     }, []);
 
     const handleApplyClick = async () => {
         const token = localStorage.getItem('customerJwtToken');
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         try {
-            const newData = { ...editedData, updated_by: currentUser.first_name}
+            const newData = { ...editedData, updated_by: currentUser.first_name };
             const response = await axios.put(
                 `${domain.domain}/user/${profileId}`,
                 newData,
@@ -62,7 +80,7 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
                     text: 'Your profile has been updated.',
                     confirmButtonText: 'OK',
                 });
-                localStorage.setItem('currentUser', JSON.stringify(response.data.user))
+                localStorage.setItem('currentUser', JSON.stringify(response.data.user));
                 isOpen();
             }
         } catch (error) {
@@ -77,128 +95,149 @@ const UserProfile = ({ isOpen, profileId, isEditable }) => {
     };
 
     return (
-        <div className="user-profile-container p-4">
-            <h1 className='mb-3'>Profile</h1>
+        <div className='main-container'>
+            <div className="user-profile-container p-2">
+                <h1 className='mb-3'>Profile</h1>
 
-            {/* User Profile Items */}
-            <div className="user-profile-item">
-                <th style={{width:'160px', textAlign:"start" }}><strong>First Name: </strong></th>
-                {isEditing ? (
-                    <input
-                        className="input-field"
-                        type="text"
-                        name="first_name"
-                        value={editedData.first_name}
-                        onChange={handleInputChange}
-                    />
-                ) : (
-                        <Td style={{width:'170px', textAlign:"start" }}>{userData.first_name}</Td>
-                )}
-            </div>
-
-            <div className="user-profile-item">
-                <th style={{ width: '160px', textAlign: "start" }}><strong>Last Name: </strong></th>
-                {isEditing ? (
-                    <input
-                        className="input-field"
-                        type="text"
-                        name="last_name"
-                        value={editedData.last_name}
-                        onChange={handleInputChange}
-                    />
-                ) : (
-                        <Td style={{width:'170px', textAlign:"start" }}>{userData.last_name}</Td>
-                )}
-            </div>
-
-            <div className="user-profile-item">
-                <th style={{ width: '160px', textAlign: "start" }}><strong>Email Address: </strong></th>
-                {isEditing ? (
-                    <input
-                        className="input-field"
-                        type="text"
-                        name="email_address"
-                        value={editedData.email_address}
-                        onChange={handleInputChange}
-                    />
-                ) : (
-                        <Td style={{width:'170px', textAlign:"start" }}>{userData.email_address}</Td>
-                )}
-            </div>
-
-            <div className="user-profile-item">
-                <th style={{ width: '160px', textAlign: "start" }}><strong>Contact Number: </strong></th>
-                {isEditing ? (
-                    <input
-                        className="input-field"
-                        type="text"
-                        name="contact_number"
-                        value={editedData.contact_number}
-                        onChange={handleInputChange}
-                    />
-                ) : (
-                        <Td style={{width:'170px', textAlign:"start" }}>{userData.contact_number}</Td>
-                )}
-            </div>
-
-            {userData.secret_code && <div className="user-profile-item">
-                <th style={{ width: '160px', textAlign: "start" }}><strong>Secret Code: </strong></th>
-                {isEditing ? (
-                    <input
-                        className="input-field"
-                        type="text"
-                        name="secret_code"
-                        value={editedData.secret_code}
-                        onChange={handleInputChange}
-                    />
-                ) : (
-                        <Td style={{width:'170px', textAlign:"start" }}>{userData.secret_code}</Td>
-                )}
-            </div>}
-
-            {userData.current_step && !isEditing && (
-                <div className="user-profile-item d-flex">
-                    <th style={{ width: '160px', textAlign: "start" }}><strong>Current Step: </strong></th> <Td style={{width:'170px', textAlign:"start" }}>{userData.current_step}</Td>
-                </div>
-            )}
-
-            {userData.staff_team && !isEditing && (
-                <div className="user-profile-item d-flex">
-                   <th style={{ width: '160px', textAlign: "start" }}> <strong>Staff Team: </strong></th> <Td style={{width:'170px', textAlign:"start" }}>{userData.staff_team}</Td>
-                </div>
-            )}
-
-            {!isEditing && (
-                <div className="user-profile-item d-flex">
-                    <th style={{ width: '160px', textAlign: "start" }}><strong>Role: </strong></th> <Td style={{width:'170px', textAlign:"start" }}>{userData.role}</Td>
-                </div>
-            )}
-
-            {!isEditing && (
-                <div className="user-profile-item d-flex">
-                    <th style={{ width: '160px', textAlign: "start" }}><strong>Status: </strong></th> <Td style={{width:'170px', textAlign:"start" }}>{userData.status}</Td>
-                </div>
-            )}
-
-            {/* Action Buttons */}
-            {isEditable && (
-                <div className="user-profile-buttons d-flex align-items-center justify-content-between">
+                {/* User Profile Items */}
+                <div className="user-profile-item">
+                    <strong style={{ width: '200px', textAlign: "start" }}>First Name: </strong>
                     {isEditing ? (
-                        <button className="apply-button" onClick={handleApplyClick}>
-                            Apply
-                        </button>
+                        <input
+                            className="input-field"
+                            type="text"
+                            name="first_name"
+                            value={editedData.first_name}
+                            onChange={handleInputChange}
+                        />
                     ) : (
-                        <button className="edit-button" onClick={handleEditClick}>
-                            Edit
-                        </button>
+                        <label style={{ width: '200px', textAlign: "start" }}>{userData.first_name}</label>
                     )}
-                    {!isEditing ? <button className="close-button" onClick={() => isOpen()}>
-                        Close
-                    </button> : <button className="close-button" onClick={() => handleEditClick()}>
-                        Cancel
-                    </button>}
                 </div>
-            )}
+
+                <div className="user-profile-item">
+                    <strong style={{ width: '200px', textAlign: "start" }}>Last Name: </strong>
+                    {isEditing ? (
+                        <input
+                            className="input-field"
+                            type="text"
+                            name="last_name"
+                            value={editedData.last_name}
+                            onChange={handleInputChange}
+                        />
+                    ) : (
+                        <label style={{ width: '200px', textAlign: "start" }}>{userData.last_name}</label>
+                    )}
+                </div>
+
+                <div className="user-profile-item">
+                    <strong style={{ width: '200px', textAlign: "start" }}>Email Address: </strong>
+                    {isEditing ? (
+                        <input
+                            className="input-field"
+                            type="text"
+                            name="email_address"
+                            value={editedData.email_address}
+                            onChange={handleInputChange}
+                        />
+                    ) : (
+                        <label style={{ width: '200px', textAlign: "start" }}>{userData.email_address}</label>
+                    )}
+                </div>
+
+                <div className="user-profile-item">
+                    <strong style={{ width: '200px', textAlign: "start" }}>Contact Number: </strong>
+                    {isEditing ? (
+                        <input
+                            className="input-field"
+                            type="text"
+                            name="contact_number"
+                            value={editedData.contact_number}
+                            onChange={handleInputChange}
+                        />
+                    ) : (
+                        <label style={{ width: '200px', textAlign: "start" }}>{userData.contact_number}</label>
+                    )}
+                </div>
+
+                {userData.secret_code && !isCustomer && (
+                    <div className="user-profile-item">
+                        <strong style={{ width: '200px', textAlign: "start" }}>Secret Code: </strong>
+                        {isEditing ? (
+                            <input
+                                className="input-field"
+                                type="text"
+                                name="secret_code"
+                                value={editedData.secret_code}
+                                onChange={handleInputChange}
+                            />
+                        ) : (
+                            <label style={{ width: '200px', textAlign: "start" }}>{userData.secret_code}</label>
+                        )}
+                    </div>
+                )}
+
+                {!isCustomer && userData.current_step && !isEditing && (
+                    <div className="user-profile-item d-flex">
+                        <strong >Current Step : </strong>
+                        <label > {userData.current_step}</label>
+                    </div>
+                )}
+
+                {!isCustomer && userData.staff_team && !isEditing && (
+                    <div className="user-profile-item d-flex">
+                        <strong>Staff Team : </strong>
+                        <label> {userData.staff_team}</label>
+                    </div>
+                )}
+
+                {!isCustomer && !isEditing && (
+                    <div className="user-profile-item d-flex">
+                        <strong>Role : </strong>
+                        <label> {userData.role}</label>
+                    </div>
+                )}
+
+                {!isEditing && (
+                    <div className="user-profile-item d-flex">
+                        <strong>Status : </strong>
+                        <label> {userData.status}</label>
+                    </div>
+                )}
+
+                {/* Action Buttons */}
+                {isEditable && (
+                    <div className="user-profile-buttons d-flex align-items-center justify-content-between">
+                        {isEditing ? (
+                            <button className="apply-button" onClick={handleApplyClick}>
+                                Apply
+                            </button>
+                        ) : (
+                            <button className="edit-button" onClick={handleEditClick}>
+                                Edit
+                            </button>
+                        )}
+                        {!isEditing ? (
+                            <button className="close-button" onClick={() => isOpen()}>
+                                Close
+                            </button>
+                        ) : (
+                            <button className="close-button" onClick={() => handleEditClick()}>
+                                Cancel
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+            {responseData.length > 0 && user.role !== 'CUSTOMER' && 
+                            <ul className='p-0 m-0 w-100 p-3' style={{listStyleType:'none', backgroundColor:`var(--main-background)`}}>
+                                <H1>Customer Response</H1>
+                                {responseData.map((response) => (
+                                    <ResponseDisplay response={response.response} staffId={response.staff_id} key={response.user_id} />
+                                ))}
+                            </ul>
+            }
+            {userData && user.role !== 'CUSTOMER' && profileId !== user.user_id && <ClientTaxDocuments clientId={profileId} />}
         </div>
     );
 };

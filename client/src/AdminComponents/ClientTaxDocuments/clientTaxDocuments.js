@@ -36,7 +36,7 @@ const apiStatusConstants = {
     inProgress: 'IN_PROGRESS',
 };
 
-const ClientTaxDocuments = () => {
+const ClientTaxDocuments = ({ clientId }) => {
     // State and variables
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
@@ -76,6 +76,21 @@ const ClientTaxDocuments = () => {
             });
             setClients(filteredClients);
             setApiStatus(apiStatusConstants.success)
+        }
+        if (clientId){
+            try {
+                const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents/${clientId}`, {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                if (response.status === 200) {
+                    setFilteredDocuments(response.data);
+                    setApiStatus(apiStatusConstants.success)
+                } else {
+                    setFilteredDocuments(documents);
+                }
+            } catch (error) {
+                console.error('Error fetching documents:', error);
+            }
         }
 
     };
@@ -191,7 +206,7 @@ const ClientTaxDocuments = () => {
                 <DocumentTableContainer >
                     <ClientTaxDocumentsHeaderContainer>
                         <H1>Uploaded Documents</H1>
-                        <ClientTaxDocumentHeader clients={clients} selectedClient={selectedClient} handleClientChange={handleClientChange} />
+                        {!clientId && <ClientTaxDocumentHeader clients={clients} selectedClient={selectedClient} handleClientChange={handleClientChange} />}
                     </ClientTaxDocumentsHeaderContainer>
                     {filteredDocuments.length > 0 ? (
                         <DocumentTableComponent onChangeDocumentStatus={onChangeDocumentStatus} documents={documents} formatDateTime={formatDateTime} handleDownloadClick={handleDownloadClick} renderDocumentThumbnail={renderDocumentThumbnail} />
@@ -218,10 +233,10 @@ const ClientTaxDocuments = () => {
 
     return (
         <ClientDocumentContainer >
-            <H1>Tax Documents</H1>
+            {/* <H1>Tax Documents</H1>
             <Description >
                 Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
-            </Description>
+            </Description> */}
             {documents.length > 0 ?
                 onRenderComponents()
                 : (

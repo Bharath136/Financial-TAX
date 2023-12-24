@@ -554,6 +554,26 @@ const getMyStaffDetails = async (req, res) => {
 };
 
 
+// Get Customer response
+const getCustomerResponse = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const getResponseQuery = `
+      SELECT * FROM user_logins
+      JOIN customer_response ON user_logins.user_id = customer_response.client_id
+      WHERE customer_response.client_id = $1
+    `;
+
+        const response = await client.query(getResponseQuery, [id]);
+        res.status(200).json(response.rows);
+    } catch (error) {
+        console.error('Error fetching customer response:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    } 
+};
+
+module.exports = getCustomerResponse;
 
 
 module.exports = {
@@ -570,5 +590,6 @@ module.exports = {
     updateStaffTeamById,
     getAllStaffUnAssignedClients,
     editPassword,
-    getMyStaffDetails
+    getMyStaffDetails,
+    getCustomerResponse
 };

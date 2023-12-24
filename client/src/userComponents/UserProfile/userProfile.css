@@ -1,9 +1,30 @@
 /* userProfile.css */
 
 
-
+.main-container{
+    width: 100%;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.user-profile-container{
+    width: 400px;
+}
+@media screen and (max-width:500px) {
+    .user-profile-container {
+        width: 240px;
+    }
+}
+@media screen and (max-width:350px) {
+    .user-profile-container {
+        width: 200px;
+    }
+}
 .user-profile-item {
     margin-bottom: 10px;
+    width: 100%;
 }
 
 .input-field {

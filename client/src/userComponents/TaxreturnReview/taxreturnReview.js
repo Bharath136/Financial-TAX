@@ -1,7 +1,7 @@
 // Import necessary Libraries
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Components
 import BreadCrumb from '../../breadCrumb/breadCrumb';
@@ -15,7 +15,7 @@ import docx from '../../Assets/docx.png';
 import noDoc from '../../Assets/no-documents.jpg';
 
 // Styled Components 
-import { DocumentName, EmptyDocumentContainer } from '../../userComponents/CommentDocument/styledComponents';
+import { DocumentName, EmptyDocumentContainer, ViewButton } from '../../userComponents/CommentDocument/styledComponents';
 import { CtaSection, DocumentTable, DocumentTableContainer, H1, TaxDescription, TaxDocumentContainer, Td, Th } from './styledComponents';
 import formatDateTime from '../../FormatDateTime/DateTime';
 
@@ -141,6 +141,7 @@ const TaxreturnReview = () => {
                                     <Th>Payment Status</Th>
                                     <Th>Payment Amount</Th>
                                     <Th>Staff</Th>
+                                    <Th>Amount</Th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -174,6 +175,18 @@ const TaxreturnReview = () => {
                                         </Td>
                                         <Td>{document.payment_amount}</Td>
                                         <Td>{document.created_by}</Td>
+                                        <Td>
+                                            {!document.payment_status === 'Paid' ?
+                                                <button disabled={true} title='Payment completed'>
+                                                    Payment completed
+                                                </button>
+                                                :
+                                                <Link style={{ textDecoration: 'none' }} to={`/user/make-payment/${document.taxreturn_id}`}>
+                                                    <ViewButton title='Pay Now'>
+                                                        Pay Now
+                                                    </ViewButton>
+                                                </Link>}
+                                        </Td>
                                     </tr>
                                 ))}
                             </tbody>

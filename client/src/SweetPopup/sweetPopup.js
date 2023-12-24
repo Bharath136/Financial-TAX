@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import UserProfile from '../userComponents/UserProfile/userProfile';
 import './sweetPopup.css';
 
-const EditModal = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEditable }) => {
+const EditModal = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEditable, isCustomer }) => {
     return (
         <Modal
             isOpen={isOpen}
@@ -12,8 +12,8 @@ const EditModal = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEdita
             contentLabel="Edit Modal"
             style={{
                 content: {
-                    width: '40%',
-                    height: '50%',
+                    width:'60%',
+                    height: '74%',
                     margin: 'auto',
                     backgroundColor: '#ffffff',
                 },
@@ -23,7 +23,7 @@ const EditModal = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEdita
                 },
             }}
         >
-            <UserProfile profileId={profileId} isEditable={isEditable} isOpen={handleOpenClick} />
+            <UserProfile profileId={profileId} isEditable={isEditable} isOpen={handleOpenClick} isCustomer={isCustomer} />
         </Modal>
     );
 };

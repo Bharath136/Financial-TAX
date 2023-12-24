@@ -17,6 +17,7 @@ const {
     getAllStaffUnAssignedClients,
     editPassword,
     getMyStaffDetails,
+    getCustomerResponse
 } = require('../controllers/user');
 
 // Register a new user API
@@ -50,7 +51,10 @@ router.put('/change-password', editPassword)
 router.put('/add/staff-team/:id', authenticate(['ADMIN']), updateStaffTeamById)
 
 // My staff details
-router.get('/my-staff/details/:id', getMyStaffDetails)
+router.get('/my-staff/details/:id', authenticate(['CUSTOMER']), getMyStaffDetails)
+
+// Customer Response
+router.get('/customer-response/:id', authenticate(['STAFF', 'ADMIN']), getCustomerResponse)
 
 // Authorized user API with common CRUD operations
 router.route("/:id")

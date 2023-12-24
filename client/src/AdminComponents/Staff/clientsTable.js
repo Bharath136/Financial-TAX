@@ -1,4 +1,4 @@
-const { Table, ViewButton } = require("../../staffComponents/AssignedClients/styledComponents")
+const { Table } = require("../../staffComponents/AssignedClients/styledComponents")
 const { Th, Td } = require("./styledComponents")
 
 const ClientTable = ({ assignedClients, viewAssignedClients }) => {

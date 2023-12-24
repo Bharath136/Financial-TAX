@@ -10,6 +10,8 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 import { CurrentUser, DashboardContainer, DashboardItem, DetailsContainer, MainContainer, SectionCard } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
+import { Select } from '../ClientTaxDocuments/styledComponents';
+import { ExecuteButton } from '../Staff/styledComponents';
 
 
 const apiStatusConstants = {
@@ -40,6 +42,9 @@ const AdminDashboard = () => {
     const [clients, setClients] = useState([]);
     const [selectedClient, setSelectedClient] = useState(null);
     const [availableSteps, setAvailableSteps] = useState([]);
+
+    const [staffList, setStaff] = useState([]);
+    const [selectedStaff, setSelectedStaff] = useState({})
 
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const token = localStorage.getItem('customerJwtToken');
@@ -151,7 +156,7 @@ const AdminDashboard = () => {
     const handleMoveToClick = (client) => {
         setSelectedClient(client);
         const currentStepIndex = dataOrder.indexOf(client.current_step);
-        const stepsAfterCurrent = dataOrder.slice(currentStepIndex + 1, currentStepIndex + 2);
+        const stepsAfterCurrent = dataOrder.slice(currentStepIndex + 1);
 
         setAvailableSteps(stepsAfterCurrent);
     };
@@ -246,7 +251,6 @@ const AdminDashboard = () => {
     };
 
     const onAssignAll = async () => {
-        getAllAssignedClients();
         try {
             setApiStatus(apiStatusConstants.inProgress)
             const res = await axios.post(`${domain.domain}/staff-customer-assignments/auto-assign-clients`, {
@@ -262,6 +266,7 @@ const AdminDashboard = () => {
                     confirmButtonText: 'OK',
                 });
                 setApiStatus(apiStatusConstants.success)
+                getAllAssignedClients();
             }
         } catch (error) {
             console.error('Error assigning clients:', error);
@@ -293,6 +298,40 @@ const AdminDashboard = () => {
         }
     };
 
+    // Get client label
+    const getClientLabel = (client) => {
+        return `${client.first_name} ${client.last_name}`;
+    };
+
+    // Handle action change
+    const handleActionChange = (selectedOption) => {
+        setSelectedStaff(selectedOption);
+    };
+
+    // Handle assigning a client to a staff member
+    const handleAssign = async (staffId) => {
+        const assignData = { client_id: selectedStaff.data.user_id, staff_id: staffId }
+        setApiStatus(apiStatusConstants.inProgress)
+        try {
+            const response = await axios.post(`${domain.domain}/staff-customer-assignments/assign`, assignData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.status === 200) {
+                setApiStatus(apiStatusConstants.success)
+                showAlert({
+                    title: 'Client Assigned Successfully!',
+                    text: 'The selected client has been successfully assigned.',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                });
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <MainContainer>
             <h2>Welcome <CurrentUser>{currentUser}</CurrentUser></h2>
@@ -320,8 +359,27 @@ const AdminDashboard = () => {
             </DashboardContainer>
             {selectedCard ? (
                 <DetailsContainer id="details-container">
-                    <div className=' p-3'>
+                    <div className=' p-3 d-flex align-items-center justify-content-between'>
                         <H1>{data[selectedCard].description} Details:</H1>
+                        {/* <div className='d-flex'>
+                        <input placeholder="Enter a range" value={selectedRange} className="range-input"/>
+                            <Select
+                                options={staffList.map((staff) => ({
+                                    value: staff.user_id,
+                                    label: getClientLabel(staff),
+                                    data: staff,
+                                }))}
+                                onChange={handleActionChange}
+                                placeholder="Select staff"
+                            />
+                            <ExecuteButton
+                                onClick={() => handleAssign(staff.user_id)}
+                                disabled={!selectedStaff}
+                            >
+                                Assign
+                            </ExecuteButton>
+
+                        </div> */}
                     </div>
                     {selectedCard === 'Client Interview' && (
                         <p>

@@ -167,6 +167,21 @@ const getCustomerAllDocuments = async (req, res) => {
     }
 };
 
+const getCustomerTaxReturnDocumentById = async (req, res) => {
+    try {
+        const taxReturnId = req.params.id; // Assuming customer ID is in the request parameters
+
+        const documentsQuery = 'SELECT * FROM tax_return_documents WHERE taxreturn_id = $1';
+        const result = await client.query(documentsQuery, [taxReturnId]);
+
+        res.status(200).json({ documents: result.rows });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error retrieving documents' });
+    }
+};
+
+
 // Update a tax return document
 const updateTaxreturnDocument = async (req, res) => {
     try {
@@ -198,9 +213,40 @@ const updateTaxreturnDocument = async (req, res) => {
     }
 };
 
+
+
+const updateTaxreturnDocumentPaymentStatus = async (id, updated_by, payment_status) => {
+    try {
+        const result = await client.query(
+            'UPDATE tax_return_documents SET updated_by = $1, payment_status = $2, updated_on = CURRENT_TIMESTAMP WHERE taxreturn_id = $3 RETURNING *',
+            [updated_by, payment_status, id]
+        );
+
+        if (result.rows.length === 0) {
+            return { error: 'Tax return document not found' };
+        }
+
+        // Update the payment status, updated_by, and updated_on for the corresponding payment record
+        await client.query(
+            'UPDATE payments SET status = $1, updated_by = $2, updated_on = CURRENT_TIMESTAMP WHERE taxreturn_id = $3',
+            [payment_status, updated_by, id]
+        );
+
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error updating tax return document:', error);
+        return { error: 'Internal Server Error' };
+    }
+};
+
+
+
+
 module.exports = {
     createTaxReturnDocument,
     downloadDocument,
     updateTaxreturnDocument,
-    getCustomerAllDocuments
+    getCustomerAllDocuments,
+    getCustomerTaxReturnDocumentById,
+    updateTaxreturnDocumentPaymentStatus
 };

@@ -19,7 +19,8 @@ const {
     createTaxReturnDocument,
     downloadDocument,
     updateTaxreturnDocument,
-    getCustomerAllDocuments
+    getCustomerAllDocuments,
+    getCustomerTaxReturnDocumentById
 } = require('../controllers/taxReturnDocuments');
 
 // API endpoint for uploading tax return documents
@@ -30,5 +31,8 @@ router.get('/download/:id', downloadDocument);
 
 // API endpoint for getting all customer documents
 router.get('/', authenticate(['STAFF', 'CUSTOMER']), getCustomerAllDocuments);
+
+// API endpoit for getting document details 
+router.get('/:id', authenticate(['STAFF', 'CUSTOMER']), getCustomerTaxReturnDocumentById);
 
 module.exports = router;

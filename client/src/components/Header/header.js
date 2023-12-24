@@ -6,6 +6,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { useEffect, useState } from 'react';
 import AuthContext from '../../AuthContext/AuthContext';
 import EditModal from '../../SweetPopup/sweetPopup';
+import logo from '../../Assets/logo7.png'
 import './header.css';
 
 const Header = ({ setShowNav }) => {
@@ -68,12 +69,13 @@ const Header = ({ setShowNav }) => {
                             <div className="container-fluid">
                                 <Navbar.Brand>
                                     <NavLink to="/" className='logo-link'>
-                                        <div className="logo-text">
+                                    <img src={logo} alt='logo' className='logo-image'/>
+                                        {/* <div className="logo-text">
                                             <p className="m-0 p-0" style={{ fontSize: '34px' }}>
                                                 TAX
                                             </p>
                                             <p className="m-0 p-0">Return</p>
-                                        </div>
+                                        </div> */}
                                     </NavLink>
                                 </Navbar.Brand>
                                 {token && 

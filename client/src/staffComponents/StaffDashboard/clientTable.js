@@ -3,7 +3,7 @@ import React from 'react';
 import { ViewButton, Td, TableContainer, Table, Th } from '../../staffComponents/AssignedClients/styledComponents';
 import EditModal from '../../SweetPopup/sweetPopup';
 
-const ClientTable = ({ clients, isAuthenticated, handleMoveToClick, handleEditClick, customerResponse, onChangeCustomerResponse, onSendResponse, handleStepChange, availableSteps, isEditModalOpen, profileId, handleEditModalClose }) => (
+const ClientTable = ({selectedClient, clients, isAuthenticated, handleMoveToClick, handleEditClick, customerResponse, onChangeCustomerResponse, onSendResponse, handleStepChange, availableSteps, isEditModalOpen, profileId, handleEditModalClose }) => (
     <>
         <TableContainer className='shadow'>
             <Table>
@@ -11,7 +11,7 @@ const ClientTable = ({ clients, isAuthenticated, handleMoveToClick, handleEditCl
                     <tr>
                         <Th>ID</Th>
                         <Th>Name</Th>
-                        <Th>Email</Th>
+                        {/* <Th>Email</Th> */}
                         <Th>Phone</Th>
                         <Th>Current Step</Th>
                         <Th>Actions</Th>
@@ -24,7 +24,7 @@ const ClientTable = ({ clients, isAuthenticated, handleMoveToClick, handleEditCl
                         <tr key={client.user_id}>
                             <Td>{client.user_id}</Td>
                             <Td>{client.first_name}</Td>
-                            <Td>{client.email_address}</Td>
+                            {/* <Td>{client.email_address}</Td> */}
                             <Td>{client.contact_number}</Td>
                             <Td>{client.current_step ? client.current_step : 'Null'}</Td>
                             <Td>
@@ -35,6 +35,21 @@ const ClientTable = ({ clients, isAuthenticated, handleMoveToClick, handleEditCl
                                 </ViewButton>
                             </Td>
                             <Td>
+                                {isAuthenticated && selectedClient.user_id === client.user_id && availableSteps.length > 0 && (
+                                        <select
+                                            id="moveTo"
+                                            value=""
+                                            className='p-2'
+                                            onChange={(e) => handleStepChange(e.target.value)}
+                                        >
+                                            <option value="" disabled>Select an option</option>
+                                            {availableSteps.map((step) => (
+                                                <option key={step} value={step}>
+                                                    {step}
+                                                </option>
+                                            ))}
+                                        </select>
+                                )}
                                 <ViewButton onClick={() => handleMoveToClick(client)}>
                                     Move To
                                 </ViewButton>
@@ -43,11 +58,11 @@ const ClientTable = ({ clients, isAuthenticated, handleMoveToClick, handleEditCl
                                 <div className='d-flex align-items-center justify-content-center p-0' style={{ gap: "10px" }}>
                                     <input
                                         type='text'
-                                        value={customerResponse}
+                                        value={selectedClient && selectedClient.user_id === client.user_id ? customerResponse : ''}
                                         className="p-2 text-dark"
                                         style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
                                         placeholder='Enter customer response...'
-                                        onChange={(e) => onChangeCustomerResponse(e)}
+                                        onChange={(e) => onChangeCustomerResponse(e, client)}
                                         required
                                     />
                                     <ViewButton
@@ -65,24 +80,7 @@ const ClientTable = ({ clients, isAuthenticated, handleMoveToClick, handleEditCl
 
             </Table>
 
-            {isAuthenticated && availableSteps.length > 0 && (
-                <div className='d-flex align-items-center justify-content-end mt-4'>
-                    <label htmlFor="moveTo" className='m-2'><strong>Move To: </strong></label>
-                    <select
-                        id="moveTo"
-                        value=""
-                        className='p-2'
-                        onChange={(e) => handleStepChange(e.target.value)}
-                    >
-                        <option value="" disabled>Select an option</option>
-                        {availableSteps.map((step) => (
-                            <option key={step} value={step}>
-                                {step}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
+            
 
 
             <EditModal

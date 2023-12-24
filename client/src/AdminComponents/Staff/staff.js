@@ -397,13 +397,13 @@ const Staff = () => {
                             <Table>
                                 <thead>
                                     <tr>
-                                        {/* <Th>ID</Th> */}
+                                        <Th>ID</Th>
                                         <Th>Name</Th>
                                         <Th>Email</Th>
                                         {/* <Th>Phone</Th> */}
                                         {/* <Th>Secret Code</Th> */}
                                         <Th>Select Team</Th>
-                                        <Th>Assign Clients</Th>
+                                        {/* <Th>Assign Clients</Th> */}
                                         <Th>Assigned Clients</Th>
                                         <Th>Profile Actions</Th>
                                     </tr>
@@ -411,7 +411,7 @@ const Staff = () => {
                                 <tbody>
                                     {filteredStaff.map((staff) => (
                                         <tr key={staff.user_id}>
-                                            {/* <Td>{staff.user_id}</Td> */}
+                                            <Td>{staff.user_id}</Td>
                                             <Td>{staff.first_name}</Td>
                                             <Td>{staff.email_address}</Td>
                                             {/* <Td>{staff.contact_number}</Td> */}
@@ -436,7 +436,7 @@ const Staff = () => {
                                                     </ExecuteButton>
                                                 </div>
                                             </Td>}
-                                            <Td>
+                                            {/* <Td>
                                                 <div className='d-flex'>
                                                     <Select
                                                         options={unassignedClients.map((client) => ({
@@ -455,7 +455,7 @@ const Staff = () => {
                                                     </ExecuteButton>
 
                                                 </div>
-                                            </Td>
+                                            </Td> */}
                                             <Td>
                                                 <ViewButton
                                                     onClick={() => getAssignedClients(staff.user_id)}
@@ -464,7 +464,7 @@ const Staff = () => {
                                                 </ViewButton>
                                             </Td>
                                             <Td>
-                                                <div className='d-flex'>
+                                                <div className='d-flex align-items-center justify-content-center'>
                                                     <Select
                                                         options={actionOptions}
                                                         onChange={handleActionChange}

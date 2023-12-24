@@ -34,7 +34,7 @@ const menuItems = [
     { path: '/user/upload-document', label: 'Upload Document', icon: <FaFileUpload size={25} /> },
     { path: '/user/comment-to-document', label: 'Add Comment', icon: <FaComments size={25} /> },
     { path: '/user/tax-return-review', label: 'Taxreturn Review', icon: <HiDocumentDuplicate size={25} /> },
-    { path: '/user/make-payment', label: 'Payments', icon: <MdPayments size={25} /> },
+    { path: '/user/my-payments', label: 'Payments', icon: <MdPayments size={25} /> },
     // { path: '/my-tax-documents', label: 'Documents', icon: <FaFileAlt size={25} /> },
 ];
 
@@ -51,6 +51,7 @@ const adminMenuItems = [
     { path: '/admin/staff', label: 'Staff', icon: <FaUser size={25} /> },
     { path: '/admin/client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
     { path: '/admin/add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> },
+    { path: '/admin/payments', label: 'Payments', icon: <MdPayments size={25} /> },
     { path: '/admin/user-contact/info', label: 'Contacts', icon: <RiContactsFill  size={25}/>}
 ];
 
@@ -69,23 +70,23 @@ const Sidebar = () => {
     // const [isDarkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
-        
-        
-        if (user) {
-            setCurrentUser(user.first_name);
-        }
-        setActiveItem(location.pathname);
-
         const getMyStaff = async () => {
-            try{
+            try {
                 const response = await axios.get(`${domain.domain}/user/my-staff/details/${user.user_id}`)
                 setProfileId(response.data[0].user_id)
-            }catch(error){
+            } catch (error) {
                 console.log(error)
             }
         }
+        
+        if (user) {
+            setCurrentUser(user.first_name);
+            if(user.role === 'CUSTOMER'){
+                getMyStaff()
+            }
+        }
+        setActiveItem(location.pathname);
 
-        getMyStaff()
         const token = localStorage.getItem('customerJwtToken');
         if (token) {
            if(user){
@@ -189,6 +190,7 @@ const Sidebar = () => {
                                 onRequestClose={handleEditModalClose}
                                 handleOpenClick={handleEditClick}
                                 isEditable={false}
+                                isCustomer={user.role === 'CUSTOMER'}
                             />
                         </div>
                     </div>

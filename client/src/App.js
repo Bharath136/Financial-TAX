@@ -33,6 +33,8 @@ import ContactView from './AdminComponents/Messages/message';
 import Sidebar from './userComponents/SideBar/sidebar';
 import PaymentDetails from './AdminComponents/Payments/payments';
 import MyPaymentDetails from './userComponents/MyPayments/myPayments';
+import AddCustomer from './AdminComponents/AddCustomer/addCustomer';
+import ExcelUploader from './AdminComponents/ExcelUploader/excelUploader';
 
 function App() {
   const [currentToken, setCurrentToken] = useState('');
@@ -177,6 +179,8 @@ function AdminSection() {
         <Route path="staff" element={<ProtectedRoute Component={Staff} />} />
         <Route path="client-tax-documents" element={<ProtectedRoute Component={ClientTaxDocuments} />} />
         <Route path="add-staff" element={<ProtectedRoute Component={AddStaff} />} />
+        <Route path="add-customer" element={<ProtectedRoute Component={AddCustomer} />} />
+        <Route path="excel-uploader" element={<ProtectedRoute Component={ExcelUploader} />} />
         <Route path="payments" element={<ProtectedRoute Component={PaymentDetails} />} />
         <Route path="user-contact/info" element={<ProtectedRoute Component={ContactView} />} />
       </Routes>

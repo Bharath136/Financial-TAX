@@ -78,6 +78,14 @@ app.use('/contact', contact);
 const customerResponseRoutes = require('./routes/customerResponse');
 app.use('/customer-response', customerResponseRoutes);
 
+// Use the routes in your application
+const dummyUserRoutes = require('./routes/dummy_users')
+app.use('/dummy-users', dummyUserRoutes);
+
+// Email api routes
+const emailRoutes = require('./routes/email')
+app.use('/email', emailRoutes);
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

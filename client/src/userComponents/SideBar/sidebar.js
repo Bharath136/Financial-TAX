@@ -51,6 +51,8 @@ const adminMenuItems = [
     { path: '/admin/staff', label: 'Staff', icon: <FaUser size={25} /> },
     { path: '/admin/client-tax-documents', label: 'Tax Document', icon: <FaFileAlt size={25} /> },
     { path: '/admin/add-staff', label: 'Add Staff', icon: <IoPersonAddSharp size={25} /> },
+    { path: '/admin/add-customer', label: 'Add Customer', icon: <IoPersonAddSharp size={25} /> },
+    { path: '/admin/excel-uploader', label: 'Excel Uploader', icon: <FaFileUpload size={25} /> },
     { path: '/admin/payments', label: 'Payments', icon: <MdPayments size={25} /> },
     { path: '/admin/user-contact/info', label: 'Contacts', icon: <RiContactsFill  size={25}/>}
 ];

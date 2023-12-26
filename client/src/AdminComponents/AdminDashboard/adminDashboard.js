@@ -10,8 +10,8 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 import { CurrentUser, DashboardContainer, DashboardItem, DetailsContainer, MainContainer, SectionCard } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
-import { Select } from '../ClientTaxDocuments/styledComponents';
-import { ExecuteButton } from '../Staff/styledComponents';
+// import { Select } from '../ClientTaxDocuments/styledComponents';
+// import { ExecuteButton } from '../Staff/styledComponents';
 
 
 const apiStatusConstants = {
@@ -43,8 +43,8 @@ const AdminDashboard = () => {
     const [selectedClient, setSelectedClient] = useState(null);
     const [availableSteps, setAvailableSteps] = useState([]);
 
-    const [staffList, setStaff] = useState([]);
-    const [selectedStaff, setSelectedStaff] = useState({})
+    // const [staffList, setStaff] = useState([]);
+    // const [selectedStaff, setSelectedStaff] = useState({})
 
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const token = localStorage.getItem('customerJwtToken');
@@ -197,11 +197,10 @@ const AdminDashboard = () => {
                 setApiStatus(apiStatusConstants.error);
             }
         } catch (error) {
-            // Handle request errors
-            console.error('Error:', error);
             showAlert({
                 title: 'Error',
-                text: `No staff with the ${selectedStep} team is available. Please try again.`,
+                // text: `No staff with the ${selectedStep} team is available. Please try again.`,
+                text: `${error.response.data.error}.  Please try again.`,
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
@@ -288,7 +287,7 @@ const AdminDashboard = () => {
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return <div>failure</div>;
+                return renderClients();
             case apiStatusConstants.inProgress:
                 return <SweetLoading />;
             case apiStatusConstants.success:
@@ -299,38 +298,38 @@ const AdminDashboard = () => {
     };
 
     // Get client label
-    const getClientLabel = (client) => {
-        return `${client.first_name} ${client.last_name}`;
-    };
+    // const getClientLabel = (client) => {
+    //     return `${client.first_name} ${client.last_name}`;
+    // };
 
     // Handle action change
-    const handleActionChange = (selectedOption) => {
-        setSelectedStaff(selectedOption);
-    };
+    // const handleActionChange = (selectedOption) => {
+    //     setSelectedStaff(selectedOption);
+    // };
 
     // Handle assigning a client to a staff member
-    const handleAssign = async (staffId) => {
-        const assignData = { client_id: selectedStaff.data.user_id, staff_id: staffId }
-        setApiStatus(apiStatusConstants.inProgress)
-        try {
-            const response = await axios.post(`${domain.domain}/staff-customer-assignments/assign`, assignData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.status === 200) {
-                setApiStatus(apiStatusConstants.success)
-                showAlert({
-                    title: 'Client Assigned Successfully!',
-                    text: 'The selected client has been successfully assigned.',
-                    icon: 'success',
-                    confirmButtonText: 'Ok',
-                });
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const handleAssign = async (staffId) => {
+    //     const assignData = { client_id: selectedStaff.data.user_id, staff_id: staffId }
+    //     setApiStatus(apiStatusConstants.inProgress)
+    //     try {
+    //         const response = await axios.post(`${domain.domain}/staff-customer-assignments/assign`, assignData, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
+    //         if (response.status === 200) {
+    //             setApiStatus(apiStatusConstants.success)
+    //             showAlert({
+    //                 title: 'Client Assigned Successfully!',
+    //                 text: 'The selected client has been successfully assigned.',
+    //                 icon: 'success',
+    //                 confirmButtonText: 'Ok',
+    //             });
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     return (
         <MainContainer>
@@ -401,7 +400,7 @@ const AdminDashboard = () => {
             ) :
                 <div className='bg-light'>
                     {clients.length > 0 && <div>
-                        <div className='d-flex align-items-center justify-content-between bg-dark p-3'>
+                        <div style={{backgroundColor:`var(--main-background-shade)`}} className='d-flex align-items-center justify-content-between p-3'>
                             <H1>Unassigned clients</H1>
                             <button className='btn bg-success text-light' onClick={onAssignAll} title='Auto assign all to Scheduling'>Assign All</button>
                         </div>

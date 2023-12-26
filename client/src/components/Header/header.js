@@ -3,6 +3,7 @@ import { Nav, Navbar } from 'react-bootstrap';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { BiLogIn } from 'react-icons/bi';
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { IoReorderThreeSharp } from "react-icons/io5";
 import { useEffect, useState } from 'react';
 import AuthContext from '../../AuthContext/AuthContext';
 import EditModal from '../../SweetPopup/sweetPopup';
@@ -87,7 +88,7 @@ const Header = ({ setShowNav }) => {
                                         <label style={{ cursor: 'pointer' }}><strong>{activeUser}</strong></label>
                                     </div>
                                 <button className='d-block d-md-none three-dots align-items-center' style={{marginLeft:'10px'}} title='Close' onClick={toggleSidebar}>
-                                    <BsThreeDotsVertical size={18} />
+                                            <IoReorderThreeSharp size={18} />
                                 </button>
                                 </div>}
                                 {token && <Navbar.Toggle aria-controls="navbarSupportedContent" id="navbar-toggle" className='d-none d-md-block d-lg-none' />}

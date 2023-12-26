@@ -61,6 +61,6 @@ export const AddStaffButton = styled.button`
     border-radius: 4px;
     cursor: pointer;
     &:hover {
-        background-color: #2980b9;
+        background-color: var(--button-hover);
     }
 `;

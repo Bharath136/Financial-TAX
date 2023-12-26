@@ -13,8 +13,6 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
             });
         }
 
-        console.log(new Date())
-
         // Store additional information about the uploaded file
         const fileInfo = {
             filename: req.file.filename,
@@ -144,7 +142,6 @@ const updateCustomerDocument = async (req, res) => {
         const result = await client.query(updatedUserQuery, [user_id])
 
         const updated_by = `${result.rows[0].first_name} ${result.rows[0].last_name}`;
-        console.log(updated_by)
 
         const queryParams = [
             `document_path = '${document_path}'`,
@@ -219,7 +216,7 @@ const updateDocumentReviewStatus = async (req, res) => {
         review_status
     } = req.body
 
-    const updatedOn = new Date();
+    const updatedOn = new Date().toISOString();
 
     try {
         const updatedUserQuery = 'SELECT * FROM user_logins WHERE user_id = $1';

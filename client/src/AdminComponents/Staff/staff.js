@@ -263,29 +263,29 @@ const Staff = () => {
     };
 
     // Handle assigning a client to a staff member
-    const handleAssign = async (staffId) => {
-        const assignData = { client_id: selectedAction.data.user_id, staff_id: staffId }
-        setApiStatus(apiStatusConstants.inProgress)
-        try {
-            const response = await axios.post(`${domain.domain}/staff-customer-assignments/assign`, assignData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.status === 200) {
-                setApiStatus(apiStatusConstants.success)
-                showAlert({
-                    title: 'Client Assigned Successfully!',
-                    text: 'The selected client has been successfully assigned.',
-                    icon: 'success',
-                    confirmButtonText: 'Ok',
-                });
-                fetchData()
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const handleAssign = async (staffId) => {
+    //     const assignData = { client_id: selectedAction.data.user_id, staff_id: staffId }
+    //     setApiStatus(apiStatusConstants.inProgress)
+    //     try {
+    //         const response = await axios.post(`${domain.domain}/staff-customer-assignments/assign`, assignData, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
+    //         if (response.status === 200) {
+    //             setApiStatus(apiStatusConstants.success)
+    //             showAlert({
+    //                 title: 'Client Assigned Successfully!',
+    //                 text: 'The selected client has been successfully assigned.',
+    //                 icon: 'success',
+    //                 confirmButtonText: 'Ok',
+    //             });
+    //             fetchData()
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     const [team, setTeam] = useState('')
 
@@ -321,6 +321,7 @@ const Staff = () => {
                     confirmButtonText: 'Ok',
                 });
             }
+            fetchData()
             setTeam()
         } catch (error) {
             console.error(error);
@@ -389,7 +390,7 @@ const Staff = () => {
                     </ClientsHeaderContainer>
                     <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize: '14px' }} className='p-3 mt-2'>
                         <strong>Note: </strong>
-                        <lable>Make sure that selecting a team should be done only once. Changing it repeatedly may cause issues for your website.</lable>
+                        <lable>Make sure that selecting a team should be done only once. Changing it repeatedly may cause issues for your data.</lable>
                     </div>
 
                     <Container>

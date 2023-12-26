@@ -38,8 +38,9 @@ const Contact = () => {
     return (
         <>
             <section id="contact-us" className="contact-us-container">
-                <div className="container">
-                    <h2 className="section-title mb-5">CONTACT US</h2>
+                <div className="container container-section">
+                    <h2 className="section-title">Get In Touch</h2>
+                    <p className="section-description">We are here to help you! how can we help?</p>
                     <div className="row">
                         <div className="col-md-6 text-start">
                             <form onSubmit={handleSubmit} className="contact-form content">
@@ -68,7 +69,9 @@ const Contact = () => {
                                         )}
                                     </div>
                                 ))}
-                                <button type="submit" className="btn bg-dark text-warning border button mb-3">Submit</button>
+                                <div className='d-flex align-items-center justify-content-end'>
+                                    <button type="submit" className="btn text-center" style={{ backgroundColor: '#dad6ff', color:`var(--accent-background)`,fontWeight:'500', padding:'10px 30px'}}>SUBMIT</button>
+                                </div>
                             </form>
                         </div>
                         <div className="col-md-6">

@@ -2,12 +2,27 @@
     margin-top: 10vh;
     min-height: 90vh;
     display: flex;
-    padding: 10px;
+    padding:80px 10px;
+    background-color: var(--main-background);
+}
+
+.container-section{
+    padding: 20px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 30px rgb(191, 191, 191);
+    border-radius: 8px;
 }
 
 .section-title{
-    text-align: center;
+    margin-left: 40px;
+    color: var(--headings);
     font-family: 'Bree Serif';
+    margin-bottom: 10px;
+}
+
+.section-description{
+    margin-left: 40px;
+    margin-bottom: 40px;
 }
 
 .button{
@@ -27,6 +42,14 @@
         padding: 0 20px;
         font-size: 16px;
     }
+        .section-title {
+            margin-left: 0px;
+            color: var(--headings);
+            font-family: 'Bree Serif';
+        }
+        .section-description{
+            margin-left: 0px;
+        }
 }
 
 @media screen and (max-width:768px) {

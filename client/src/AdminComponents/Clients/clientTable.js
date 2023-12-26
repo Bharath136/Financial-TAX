@@ -1,6 +1,6 @@
 // ClientTable.js
 import React from 'react';
-import { TableContainer, Table, Th, Td, ViewButton } from './styledComponents';
+import {  Table, Th, Td, ViewButton } from './styledComponents';
 import { MdDelete } from 'react-icons/md';
 
 const ClientTable = ({ clients, onDeleteClient, handleEditClick, setProfileId }) => {

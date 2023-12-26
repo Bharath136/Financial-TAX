@@ -8,6 +8,7 @@ import showAlert from '../../SweetAlert/sweetalert';
 import authImage from '../../Assets/loginbg.png'
 import EyeButton from '../EyeButton/EyeButton';
 import SweetLoading from '../../SweetLoading/SweetLoading';
+import renderLoader from '../../SweetLoading/ButtonLoader';
 
 
 const apiStatusConstants = {
@@ -84,8 +85,8 @@ const Login = ({ setShowNav }) => {
 
     const renderComponents = () => {
         switch (apiStatus) {
-            case apiStatusConstants.inProgress:
-                return <div style={{ marginTop: '300px' }}><SweetLoading /></div>;
+            // case apiStatusConstants.inProgress:
+            //     return <div style={{ marginTop: '300px' }}><SweetLoading /></div>;
             case apiStatusConstants.failure:
                 return renderLoginForm();
             case apiStatusConstants.success:
@@ -146,7 +147,7 @@ const Login = ({ setShowNav }) => {
                                         <label htmlFor='remember' style={{ marginLeft: '10px' }}>Remember me</label>
                                     </div>
                                     <button type="submit" onClick={changeLogin} className="login-button w-100 mt-2">
-                                        Login
+                                        {apiStatus === apiStatusConstants.inProgress ? renderLoader() : <span>Login</span>}
                                     </button>
                                     {errorMsg && <p className='text-danger'>{errorMsg}</p>}
                                 </form>

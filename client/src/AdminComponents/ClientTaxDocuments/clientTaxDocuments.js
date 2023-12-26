@@ -17,7 +17,6 @@ import {
     ClientDocumentContainer,
     ClientTaxDocumentsHeaderContainer,
     CtaSection,
-    Description,
     DocumentTableContainer,
     H1,
     NoDocuments,

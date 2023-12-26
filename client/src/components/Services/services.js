@@ -1,6 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
-import Footer from '../Footer/footer'
+import styled, { keyframes } from 'styled-components';
+import { FaUser, FaBuilding, FaClipboard, FaBook, FaLightbulb, FaGavel, FaLandmark, FaHandshake } from 'react-icons/fa';
+import Footer from '../Footer/footer';
+
 
 const ServicesSection = styled.section`
   margin-top: 10vh;
@@ -12,6 +14,8 @@ const ServicesContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
+  padding: 80px 20px;
+  min-height: 90vh;
 `;
 
 const ServicesHeader = styled.h2`
@@ -31,24 +35,74 @@ const ServicesList = styled.ul`
   list-style: none;
   padding: 0;
   margin-bottom: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 `;
 
-const ServiceItem = styled.li`
-  font-size: 1.2em;
-  margin-bottom: 15px;
-  color: #333;
-  position: relative;
+const shakeAnimation = keyframes`
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px) rotate(-5deg); }
+  50% { transform: translateX(5px) rotate(5deg); }
+  75% { transform: translateX(-5px) rotate(-5deg); }
+  100% { transform: translateX(0); }
+`;
 
-  &:before {
-    content: "•";
-    color: #007BFF;
-    font-size: 1.5em;
-    position: absolute;
-    left: -20px;
-    top: 50%;
-    transform: translateY(-50%);
+const ServiceCard = styled.li`
+  width: 250px;
+  margin: 0 15px 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+
+  &:hover {
+    transform: scale(1.04);
+    transition: 0.09s ease-in;
+    animation: ${shakeAnimation} 0.5s ease-in-out; /* Apply shake animation on hover */
   }
 `;
+
+
+const ServiceIcon = styled.div`
+  color: var(--accent-background);
+  font-size: 2em;
+  margin-bottom: 15px;
+`;
+
+const ServiceTitle = styled.h3`
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 10px;
+`;
+
+const ServiceDescription = styled.p`
+  font-size: 1.1em;
+  color: #555;
+`;
+
+const iconMap = {
+  IndividualTaxReturns: FaUser,
+  BusinessTaxPlanning: FaBuilding,
+  AuditSupport: FaClipboard,
+  Bookkeeping: FaBook,
+  TaxConsultation: FaLightbulb,
+  IRSIssueResolution: FaGavel,
+  EstateTaxPlanning: FaLandmark,
+  NonprofitTaxServices: FaHandshake,
+};
+
+const serviceDescriptions = {
+  IndividualTaxReturns: 'Maximize deductions for individuals.',
+  BusinessTaxPlanning: 'Strategic tax planning for businesses.',
+  AuditSupport: 'Support and representation during audits.',
+  Bookkeeping: 'Maintain accurate financial records.',
+  TaxConsultation: 'Expert advice on tax-related matters.',
+  IRSIssueResolution: 'Resolution and appeals for IRS issues.',
+  EstateTaxPlanning: 'Plan for estate and inheritance taxes.',
+  NonprofitTaxServices: 'Tax services tailored for nonprofit organizations.',
+};
 
 const Services = () => (
   <ServicesSection>
@@ -58,14 +112,15 @@ const Services = () => (
         At TaxReturn Management, we are dedicated to providing a comprehensive suite of services to meet your diverse tax needs. Our experienced team ensures accuracy, compliance, and peace of mind.
       </ServicesDescription>
       <ServicesList>
-        <ServiceItem>Individual Tax Returns</ServiceItem>
-        <ServiceItem>Business Tax Planning and Strategy</ServiceItem>
-        <ServiceItem>Audit Support and Representation</ServiceItem>
-        <ServiceItem>Bookkeeping and Financial Statements</ServiceItem>
-        <ServiceItem>Tax Consultation and Advisory Services</ServiceItem>
-        <ServiceItem>IRS Issue Resolution and Appeals</ServiceItem>
-        <ServiceItem>Estate and Inheritance Tax Planning</ServiceItem>
-        <ServiceItem>Nonprofit Organization Tax Services</ServiceItem>
+        {Object.keys(iconMap).map((serviceName) => (
+          <ServiceCard key={serviceName}>
+            <ServiceIcon>
+              {React.createElement(iconMap[serviceName])}
+            </ServiceIcon>
+            <ServiceTitle>{serviceName}</ServiceTitle>
+            <ServiceDescription>{serviceDescriptions[serviceName]}</ServiceDescription>
+          </ServiceCard>
+        ))}
       </ServicesList>
       <ServicesDescription>
         We tailor our services to your unique situation, ensuring you maximize your deductions and minimize your tax liability. Trust us to navigate the complexities of the tax code so you can focus on what matters most.

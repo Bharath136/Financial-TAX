@@ -2,6 +2,8 @@ const client = require('../database/connection');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
+
 // User Registration
 const userRegistration = async (req, res) => {
     const {
@@ -44,6 +46,20 @@ const userRegistration = async (req, res) => {
             await client.query(createTableQuery);
         }
 
+        // Check if the email address already exists
+        const checkEmailQuery = `
+            SELECT EXISTS (
+                SELECT 1
+                FROM user_logins
+                WHERE email_address = $1
+            ) AS email_exists;
+        `;
+        const emailCheckResult = await client.query(checkEmailQuery, [email_address]);
+
+        if (emailCheckResult.rows[0].email_exists) {
+            return res.status(400).json({ success: false, error: 'Email address already exists' });
+        }
+
         // Hash the password before saving it in the database
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
@@ -80,6 +96,7 @@ const userRegistration = async (req, res) => {
         res.status(500).json({ success: false, error: 'Error registering user' });
     }
 };
+
 
 
 const editPassword = async (req, res) => {

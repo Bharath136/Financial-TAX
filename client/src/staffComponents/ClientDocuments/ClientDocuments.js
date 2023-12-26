@@ -264,6 +264,7 @@ const ClientDocuments = () => {
                             <thead>
                                 <tr>
                                     <Th>Document</Th>
+                                    <Th>Year</Th>
                                     <Th>Date</Th>
                                     <Th>Review Status</Th>
                                     <Th>Change Status</Th>
@@ -288,6 +289,7 @@ const ClientDocuments = () => {
                                                 <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
                                             </div>
                                         </Td>
+                                        <Td>{document.financial_year}</Td>
                                         <Td>{formatDateTime(document.created_on)}</Td>
                                         <Td style={{
                                             color:

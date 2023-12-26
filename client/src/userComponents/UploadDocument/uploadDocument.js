@@ -293,6 +293,7 @@ const UploadDocument = () => {
                                 <thead>
                                     <tr>
                                         <Th>Document</Th>
+                                        <Th>Year</Th>
                                         <Th>Date & Time</Th>
                                         <Th>Review Status</Th>
                                     </tr>
@@ -315,6 +316,7 @@ const UploadDocument = () => {
                                                 </div>
 
                                             </Td>
+                                            <Td>{document.financial_year}</Td>
                                             <Td>{formatDateTime(document.created_on)}</Td>
                                             <Td className={`status-${document.review_status.toLowerCase()}`}>
                                                 <strong>{document.review_status}</strong>

@@ -69,32 +69,41 @@ const Sidebar = () => {
     const [currentUser, setCurrentUser] = useState('');
     const [profileId, setProfileId] = useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const token = localStorage.getItem('customerJwtToken');
     // const [isDarkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
         const getMyStaff = async () => {
             try {
-                const response = await axios.get(`${domain.domain}/user/my-staff/details/${user.user_id}`)
+                const response = await axios.get(`${domain.domain}/user/my-staff/details/${user.user_id}`, {
+                    headers:{
+                        Authorization:`Bearer ${token}`
+                    }
+                })
                 setProfileId(response.data[0].user_id)
             } catch (error) {
                 console.log(error)
             }
         }
+
+        const role = user?.role;
         
         if (user) {
             setCurrentUser(user.first_name);
-            if(user.role === 'CUSTOMER'){
+            if(role === 'CUSTOMER'){
                 getMyStaff()
             }
+        }else{
+            navigate("/")
         }
         setActiveItem(location.pathname);
 
-        const token = localStorage.getItem('customerJwtToken');
+        
         if (token) {
            if(user){
-               if (user.role === 'ADMIN') {
+               if (role === 'ADMIN') {
                    setActiveMenuItems(adminMenuItems);
-               } else if (user.role === 'STAFF') {
+               } else if (role === 'STAFF') {
                    setActiveMenuItems(staffMenuItems);
                } else {
                    setActiveMenuItems(menuItems);
@@ -192,7 +201,7 @@ const Sidebar = () => {
                                 onRequestClose={handleEditModalClose}
                                 handleOpenClick={handleEditClick}
                                 isEditable={false}
-                                isCustomer={user.role === 'CUSTOMER'}
+                                isCustomer={user?.role === 'CUSTOMER'}
                             />
                         </div>
                     </div>

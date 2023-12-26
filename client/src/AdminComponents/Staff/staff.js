@@ -68,7 +68,7 @@ const Staff = () => {
     const [viewAssignedClients, setViewAssignedClients] = useState(false);
     const [selectedStaff, setSelectedStaff] = useState({})
     const [searchTerm, setSearchTerm] = useState('');
-    const [unassignedClients, setUnassignedClients] = useState([]);
+    // const [unassignedClients, setUnassignedClients] = useState([]);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const [selectedFilter, setFilterType] = useState('');
     const token = localStorage.getItem('customerJwtToken');
@@ -125,7 +125,7 @@ const Staff = () => {
                 return !assignedClients.some((assignedClient) => assignedClient.client_id === client.user_id);
             });
             setApiStatus(apiStatusConstants.success)
-            setUnassignedClients(unassignedClients);
+            // setUnassignedClients(unassignedClients);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -231,9 +231,9 @@ const Staff = () => {
     };
 
     // Get client label
-    const getClientLabel = (client) => {
-        return `${client.first_name} ${client.last_name}`;
-    };
+    // const getClientLabel = (client) => {
+    //     return `${client.first_name} ${client.last_name}`;
+    // };
 
     // Get assigned clients for a staff member
     const getAssignedClients = async (id) => {
@@ -324,7 +324,6 @@ const Staff = () => {
             fetchData()
             setTeam()
         } catch (error) {
-            console.error(error);
             setApiStatus(apiStatusConstants.error); // Set error status if there's an error
             showAlert({
                 title: 'Error',
@@ -390,7 +389,7 @@ const Staff = () => {
                     </ClientsHeaderContainer>
                     <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize: '14px' }} className='p-3 mt-2'>
                         <strong>Note: </strong>
-                        <lable>Make sure that selecting a team should be done only once. Changing it repeatedly may cause issues for your data.</lable>
+                        <p>Make sure that selecting a team should be done only once. Changing it repeatedly may cause issues for your data.</p>
                     </div>
 
                     <Container>

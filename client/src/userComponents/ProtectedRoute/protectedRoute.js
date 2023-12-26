@@ -10,7 +10,7 @@ const ProtectedRoute = (props) => {
         const user = JSON.parse(localStorage.getItem('currentUser'));
 
         if (!token || !user || (user.role !== 'ADMIN' && user.role !== 'STAFF' && user.role !== 'CUSTOMER')) {
-            navigate('/login');
+            navigate('/accounts/login');
         }
     }, [navigate]);
 

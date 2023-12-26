@@ -17,7 +17,8 @@ const {
     getAllStaffUnAssignedClients,
     editPassword,
     getMyStaffDetails,
-    getCustomerResponse
+    getCustomerResponse,
+    getAllStaff
 } = require('../controllers/user');
 
 // Register a new user API
@@ -31,6 +32,9 @@ router.post('/add-staff', authenticate(['ADMIN']), addStaff);
 
 // Authorized user API
 router.get('/', authenticate(['STAFF', 'ADMIN']), getAllUsers);
+
+// Get all staff API
+router.get('/staff', authenticate(['ADMIN']), getAllStaff)
 
 // Get staff assigned clients API
 router.get('/staff-clients', authenticate(['STAFF', 'ADMIN']), getAllStaffAssignedClients);

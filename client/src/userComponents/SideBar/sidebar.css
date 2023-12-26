@@ -6,6 +6,7 @@
     transition: width 0.3s ease;
     margin-top: 10vh;
     height: 90vh;
+    overflow: auto;
 }
 
 .hide-icons {

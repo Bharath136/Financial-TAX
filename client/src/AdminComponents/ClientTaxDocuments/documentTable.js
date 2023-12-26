@@ -9,6 +9,7 @@ const DocumentTableComponent = ({ documents, formatDateTime, handleDownloadClick
         <thead>
             <tr>
                 <Th>Document</Th>
+                <Th>Financial Year</Th>
                 <Th>Date & Time</Th>
                 <Th>Review Status</Th>
                 <Th>Change Status</Th>
@@ -31,6 +32,7 @@ const DocumentTableComponent = ({ documents, formatDateTime, handleDownloadClick
                             <DocumentName>{document.document_path.split('-')[1]}</DocumentName>
                         </div>
                     </Td>
+                    <Td>{document.financial_year}</Td>
                     <Td>{formatDateTime(document.created_on)}</Td>
                     <Td style={{
                         color:

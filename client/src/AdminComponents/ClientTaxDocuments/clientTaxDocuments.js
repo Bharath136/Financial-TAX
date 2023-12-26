@@ -47,51 +47,64 @@ const ClientTaxDocuments = ({ clientId }) => {
 
     // Fetch documents from the server
     const fetchDocuments = async () => {
-        setApiStatus(apiStatusConstants.inProgress)
+        setApiStatus(apiStatusConstants.inProgress);
         try {
             const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents`, {
-                headers: { Authorization: `Bearer ${accessToken}` }
+                headers: { Authorization: `Bearer ${accessToken}` },
             });
+
             if (response.status === 200) {
                 setDocuments(response.data);
                 setFilteredDocuments(response.data);
-                setApiStatus(apiStatusConstants.success)
+                setApiStatus(apiStatusConstants.success);
+            } else {
+                setApiStatus(apiStatusConstants.failure);
             }
         } catch (error) {
             console.error('Error fetching documents:', error);
+            setApiStatus(apiStatusConstants.failure);
         }
     };
 
     // Fetch clients from the server
     const fetchClients = async () => {
-        setApiStatus(apiStatusConstants.inProgress)
-        const response = await axios.get(`${domain.domain}/user`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-
-        if (response.status === 200) {
-            const filteredClients = response.data.filter((client) => {
-                return client.role === 'CUSTOMER';
+        setApiStatus(apiStatusConstants.inProgress);
+        try {
+            const response = await axios.get(`${domain.domain}/user`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
             });
-            setClients(filteredClients);
-            setApiStatus(apiStatusConstants.success)
+
+            if (response.status === 200) {
+                const filteredClients = response.data.filter((client) => {
+                    return client.role === 'CUSTOMER';
+                });
+                setClients(filteredClients);
+                setApiStatus(apiStatusConstants.success);
+            } else {
+                setApiStatus(apiStatusConstants.failure);
+            }
+        } catch (error) {
+            console.error('Error fetching clients:', error);
+            setApiStatus(apiStatusConstants.failure);
         }
-        if (clientId){
+
+        if (clientId) {
             try {
                 const response = await axios.get(`${domain.domain}/customer-tax-document/get-assigned-client-documents/${clientId}`, {
-                    headers: { Authorization: `Bearer ${accessToken}` }
+                    headers: { Authorization: `Bearer ${accessToken}` },
                 });
+
                 if (response.status === 200) {
                     setFilteredDocuments(response.data);
-                    setApiStatus(apiStatusConstants.success)
+                    setApiStatus(apiStatusConstants.success);
                 } else {
                     setFilteredDocuments(documents);
                 }
             } catch (error) {
-                console.error('Error fetching documents:', error);
+                console.error('Error fetching documents for specific client:', error);
+                setApiStatus(apiStatusConstants.failure);
             }
         }
-
     };
 
     // Handle document status change

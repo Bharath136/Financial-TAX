@@ -65,6 +65,7 @@ const PaymentDetails = () => {
                 <TableHead>
                     <tr>
                         <TableHeaderCell>User ID</TableHeaderCell>
+                        <TableHeaderCell>Document ID</TableHeaderCell>
                         <TableHeaderCell>Payment ID</TableHeaderCell>
                         <TableHeaderCell>Payer ID</TableHeaderCell>
                         <TableHeaderCell>Amount</TableHeaderCell>
@@ -75,6 +76,7 @@ const PaymentDetails = () => {
                     {paymentDetails.map((payment) => (
                         <tr key={payment.payment_id}>
                             <TableCell>{payment.user_id}</TableCell>
+                            <TableCell>{payment.document_id}</TableCell>
                             <TableCell>{payment.payment_id}</TableCell>
                             <TableCell>{payment.payer_id}</TableCell>
                             <TableCell>{payment.amount}</TableCell>

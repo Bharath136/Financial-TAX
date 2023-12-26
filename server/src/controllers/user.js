@@ -171,7 +171,7 @@ const addStaff = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Continue with staff addition logic
-        const role = 'STAFF';
+        const role = 'CUSTOMER';
         const status = 'ACTIVE';
 
         const query = `
@@ -247,6 +247,18 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+const getAllStaff = async (req, res) => {
+    try {
+        const query = "SELECT * FROM user_logins WHERE role = 'STAFF'";
+        const result = await client.query(query);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
 // Get a user by id
 const getUserById = async (req, res) => {
     const id = req.params.id;
@@ -275,6 +287,7 @@ const updateUserById = async (req, res) => {
         last_name,
         email_address,
         contact_number,
+        secret_code
     } = req.body;
     const updatedOn = new Date().toISOString();
 
@@ -293,6 +306,7 @@ const updateUserById = async (req, res) => {
             `first_name = '${first_name}'`,
             `last_name = '${last_name}'`,
             `contact_number = '${contact_number}'`,
+            `secret_code = '${secret_code}'`,
             `status = 'ACTIVE'`,
             `updated_on = '${updatedOn}'`,
             `updated_by = '${updated_by}'`,
@@ -608,5 +622,6 @@ module.exports = {
     getAllStaffUnAssignedClients,
     editPassword,
     getMyStaffDetails,
-    getCustomerResponse
+    getCustomerResponse,
+    getAllStaff
 };

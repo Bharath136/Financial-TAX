@@ -4,10 +4,10 @@ export const ClientListContainer = styled.div`
     width: 100%;
     margin: auto;
     margin-top: 10vh;
-    overflow-y: auto;
     padding: 1rem;
     background-color: var(--main-background);
     height: 90vh;
+    overflow-y: auto;
 `
 
 export const H1 = styled.h1`
@@ -80,6 +80,7 @@ export const Table = styled.table`
     border-collapse: collapse;
     margin-top: 20px;
     text-align: center;
+    overflow: auto;
 `
 
 export const Th = styled.th`

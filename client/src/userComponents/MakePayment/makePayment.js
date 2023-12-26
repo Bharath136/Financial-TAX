@@ -102,6 +102,7 @@ const MakePayment = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response.data.documents)
       setSelectedDoc(response.data.documents[0]);
     } catch (error) {
       console.log(error);
@@ -111,9 +112,11 @@ const MakePayment = () => {
   const createPayment = async () => {
     try {
       setLoading(true);
+      console.log(selectedDoc)
       const response = await axios.post(`${domain.domain}/paypal/create-payment`, {
         user: user,
         amount: selectedDoc.payment_amount,
+        document_id: selectedDoc.taxreturn_id
       });
 
       const { approvalUrl, paymentId, payerId } = response.data;

@@ -57,6 +57,8 @@ const Clients = () => {
             } else if (user.role === 'CUSTOMER') {
                 navigate('/user/dashboard')
             }
+        }else{
+            navigate('/')
         }
 
         // Fetch assigned clients and all clients

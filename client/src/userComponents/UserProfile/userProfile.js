@@ -82,7 +82,8 @@ const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
                     text: 'Your profile has been updated.',
                     confirmButtonText: 'OK',
                 });
-                localStorage.setItem('currentUser', JSON.stringify(response.data.user));
+                const user = JSON.stringify(response.data.user)
+                localStorage.setItem('currentUser', user.user_id === currentUser.user_id ? user : JSON.stringify(currentUser));
                 isOpen();
             }
         } catch (error) {

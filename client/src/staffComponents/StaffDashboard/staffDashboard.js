@@ -27,7 +27,6 @@ const dataOrder = [
     'TaxPreparation',
     'Review',
     'Payments',
-    'ClientReview',
     'Filing',
     'Client Interview',
 ];
@@ -163,15 +162,6 @@ const StaffDashboard = () => {
         setAvailableSteps(stepsAfterCurrent);
     };
 
-    const message = (title, text, icon) => {
-        showAlert({
-            title: title || 'Error',
-            text: text || 'Failed to move the client.',
-            icon: icon || 'error',
-            confirmButtonText: 'OK',
-        });
-    };
-
     const handleStepChange = async (selectedStep) => {
         try {
             // Update the local state to reflect the change
@@ -189,7 +179,12 @@ const StaffDashboard = () => {
                 }
             );
             if(response){
-                message('Client Moved Successfully!', 'The client has been moved to the next step.', 'success');
+                showAlert({
+                    title: 'Client Moved Successfully!',
+                    text: `${response.data}`,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
                 getAllAssignedClients();
                 setApiStatus(apiStatusConstants.success);
                 setIsAuthenticated(false);
@@ -201,7 +196,12 @@ const StaffDashboard = () => {
         } catch (error) {
             console.error('Error moving client:', error);
             setIsAuthenticated(false);
-            message('Error', 'An unexpected error occurred while moving the client.', 'error');
+            showAlert({
+                title:  'Error',
+                text:  `${error.response.data.error}`,
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
             setApiStatus(apiStatusConstants.failure);
         }
     };
@@ -244,7 +244,7 @@ const StaffDashboard = () => {
             console.error('Error creating customer response:', error);
             showAlert({
                 title: 'Error!',
-                text: 'An unexpected error occurred. Please try again.',
+                text: `${error.response.data.message}`,
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
@@ -259,7 +259,7 @@ const StaffDashboard = () => {
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return <div>failure</div>;
+                return renderClients();
             case apiStatusConstants.inProgress:
                 return <SweetLoading />;
             case apiStatusConstants.success:

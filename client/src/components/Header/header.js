@@ -88,7 +88,7 @@ const Header = ({ setShowNav }) => {
                                         <label style={{ cursor: 'pointer' }}><strong>{activeUser}</strong></label>
                                     </div>
                                 <button className='d-block d-md-none three-dots align-items-center' style={{marginLeft:'10px'}} title='Close' onClick={toggleSidebar}>
-                                            <IoReorderThreeSharp size={18} />
+                                            <IoReorderThreeSharp size={24} />
                                 </button>
                                 </div>}
                                 {token && <Navbar.Toggle aria-controls="navbarSupportedContent" id="navbar-toggle" className='d-none d-md-block d-lg-none' />}

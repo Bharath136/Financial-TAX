@@ -16,7 +16,8 @@ paypal.configure({
 
 // Create a payment for tax return
 const createTaxReturnPayment = async (req, res) => {
-    const { user, amount } = req.body;
+    const { user, amount,document_id } = req.body;
+    console.log(req.body)
     try {
         const paymentData = {
             intent: 'sale',
@@ -45,12 +46,21 @@ const createTaxReturnPayment = async (req, res) => {
             }],
         };
 
-        paypal.payment.create(paymentData, (error, payment) => {
+        paypal.payment.create(paymentData, async (error, payment) => {
             if (error) {
                 res.status(500).json({ error: `Failed to create tax return payment: ${error.message}` });
             } else {
                 const approvalUrl = payment.links.find(link => link.rel === 'approval_url').href;
                 const paymentId = payment.id; // Extract payment ID
+
+                const createPaymentDetails = `
+                    INSERT INTO payments(user_id, payment_id,amount,date,document_id)
+                    VALUES($1,$2,$3,$4,$5)
+                `
+                const user_id = user.user_id
+                const response = await client.query(createPaymentDetails, [user_id,paymentId,amount,new Date(),document_id])
+                
+
                 res.json({ approvalUrl, paymentId });
             }
         });
@@ -65,11 +75,15 @@ const createTaxReturnPayment = async (req, res) => {
 const executeTaxReturnPayment = async (req, res) => {
     try {
         const { paymentId, payerId } = req.query;
-        console.log(req.query)
 
         const executeData = {
             payer_id: payerId,
         };
+
+        const response = await client.query(`
+            UPDATE payments SET payer_id = $1 WHERE payment_id = $2
+        `, [payerId, paymentId])
+        console.log(response.rows)
 
         paypal.payment.execute(paymentId, executeData, (error, payment) => {
             if (error) {

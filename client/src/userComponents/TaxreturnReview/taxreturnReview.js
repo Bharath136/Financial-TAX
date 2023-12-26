@@ -136,6 +136,7 @@ const TaxreturnReview = () => {
                         <DocumentTable>
                             <thead>
                                 <tr>
+                                    <Th>Document ID</Th>
                                     <Th>Document</Th>
                                     <Th>Date & Time</Th>
                                     <Th>Payment Status</Th>
@@ -147,6 +148,7 @@ const TaxreturnReview = () => {
                             <tbody>
                                 {documents.map((document) => (
                                     <tr key={document.taxreturn_id}>
+                                        <Td>{document.taxreturn_id}</Td>
                                         <Td>
                                             <div className='d-flex flex-column'>
                                                 <a

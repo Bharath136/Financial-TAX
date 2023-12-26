@@ -15,6 +15,47 @@ const assignClientToStaff = async (req, res) => {
     }
 };
 
+//create assignments
+const assignClientsToStaff = async (req, res) => {
+    const { selectedStaff, selectedClients } = req.body;
+    const created_at = new Date().toISOString();
+
+    try {
+        const assignments = [];
+
+        for (const user of selectedClients) {
+            
+                const deleteQuery = `
+                    DELETE FROM staff_customer_assignments WHERE client_id = $1
+                `
+                const response = await client.query(deleteQuery,[user.user_id])
+            
+
+                // Insert into staff_customer_assignments
+                const assignmentResult = await client.query(
+                    'INSERT INTO staff_customer_assignments (staff_id, client_id, created_at) VALUES ($1, $2, $3) RETURNING *',
+                    [selectedStaff.user_id, user.user_id, created_at]
+                );
+
+                // // Update current_step for the client in the clients table (assuming such a table exists)
+                await client.query(
+                    'UPDATE user_logins SET current_step = $1 WHERE user_id = $2',
+                    [selectedStaff.staff_team, user.user_id]
+                );
+
+                assignments.push(assignmentResult.rows[0]);
+            
+        }
+
+        // Respond with the list of newly created assignments
+        res.json(assignments);
+    } catch (error) {
+        console.error('Error creating assignments:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
 
 
 // Update Assignment
@@ -97,7 +138,7 @@ const autoAssignClients = async (req, res) => {
 
     try {
         // Find available staff for a specific team
-        const team = req.body.team || 'Scheduling'; // Default to 'Scheduling' if not provided
+        const team = 'Scheduling'; // Default to 'Scheduling' if not provided
         const availableStaffQuery = `
             SELECT user_id
             FROM user_logins
@@ -177,5 +218,6 @@ module.exports = {
     deleteAssignment,
     getAssignmentById,
     getStaffAssignments,
-    autoAssignClients
+    autoAssignClients,
+    assignClientsToStaff
 }

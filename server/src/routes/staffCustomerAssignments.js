@@ -9,7 +9,8 @@ const {
     deleteAssignment,
     getAssignmentById,
     getStaffAssignments,
-    autoAssignClients
+    autoAssignClients, 
+    assignClientsToStaff
 } = require('../controllers/staffCustomerAssignments');
 
 // Get all assignments (accessible by ADMIN and STAFF)
@@ -21,7 +22,10 @@ router.get('/staff/:id', authenticate(['STAFF', 'ADMIN']), getStaffAssignments);
 // Create a new assignment (accessible by ADMIN)
 router.post('/assign', authenticate(['ADMIN']), assignClientToStaff);
 
-router.post('/auto-assign-clients', autoAssignClients)
+router.post('/auto-assign-clients', authenticate(['ADMIN']), autoAssignClients)
+
+// Create new assignements 
+router.post('/assign-clients', authenticate(['ADMIN']), assignClientsToStaff)
 
 // Routes for a specific assignment by ID
 router.route('/:id')

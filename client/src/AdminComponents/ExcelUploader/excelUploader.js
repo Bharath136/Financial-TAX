@@ -35,61 +35,93 @@ const UploadButton = styled.button`
 `;
 
 const ExcelUploader = () => {
-    const [file, setFile] = useState(null);
-    const token = localStorage.getItem('customerJwtToken')
+    // const [file, setFile] = useState(null);
+    // const token = localStorage.getItem('customerJwtToken')
 
-    const onDrop = (acceptedFiles) => {
-        setFile(acceptedFiles[0]);
+    // const onDrop = (acceptedFiles) => {
+    //     setFile(acceptedFiles[0]);
+    // };
+
+    // const { getRootProps, getInputProps } = useDropzone({
+    //     onDrop,
+    //     accept: '.xlsx, .xls', // Double-check and validate these MIME types
+    //     multiple: false,
+    // });
+
+
+    // const handleUpload = async () => {
+    //     if (!file) {
+    //         console.error('No file selected.');
+    //         return;
+    //     }
+
+    //     const formData = new FormData();
+    //     formData.append('file', file);
+    //     console.log(file)
+
+    //     try {
+    //         const response = await axios.post(`${domain.domain}/dummy-users/from-excel`, formData, {
+    //             headers: {
+    //                 Authorization:`Bearer ${token}`,
+    //                 'Content-Type': 'multipart/form-data',
+    //             },
+    //         });
+
+    //         console.log('Response:', response.data);
+    //         // Display a success message to the user
+    //     } catch (error) {
+    //         console.error('Error uploading file:', error);
+    //         // Display an error message to the user
+    //     }
+    // };
+
+    // return (
+    //     <ExcelUploaderContainer>
+    //         <H1>Excel Uploader</H1>
+    //         <DropzoneContainer {...getRootProps()} style={dropzoneStyle}>
+    //             <input {...getInputProps()} aria-labelledby="dropzone-title" />
+    //             <p>Drag 'n' drop an Excel file here, or click to select one</p>
+    //         </DropzoneContainer>
+    //         {file && (
+    //             <div>
+    //                 <p>Selected File: {file.name}</p>
+    //                 <UploadButton onClick={handleUpload}>Upload</UploadButton>
+    //             </div>
+    //         )}
+    //     </ExcelUploaderContainer>
+    // );
+
+    const [file, setFile] = useState(null);
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
     };
 
-    const { getRootProps, getInputProps } = useDropzone({
-        onDrop,
-        accept: '.xlsx, .xls', // Double-check and validate these MIME types
-        multiple: false,
-    });
-
-
     const handleUpload = async () => {
-        if (!file) {
-            console.error('No file selected.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-        console.log(file)
-
         try {
-            const response = await axios.post(`${domain.domain}/dummy-users/from-excel`, formData, {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            await axios.post(`${domain.domain}/excel-uploader`, formData, {
                 headers: {
-                    Authorization:`Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            console.log('Response:', response.data);
-            // Display a success message to the user
+            console.log('File uploaded successfully');
         } catch (error) {
             console.error('Error uploading file:', error);
-            // Display an error message to the user
         }
     };
 
     return (
         <ExcelUploaderContainer>
             <H1>Excel Uploader</H1>
-            <DropzoneContainer {...getRootProps()} style={dropzoneStyle}>
-                <input {...getInputProps()} aria-labelledby="dropzone-title" />
-                <p>Drag 'n' drop an Excel file here, or click to select one</p>
-            </DropzoneContainer>
-            {file && (
-                <div>
-                    <p>Selected File: {file.name}</p>
-                    <UploadButton onClick={handleUpload}>Upload</UploadButton>
-                </div>
-            )}
+            <input type="file" onChange={handleFileChange} />
+            <button onClick={handleUpload}>Upload</button>
         </ExcelUploaderContainer>
     );
+
 };
 
 const dropzoneStyle = {

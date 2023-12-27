@@ -8,6 +8,7 @@
     flex-direction: column;
     /* justify-content: center;
     align-items: center; */
+
 }
 .user-profile-container{
     width: 400px;
@@ -29,10 +30,11 @@
 
 .input-field {
     width: 100%;
-    padding: 8px;
+    padding: 14px;
     margin-bottom: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: transparent;
 }
 
 .user-profile-buttons {

@@ -279,8 +279,7 @@ const StaffDashboard = () => {
                         onClick={() => handleCardClick(key)}
                         className={selectedCard === key ? 'selected' : ''}
                         style={{
-                            transform: selectedCard === key ? 'scale(1.06)' : 'initial',
-                            borderBottom: selectedCard === key ? `6px solid ${value.color}` : '1px solid blue',
+                            borderBottom: selectedCard === key ? `6px solid ${value.color}` : '',
                         }}
                     >
 

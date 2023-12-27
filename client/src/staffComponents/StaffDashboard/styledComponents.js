@@ -26,11 +26,17 @@ export const SectionCard = styled.div`
   ${'' /* flex: 0 0 calc(100% - 20px); */}
   margin-bottom: 20px;
   background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 0px 20px var(--shadow);
   overflow: hidden;
   cursor: pointer;
   width:100%;
+
+  &:hover{
+    transform: scale(1.04);
+    transition: .3s ease-in;
+    box-shadow: 0 0px 20px var(--main-background-shade);
+  }
 
   @media (min-width: 768px) {
     flex: 0 0 calc(50% - 20px);

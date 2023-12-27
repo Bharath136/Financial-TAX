@@ -108,3 +108,22 @@
     text-decoration: none;
     color: var(--main-text);
 }
+
+
+.name {
+    background: linear-gradient(90deg, rgb(0, 153, 242), var(--accent-background));
+    -webkit-background-clip: text;
+    color: transparent;
+    background-size: 200% 100%;
+    animation: gradientAnimation 5s linear infinite;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}

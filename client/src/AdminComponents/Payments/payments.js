@@ -3,14 +3,16 @@ import axios from 'axios';
 import styled from 'styled-components';
 import domain from '../../domain/domain';
 import formatDateTime from '../../FormatDateTime/DateTime';
-import { H1 } from '../ClientTaxDocuments/styledComponents';
+import { Description, H1 } from '../ClientTaxDocuments/styledComponents';
 import { useNavigate } from 'react-router-dom';
 
 const TableWrapper = styled.div`
   padding:20px;
   margin-top:10vh;
   width:100%;
+  height:90vh;
   overflow:auto;
+  background-color:var(--main-background);
 `;
 
 const Table = styled.table`
@@ -38,6 +40,14 @@ const TableHeaderCell = styled.th`
   padding: 10px;
   border: 1px solid #ddd;
 `;
+
+const NoPaymentsContainer = styled.div`
+    min-height:80vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+`
 
 const PaymentDetails = () => {
     const token = localStorage.getItem('customerJwtToken');
@@ -75,7 +85,7 @@ const PaymentDetails = () => {
     return (
         <TableWrapper>
         <H1>Payments</H1>
-            <Table>
+           {paymentDetails.length > 0 ? <Table>
                 <TableHead>
                     <tr>
                         <TableHeaderCell>User ID</TableHeaderCell>
@@ -98,7 +108,10 @@ const PaymentDetails = () => {
                         </tr>
                     ))}
                 </TableBody>
-            </Table>
+            </Table> : <NoPaymentsContainer>
+                <H1>No Payments</H1>
+                <Description>No payment details are available at the moment.</Description>
+            </NoPaymentsContainer>}
         </TableWrapper>
     );
 };

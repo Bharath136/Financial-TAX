@@ -5,11 +5,10 @@ import axios from 'axios';
 import domain from '../../domain/domain';
 import AuthContext from '../../AuthContext/AuthContext';
 import showAlert from '../../SweetAlert/sweetalert';
-import authImage from '../../Assets/loginbg.png'
+// import authImage from '../../Assets/loginbg.png'
 import EyeButton from '../EyeButton/EyeButton';
-import SweetLoading from '../../SweetLoading/SweetLoading';
 import renderLoader from '../../SweetLoading/ButtonLoader';
-
+import authImage from '../../Assets/login-img.png'
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -106,6 +105,7 @@ const Login = ({ setShowNav }) => {
                     return (
                         <div className=" login-container d-flex">
                             <div className="login-card text-start">
+                                <h2 className="login-header">Welcome Back</h2>
                                 <h2 className="login-header">Login</h2>
                                 <p className='signup-description mt-3'>Don't have an account yet? <NavLink className='link' to='/accounts/signup'> Sign Up</NavLink></p>
                                 <form onSubmit={handleSubmit} className='form-container'>
@@ -125,7 +125,7 @@ const Login = ({ setShowNav }) => {
                                                 <input
                                                     type={field.type === 'password' ? (showPassword ? 'text' : 'password') : field.type}
                                                     className="form-control"
-                                                    style={{ border: 'none', borderRadius: '4px', outline: 'none' }}
+                                                    style={{padding:'14px', border: 'none', borderRadius: '4px', outline: 'none', backgroundColor:'transparent' }}
                                                     id={field.name}
                                                     placeholder={field.placeholder}
                                                     name={field.name}
@@ -152,7 +152,7 @@ const Login = ({ setShowNav }) => {
                                     {errorMsg && <p className='text-danger'>{errorMsg}</p>}
                                 </form>
                             </div>
-                            <img src={authImage} alt='loginImage' className='img-fluid d-none d-md-block' />
+                            <img src={authImage} alt='loginImage' className='login-image d-none d-md-block' />
                         </div>
                     );
                 }}

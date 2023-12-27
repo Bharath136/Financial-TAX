@@ -3,12 +3,14 @@ import axios from 'axios';
 import styled from 'styled-components';
 import domain from '../../domain/domain';
 import formatDateTime from '../../FormatDateTime/DateTime';
-import { H1 } from '../CommentDocument/styledComponents';
+import { useNavigate } from 'react-router-dom';
+import { Description, H1 } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
 
 const TableWrapper = styled.div`
   padding:20px;
   margin-top:10vh;
   width:100%;
+  height:90vh;
   overflow:auto;
 `;
 
@@ -38,15 +40,35 @@ const TableHeaderCell = styled.th`
   border: 1px solid #ddd;
 `;
 
+const NoPaymentsContainer = styled.div`
+    min-height:80vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+`
+
 const MyPaymentDetails = () => {
     const token = localStorage.getItem('customerJwtToken');
-    const user = JSON.parse(localStorage.getItem('currentUser'))
     const [paymentDetails, setPaymentDetails] = useState([]);
 
+    const user = JSON.parse(localStorage.getItem('currentUser'))
+
+    const navigate = useNavigate()
+
+
     useEffect(() => {
+        if (user) {
+            ;
+            if (user.role === 'STAFF') {
+                navigate('/staff/dashboard');
+            } else if (user.role === 'ADMIN') {
+                navigate('/admin/dashboard');
+            }
+        }
         const getDetails = async () => {
             try {
-                const response = await axios.get(`${domain.domain}/paypal/payment-details/${user.user_id}`, {
+                const response = await axios.get(`${domain.domain}/paypal/payment-details`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -62,10 +84,11 @@ const MyPaymentDetails = () => {
     return (
         <TableWrapper>
             <H1>Payments</H1>
-            <Table>
+            {paymentDetails.length > 0 ? <Table>
                 <TableHead>
                     <tr>
                         <TableHeaderCell>User ID</TableHeaderCell>
+                        <TableHeaderCell>Document ID</TableHeaderCell>
                         <TableHeaderCell>Payment ID</TableHeaderCell>
                         <TableHeaderCell>Payer ID</TableHeaderCell>
                         <TableHeaderCell>Amount</TableHeaderCell>
@@ -76,6 +99,7 @@ const MyPaymentDetails = () => {
                     {paymentDetails.map((payment) => (
                         <tr key={payment.payment_id}>
                             <TableCell>{payment.user_id}</TableCell>
+                            <TableCell>{payment.document_id}</TableCell>
                             <TableCell>{payment.payment_id}</TableCell>
                             <TableCell>{payment.payer_id}</TableCell>
                             <TableCell>{payment.amount}</TableCell>
@@ -83,7 +107,10 @@ const MyPaymentDetails = () => {
                         </tr>
                     ))}
                 </TableBody>
-            </Table>
+            </Table> : <NoPaymentsContainer>
+                <H1>No Payments</H1>
+                <Description>No payment details are available at the moment.</Description>
+            </NoPaymentsContainer>}
         </TableWrapper>
     );
 };

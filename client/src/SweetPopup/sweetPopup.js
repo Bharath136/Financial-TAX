@@ -12,10 +12,10 @@ const EditModal = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEdita
             contentLabel="Edit Modal"
             style={{
                 content: {
-                    width:'60%',
+                    width: '60%',
                     height: '74%',
                     margin: 'auto',
-                    backgroundColor: '#ffffff',
+                    backgroundImage: 'linear-gradient(to bottom, #fff, var(--main-background-shade))',
                 },
                 overlay: {
                     backgroundColor: 'rgba(128, 128, 140, 0.75)',

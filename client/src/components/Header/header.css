@@ -1,9 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Bree+Serif&family=Caveat:wght@400;700&family=Lobster&family=Monoton&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display+SC:ital,wght@0,400;0,700;1,700&family=Playfair+Display:ital,wght@0,400;0,700;1,700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,700&family=Work+Sans:ital,wght@0,400;0,700;1,700&display=swap");
 
 .navbar-container{
-    padding: 10px 40px;
+    padding: 10px 0;
     min-height: 10vh;
     background-color: rgb(255, 255, 255);
+    /* background-color: var(--accent-background); */
+    /* background-image: linear-gradient(to right, #fff, var(--main-background-shade)); */
     border-bottom: 1px solid var(--border);
     opacity: 0.9;
 }
@@ -11,20 +13,21 @@
 .navbar-image {
     width: 40px;
     height: 40px;
-    padding: 5px;
 }
 
 .logo-image{
+    height: 40px;
     width: 100px;
 }
 
-@media screen and (max-width:768px) {
+@media screen and (max-width:912px) {
     .btn{
         margin-bottom: 20px;
     }
-    .navbar-container{
-        padding: 10px;
-    }
+        .logo-image {
+            height: 36px;
+            width: 80px;
+        }
 }
 
 .logo-text {
@@ -85,6 +88,9 @@
 } */
 
 .three-dots{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 40px;
     width: 40px;
     border-radius: 20px;

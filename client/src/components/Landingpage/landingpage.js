@@ -168,6 +168,9 @@ const SectionTitle = styled.h2`
   color: #333;
   font-size: 2.5em;
   margin-bottom: 30px;
+  @media screen and (max-width:768px){
+    font-size:24px;
+  }
 `;
 
 const FeaturesContainer = styled.div`
@@ -200,34 +203,42 @@ const FeatureItem = styled.div`
 `;
 
 const FeatureIcon = styled.div`
-  font-size: 4em;
+  font-size: 3em;
   color: var(--accent-background);
   margin-bottom: 20px;
+   @media screen and (max-width:768px){
+    font-size: 1em;
+  }
 `;
 
 const FeatureTitle = styled.h3`
   font-size: 1.8em;
   margin-bottom: 10px;
   color: #333;
+  @media screen and (max-width:768px){
+    font-size:20px;
+  }
 `;
 
 const FeatureDescription = styled.p`
   font-size: 1.2em;
   color: #555;
+   @media screen and (max-width:768px){
+    font-size:0.8rem;
+  }
 `;
 
 const Title = styled.h1`
   font-size:2rem;
 
   @media screen and (max-width:768px){
-        font-size:1rem;
+        font-size:1.2rem;
   }
-
-`
+ `
 const Description = styled.p`
     font-size:1.2rem;
       @media screen and (max-width:768px){
-        font-size:.8rem;
+        font-size:0.8rem;
   }
 `
 

@@ -49,6 +49,27 @@ const Clients = () => {
     // Navigation hook
     const navigate = useNavigate();
 
+    const fetchClients = async () => {
+        setApiStatus(apiStatusConstants.initial)
+        try {
+            const response = await axios.get(`${domain.domain}/user`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = response.data;
+            if (response.status === 200) {
+                setApiStatus(apiStatusConstants.success)
+                const filteredData = data.filter((user) => user.role === 'CUSTOMER');
+                setClients(filteredData); // Set the filtered data by name
+                setFilteredClients(filteredData)
+            }
+        } catch (error) {
+            console.error('Error fetching clients:', error);
+        }
+    };
+
     useEffect(() => {
         // Redirect based on user role
         if(user){
@@ -63,27 +84,6 @@ const Clients = () => {
 
         // Fetch assigned clients and all clients
         getAllAssignedClients();
-        const fetchClients = async () => {
-            setApiStatus(apiStatusConstants.initial)
-            try {
-                const response = await axios.get(`${domain.domain}/user`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                const data = response.data;
-                if (response.status === 200) {
-                    setApiStatus(apiStatusConstants.success)
-                    const filteredData = data.filter((user) => user.role === 'CUSTOMER');
-                    setClients(filteredData); // Set the filtered data by name
-                    setFilteredClients(filteredData)
-                }
-            } catch (error) {
-                console.error('Error fetching clients:', error);
-            }
-        };
-
         fetchClients();
     }, [token, navigate]);
 
@@ -171,7 +171,6 @@ const Clients = () => {
                 });
 
                 setApiStatus(apiStatusConstants.success);
-                // fetchData();
 
                 // Show success alert
                 showAlert({
@@ -180,6 +179,7 @@ const Clients = () => {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 });
+                fetchClients()
             } catch (error) {
                 console.error('Error Deleting Client:', error);
                 setApiStatus(apiStatusConstants.failure);

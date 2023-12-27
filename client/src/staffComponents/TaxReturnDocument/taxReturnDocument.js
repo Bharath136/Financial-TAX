@@ -291,7 +291,7 @@ const TaxReturnDocument = () => {
             </TaxDescription>
             <CtaSection className='cta-section shadow'>
                 <H1>Enter Tax Return Document Details Below</H1>
-                <Form onSubmit={handleFileUpload}>
+                <Form onSubmit={handleFileUpload} >
                     <InputFieldsContainer className="row">
                         {initialFormFields.map((field, index) => (
                             <InputFieldsSubContainer className="col-lg-4 col-md-6 col-sm-12" key={index}>

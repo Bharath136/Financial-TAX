@@ -17,7 +17,6 @@ paypal.configure({
 // Create a payment for tax return
 const createTaxReturnPayment = async (req, res) => {
     const { user, amount,document_id } = req.body;
-    console.log(req.body)
     try {
         const paymentData = {
             intent: 'sale',
@@ -80,15 +79,20 @@ const executeTaxReturnPayment = async (req, res) => {
             payer_id: payerId,
         };
 
+        const document = await client.query(`
+            SELECT * FROM payments WHERE payment_id = $1
+        `, [paymentId])
+
         await client.query(`
             UPDATE payments SET payer_id = $1 WHERE payment_id = $2
         `, [payerId, paymentId])
 
-        paypal.payment.execute(paymentId, executeData, (error, payment) => {
+        paypal.payment.execute(paymentId, executeData,async (error, payment) => {
             if (error) {
                 res.status(500).json({ error: `Failed to execute tax return payment: ${error.message}` });
             } else {
                 res.json({ payment });
+                await updateTaxreturnDocumentPaymentStatus(document.document_id, "", 'Paid');
             }
         });
     } catch (error) {

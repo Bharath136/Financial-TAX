@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
 
 export const StaffListContainer = styled.div`
     width: 100%;
@@ -73,7 +74,6 @@ export const TableContainer = styled.div`
     background-color: var(--background-white);
     padding: 20px;
     padding-bottom:100px;
-    min-height:76vh;
     overflow:auto;
 `
 
@@ -130,3 +130,27 @@ export const NoClientContainer = styled.div`
     align-items:center;
     justify-content:center;
 `
+
+export const ScrollingTextContainer = styled.div`
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+`
+
+export const ScrollingText = styled.p`
+    font-weight:600;
+    font-size:16px;
+    margin:0;
+  white-space: nowrap;
+  width: 100%;
+  animation: scrollText 15s linear infinite;
+
+  @keyframes scrollText {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+`;

@@ -10,7 +10,7 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 import { CurrentUser, DashboardContainer, DashboardItem, DetailsContainer, MainContainer, SectionCard } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
-import { ClientsHeaderContainer, ExecuteButton } from '../Staff/styledComponents';
+import { ClientsHeaderContainer } from '../Staff/styledComponents';
 
 
 const apiStatusConstants = {
@@ -43,7 +43,6 @@ const AdminDashboard = () => {
     const [availableSteps, setAvailableSteps] = useState([]);
 
     const [staffList, setStaff] = useState([]);
-    const [selectedStaff, setSelectedStaff] = useState({})
     const [selectedRange, setSelectedRange] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -325,7 +324,6 @@ const AdminDashboard = () => {
 
     // Handle action change
     const handleStaffChange = async (selectedStaff) => {
-        setSelectedStaff(selectedStaff)     
         try {
             // Ensure selectedRange is within a valid range
             if (selectedRange < 1 || selectedRange > clients.length) {
@@ -384,7 +382,7 @@ const AdminDashboard = () => {
                         onClick={() => handleCardClick(key)}
                         className={selectedCard === key ? 'selected' : ''}
                         style={{
-                            borderBottom: selectedCard === key ? `6px solid ${value.color}` : '1px solid blue',
+                            borderBottom: selectedCard === key ? `6px solid ${value.color}` : '',
                         }}
                     >
 

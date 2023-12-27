@@ -15,8 +15,10 @@ code {
 :root {
   /* Background Colors  */
   --background-white: #ffffff;
-  --main-background: #f9f9f9;
-  --main-background-shade: rgb(234, 231, 253);
+  /* --main-background: #f9f9f9; */
+  --main-background: #f1f2f6;
+  --main-background-shade: rgb(218, 213, 252);
+  --shadow:rgb(233, 230, 255);
   --accent-background: rgb(88, 53, 227);
   --page-background: rgb(242, 243, 248);
 

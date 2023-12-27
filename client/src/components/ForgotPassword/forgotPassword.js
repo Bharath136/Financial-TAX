@@ -6,6 +6,7 @@ import './forgotPassword.css';
 import showAlert from '../../SweetAlert/sweetalert';
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import { NavLink, useNavigate } from 'react-router-dom';
+import authImage from '../../Assets/login-img.png'
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -189,8 +190,8 @@ const ForgotPassword = () => {
             <div className='d-flex' style={{ border: '1px solid grey', borderRadius: '4px', }}>
                 <input
                     type="text"
-                    className="p-2 text-dark w-100"
-                    style={{ border: 'none', borderRadius: '4px', outline: 'none' }}
+                    className="w-100"
+                    style={{ backgroundColor: 'transparent',padding:'14px', border: 'none', borderRadius: '4px', outline: 'none' }}
                     id="otp"
                     placeholder="Enter OTP"
                     name="otp"
@@ -230,7 +231,8 @@ const ForgotPassword = () => {
 
 
     return (
-        <div className="container forgot-password-container">
+        <div className="forgot-password-container">
+            <img src={authImage} alt='loginImage' className='login-image d-none d-md-block' />
             <div className="forgot-password-card text-start">
                 <h2 className="forgot-password-header mb-4">Forgot Password</h2>
                 <p className='signup-description mt-3'>Don't want to reset password? <NavLink className='link' to='/accounts/login'> Login</NavLink></p>
@@ -241,8 +243,7 @@ const ForgotPassword = () => {
                         </label>
                         <input
                             type="email"
-                            className="p-2 text-dark"
-                            style={{ border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
+                            style={{ backgroundColor: 'transparent',padding:'14px', border: '1px solid grey', borderRadius: '4px', outline: 'none' }}
                             id="email"
                             placeholder="Enter your registered email"
                             name="email"
@@ -258,8 +259,8 @@ const ForgotPassword = () => {
                         <div className="input-group w-100 " style={{ border: '1px solid grey', borderRadius: '4px', }}>
                             <input
                                 type={showNewPassword ? 'text' : 'password'}
-                                className="p-2 text-dark"
-                                style={{ border: 'none', borderRadius: '4px', outline: 'none', width: '88%' }}
+                                // className="p-2 text-dark"
+                                style={{padding:'14px',backgroundColor:'transparent', border: 'none', borderRadius: '4px', outline: 'none', width: '88%' }}
                                 id="newPassword"
                                 placeholder="New Password"
                                 name="newPassword"
@@ -284,8 +285,7 @@ const ForgotPassword = () => {
                         <div className="input-group" style={{ border: '1px solid grey', borderRadius: '4px', }}>
                             <input
                                 type={showConfirmPassword ? 'text' : 'password'}
-                                className="p-2 text-dark"
-                                style={{ border: 'none', borderRadius: '4px', outline: 'none', width: '88%' }}
+                                style={{ backgroundColor: 'transparent', padding: '14px', border: 'none', borderRadius: '4px', outline: 'none', width: '88%' }}
                                 id="confirmPassword"
                                 placeholder="Confirm Password"
                                 name="confirmPassword"

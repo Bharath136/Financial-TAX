@@ -226,12 +226,6 @@ const updateTaxreturnDocumentPaymentStatus = async (id, updated_by, payment_stat
             return { error: 'Tax return document not found' };
         }
 
-        // Update the payment status, updated_by, and updated_on for the corresponding payment record
-        await client.query(
-            'UPDATE payments SET status = $1, updated_by = $2, updated_on = CURRENT_TIMESTAMP WHERE taxreturn_id = $3',
-            [payment_status, updated_by, id]
-        );
-
         return result.rows[0];
     } catch (error) {
         console.error('Error updating tax return document:', error);

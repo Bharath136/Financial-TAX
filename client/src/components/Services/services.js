@@ -16,6 +16,9 @@ const ServicesContainer = styled.div`
   text-align: center;
   padding: 80px 20px;
   min-height: 90vh;
+  @media screen and (max-width:768px){
+    padding:20px;
+  }
 `;
 
 const ServicesHeader = styled.h2`
@@ -23,6 +26,9 @@ const ServicesHeader = styled.h2`
   color: #333;
   font-size: 2.5em;
   margin-bottom: 30px;
+  @media screen and (max-width:768px){
+    font-size:24px;
+  }
 `;
 
 const ServicesDescription = styled.p`

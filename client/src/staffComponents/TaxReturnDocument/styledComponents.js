@@ -85,6 +85,9 @@ export const InputFieldsSubContainer = styled.div`
 export const InputField = styled.input`
     padding:8px;
     color:var(--main-text);
+    @media screen and (max-width:768px){
+        margin:0px;
+    }
 `
 
 export const ButtonContainer = styled.div`

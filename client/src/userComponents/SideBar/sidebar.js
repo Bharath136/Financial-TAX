@@ -143,7 +143,7 @@ const Sidebar = () => {
                         <div>
                             <div className={`header-container d-flex align-items-center ${hideSidebar ? 'justify-content-center' : 'justify-content-between'} mt-3`}>
                                 <div className={`logo-text ${!hideSidebar && 'p-3'}`}>
-                                    {!hideSidebar && <p className='m-0 p-0 text-dark' style={{ fontSize: '24px' }}>{currentUser}</p>}
+                                    {!hideSidebar && <p className='m-0 p-0 name' style={{ fontSize: '24px', }}>{currentUser}</p>}
                                 </div>
                                 {!hideSidebar ? (
                                     <button className='btn' title='Close' onClick={toggleSidebar}>

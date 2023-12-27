@@ -6,7 +6,7 @@ import { IoReorderThreeSharp } from "react-icons/io5";
 import { useEffect, useState } from 'react';
 import AuthContext from '../../AuthContext/AuthContext';
 import EditModal from '../../SweetPopup/sweetPopup';
-import logo from '../../Assets/logo4.png'
+import logo from '../../Assets/logo.png'
 import './header.css';
 
 const Header = ({ setShowNav }) => {

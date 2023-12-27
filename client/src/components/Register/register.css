@@ -7,15 +7,16 @@
     justify-content: center;
     gap: 100px;
     padding: 40px 0;
+        background-image: linear-gradient(to bottom, white, var(--main-background-shade));
 }
 
 .register-card {
-    width: 400px;
-    background-color: var(--background-white);
+    width: 440px;
+    /* background-color: var(--background-white); */
     opacity: 0.9;
     padding: 30px;
     border-radius: .2rem;
-    box-shadow: 0px 0px 30px rgb(221, 221, 221);
+    /* box-shadow: 0px 0px 30px rgb(221, 221, 221); */
 }
     
 @media screen and (max-width:768px) {
@@ -55,4 +56,8 @@
 
 .link {
     color: var(--main-link-text);
+}
+
+.register-image {
+    width: 30%;
 }

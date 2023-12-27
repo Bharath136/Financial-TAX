@@ -178,7 +178,7 @@ const TaxreturnReview = () => {
                                         <Td>{document.payment_amount}</Td>
                                         <Td>{document.created_by}</Td>
                                         <Td>
-                                            {!document.payment_status === 'Paid' ?
+                                            {document.payment_status === 'Paid' ?
                                                 <button disabled={true} title='Payment completed'>
                                                     Payment completed
                                                 </button>

@@ -25,6 +25,7 @@ export const TableContainer = styled.div`
     background-color: var(--background-white);
     padding: 20px;
     overflow: auto;
+    ${'' /* box-shadow:0 0 20px var(--shadow); */}
 `
 
 export const Table = styled.table`

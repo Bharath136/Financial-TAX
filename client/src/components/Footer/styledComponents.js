@@ -1,13 +1,15 @@
 import styled from 'styled-components';
 
 export const SiteFooter = styled.div`
-  background-color: #2c3e50;
+  ${'' /* background-color: #2c3e50; */}
+
   color: #fff;
 `;
 
 export const FooterContainer = styled.div`
   width:100%;
   margin: 0 auto;
+    background: linear-gradient(to bottom, var(--accent-background), #2c3e50);
 `;
 
 export const Row = styled.div`
@@ -57,7 +59,7 @@ export const Address = styled.address`
 `;
 
 export const CopyRightSection = styled.div`
-  background-color: #233445;
+  ${'' /* background-color: #233445; */}
   width:100%;
   padding: 4rem;
   text-align: center;

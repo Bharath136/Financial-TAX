@@ -10,6 +10,7 @@ const ExcelUploaderContainer = styled.div`
     margin-top: 10vh;
     width: 100%;
     padding: 20px;
+      background-color:var(--main-background);
 `;
 
 const DropzoneContainer = styled.div`

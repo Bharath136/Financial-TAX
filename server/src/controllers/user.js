@@ -171,7 +171,7 @@ const addStaff = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Continue with staff addition logic
-        const role = 'CUSTOMER';
+        const role = 'STAFF';
         const status = 'ACTIVE';
 
         const query = `

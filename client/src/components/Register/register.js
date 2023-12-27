@@ -5,7 +5,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import domain from '../../domain/domain';
 import axios from 'axios';
 import showAlert from '../../SweetAlert/sweetalert';
-import authImage from '../../Assets/loginbg.png';
+import authImage from '../../Assets/login-img.png';
 import renderLoader from '../../SweetLoading/ButtonLoader'
 
 
@@ -216,8 +216,8 @@ const Register = () => {
             <div className='d-flex' style={{ border: '1px solid grey', borderRadius: '4px', }}>
                 <input
                     type="text"
-                    className="p-2 text-dark w-100"
-                    style={{ border: 'none', borderRadius: '4px', outline: 'none' }}
+                    className="w-100"
+                    style={{padding:'14px',backgroundColor:'transparent', border: 'none', borderRadius: '4px', outline: 'none' }}
                     id="otp"
                     placeholder="Enter OTP"
                     name="otp"
@@ -260,7 +260,7 @@ const Register = () => {
         return (
             <div className='register-main-container'>
                 <div className="register-container d-flex">
-                    <img src={authImage} alt='loginImage' className='img-fluid d-none d-md-block' />
+                    <img src={authImage} alt='loginImage' className='register-image  d-none d-md-block' />
                     <div className="register-card text-start">
                         <h2 className="register-header">Register</h2>
                         <p className='signup-description mt-3'>Already have an account? <NavLink className='link' to='/accounts/login'> Sign In</NavLink></p>
@@ -273,8 +273,8 @@ const Register = () => {
                                     <div className="input-group w-100" style={{ border: '1px solid grey', borderRadius: '4px' }}>
                                         <input
                                             type={field.type === 'password' ? (showPassword ? 'text' : 'password') : field.type}
-                                            className="p-2 text-dark"
-                                            style={{ border: 'none', borderRadius: '4px', outline: 'none', width: '88%' }}
+                                            className="text-dark"
+                                            style={{ padding:'14px',border: 'none', borderRadius: '4px', outline: 'none', width: '88%' ,backgroundColor:'transparent'}}
                                             id={field.name}
                                             placeholder={field.placeholder}
                                             name={field.name}

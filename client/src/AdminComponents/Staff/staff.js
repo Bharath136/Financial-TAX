@@ -30,7 +30,9 @@ import {
     Td,
     Th,
     NoClientContainer,
-    FilterSelect
+    FilterSelect,
+    ScrollingText,
+    ScrollingTextContainer
 } from './styledComponents';
 import ClientTable from './clientsTable';
 import { ViewButton } from '../Clients/styledComponents';
@@ -110,7 +112,7 @@ const Staff = () => {
                 },
             });
 
-            const [staffData, assignedClientsData] = await Promise.all([staffResponse, assignedClientsResponse]);
+            const [staffData] = await Promise.all([staffResponse, assignedClientsResponse]);
 
             // Filter staff and clients
             const filteredStaff = staffData.data.filter((user) => user.role === 'STAFF');
@@ -120,10 +122,10 @@ const Staff = () => {
             setStaff(filteredStaff);
 
             // Find unassigned clients
-            const assignedClients = assignedClientsData.data;
-            const unassignedClients = filteredClients.filter((client) => {
-                return !assignedClients.some((assignedClient) => assignedClient.client_id === client.user_id);
-            });
+            // const assignedClients = assignedClientsData.data;
+            // const unassignedClients = filteredClients.filter((client) => {
+            //     return !assignedClients.some((assignedClient) => assignedClient.client_id === client.user_id);
+            // });
             setApiStatus(apiStatusConstants.success)
             // setUnassignedClients(unassignedClients);
         } catch (error) {
@@ -236,6 +238,7 @@ const Staff = () => {
     // };
 
     // Get assigned clients for a staff member
+    
     const getAssignedClients = async (id) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -389,8 +392,10 @@ const Staff = () => {
                     </ClientsHeaderContainer>
                     <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize: '14px' }} className='p-3 mt-2'>
                         <strong>Note: </strong>
-                        <p>Make sure that selecting a team should be done only once. Changing it repeatedly may cause issues for your data.</p>
-                    </div>
+                        <ScrollingTextContainer>
+                            <ScrollingText>Ensure that team selection is performed only once. Repeatedly changing it may result in data issues. If it is necessary to make changes, please ensure that there are no clients assigned to the staff.  </ScrollingText>
+                        </ScrollingTextContainer>
+                        </div>
 
                     <Container>
                         {filteredStaff.length > 0 ?
@@ -402,6 +407,7 @@ const Staff = () => {
                                         <Th>Email</Th>
                                         {/* <Th>Phone</Th> */}
                                         {/* <Th>Secret Code</Th> */}
+                                        <Th>Team</Th>
                                         <Th>Select Team</Th>
                                         {/* <Th>Assign Clients</Th> */}
                                         <Th>Assigned Clients</Th>
@@ -416,7 +422,8 @@ const Staff = () => {
                                             <Td>{staff.email_address}</Td>
                                             {/* <Td>{staff.contact_number}</Td> */}
                                             {/* <Td>{staff.secret_code}</Td> */}
-                                            {staff.staff_team ? <Td>{staff.staff_team}</Td> : <Td>
+                                             <Td>{staff.staff_team}</Td> 
+                                              <Td>
                                                 <div className='d-flex'>
                                                     <Select
                                                         options={dataOrder.map((team) => ({
@@ -435,7 +442,7 @@ const Staff = () => {
                                                         Add
                                                     </ExecuteButton>
                                                 </div>
-                                            </Td>}
+                                            </Td>
                                             {/* <Td>
                                                 <div className='d-flex'>
                                                     <Select

@@ -25,6 +25,7 @@ const TaxReturnDocument = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        
         if (currentUser) {
             if (currentUser.role === 'ADMIN') {
                 navigate('/admin/dashboard')
@@ -32,8 +33,11 @@ const TaxReturnDocument = () => {
                 navigate('/user/dashboard')
             }
         }
-        getAllAssignedClients();
-        fetchDocuments();
+        if (accessToken) {
+            getAllAssignedClients();
+            fetchDocuments();
+        }
+        
     }, [navigate]);
 
     const handleChange = (e) => {

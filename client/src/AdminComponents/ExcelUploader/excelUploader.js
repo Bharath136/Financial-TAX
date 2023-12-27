@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import styled from 'styled-components';
 import { H1 } from '../ClientTaxDocuments/styledComponents';
 import domain from '../../domain/domain';
+import { useNavigate } from 'react-router-dom';
 
 const ExcelUploaderContainer = styled.div`
     margin-top: 10vh;
@@ -92,10 +93,25 @@ const ExcelUploader = () => {
     // );
 
     const [file, setFile] = useState(null);
+    const user = JSON.parse(localStorage.getItem('currentUser'))
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
+
+
+    const navigate = useNavigate()
+    
+
+    useEffect(() => {
+        if (user) {;
+            if (user.role === 'STAFF') {
+                navigate('/staff/dashboard');
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user/dashboard');
+            }
+        }
+    },[navigate])
 
     const handleUpload = async () => {
         try {

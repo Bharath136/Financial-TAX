@@ -604,8 +604,6 @@ const getCustomerResponse = async (req, res) => {
     } 
 };
 
-module.exports = getCustomerResponse;
-
 
 module.exports = {
     getAllUsers,

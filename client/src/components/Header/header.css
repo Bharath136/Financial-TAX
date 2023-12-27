@@ -15,7 +15,7 @@
 }
 
 .logo-image{
-    height: 40px;
+    width: 100px;
 }
 
 @media screen and (max-width:768px) {

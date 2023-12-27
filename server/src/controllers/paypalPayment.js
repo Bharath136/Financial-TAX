@@ -80,10 +80,9 @@ const executeTaxReturnPayment = async (req, res) => {
             payer_id: payerId,
         };
 
-        const response = await client.query(`
+        await client.query(`
             UPDATE payments SET payer_id = $1 WHERE payment_id = $2
         `, [payerId, paymentId])
-        console.log(response.rows)
 
         paypal.payment.execute(paymentId, executeData, (error, payment) => {
             if (error) {
@@ -93,14 +92,12 @@ const executeTaxReturnPayment = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 const paymentDetails = async (req, res) => {
     const { userId, paymentAmount, updatedBy, taxReturnId, payerId, paymentId } = req.body;
-    console.log(req.body)
 
     try {
         const result = await client.query(

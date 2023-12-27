@@ -86,6 +86,7 @@ const Register = () => {
 
             const response = await axios.post(`${domain.domain}/email/send-otp`, {
                 email_address: formData.email_address,
+                name: formData.first_name
             });
 
             if (response) {
@@ -175,7 +176,6 @@ const Register = () => {
                 otp,
             });
             
-            console.log(response)
             if (response) {
                 
                 setApiStatus(apiStatusConstants.success);
@@ -254,14 +254,6 @@ const Register = () => {
         </div>
     );
 
-
-    // const renderLoader = () => {
-    //     return(
-    //         <div className="spinner-border text-primary" role="status">
-    //             <span className="sr-only"></span>
-    //         </div>
-    //     )
-    // }
 
 
     const renderRegistrationForm = () => {

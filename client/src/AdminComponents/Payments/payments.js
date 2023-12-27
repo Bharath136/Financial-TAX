@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import domain from '../../domain/domain';
 import formatDateTime from '../../FormatDateTime/DateTime';
 import { H1 } from '../ClientTaxDocuments/styledComponents';
+import { useNavigate } from 'react-router-dom';
 
 const TableWrapper = styled.div`
   padding:20px;
@@ -42,7 +43,20 @@ const PaymentDetails = () => {
     const token = localStorage.getItem('customerJwtToken');
     const [paymentDetails, setPaymentDetails] = useState([]);
 
+    const user = JSON.parse(localStorage.getItem('currentUser'))
+
+    const navigate = useNavigate()
+
+
     useEffect(() => {
+        if (user) {
+            ;
+            if (user.role === 'STAFF') {
+                navigate('/staff/dashboard');
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user/dashboard');
+            }
+        }
         const getDetails = async () => {
             try {
                 const response = await axios.get(`${domain.domain}/paypal/payment-details`, {

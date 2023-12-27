@@ -49,7 +49,7 @@ router.post('/current-step/:id', authenticate(['STAFF', 'ADMIN']), updateCurrent
 router.get('/current-step/:current_step', authenticate(['STAFF', 'ADMIN']), getUsersByCurrentStatus);
 
 // Edit password by the user
-router.put('/change-password', editPassword)
+router.put('/reset-password', editPassword)
 
 // Add staff team by the admin
 router.put('/add/staff-team/:id', authenticate(['ADMIN']), updateStaffTeamById)

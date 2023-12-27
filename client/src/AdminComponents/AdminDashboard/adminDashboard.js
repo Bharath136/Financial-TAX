@@ -84,8 +84,8 @@ const AdminDashboard = () => {
         getStaff()
         if (user) {
             setCurrentUser(user.first_name);
-            if (user.role === 'ADMIN') {
-                navigate('/admin/dashboard');
+            if (user.role === 'STAFF') {
+                navigate('/staff/dashboard');
             } else if (user.role === 'CUSTOMER') {
                 navigate('/user/dashboard');
             }

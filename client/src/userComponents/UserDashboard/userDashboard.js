@@ -67,7 +67,7 @@ const UserDashboard = () => {
 
     return (
         <DashboardContainer>
-            <H1>Welcome <CurrentUser className="current-user">{currentUser}</CurrentUser> <p style={{ fontSize: '16px',color:'grey' }}>(Current Step: {user.current_step ? user.current_step : "Null"})</p></H1>
+            <H1>Welcome <CurrentUser className="current-user">{currentUser}</CurrentUser> <p style={{ fontSize: '16px',color:'grey' }}>(Current Step: {user ? user.current_step : "Null"})</p></H1>
             <div className="intro-section">
                 <IntroText>
                     Embark on a hassle-free tax filing journey with us. Our user-friendly platform ensures a seamless experience

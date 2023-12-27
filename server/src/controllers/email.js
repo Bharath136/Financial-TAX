@@ -20,13 +20,32 @@ function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-function sendOTP(email, otp) {
+function sendOTP(email, otp, name) {
     const mailOptions = {
         from: process.env.EMAIL, // Use the configured email
         to: email,
-        subject: 'Your OTP for Verification',
-        text: `Your OTP (One-Time Password) for verification is: ${otp}`,
+        subject: 'UniProFin Account Verification OTP',
+        text: `Dear ${name},
+
+Thank you for registering with UniProFin!
+
+To complete your registration, please use the following One-Time Password (OTP) for verification:
+OTP: ${otp}
+
+This OTP is valid for a limited time. Do not share it with anyone for security reasons.
+
+Welcome to UniProFin! If you did not initiate this registration, please contact our support immediately at support@uniprofin.com or visit our [Contact Support](https://uniprofin.com/contact) page.
+
+Best regards,
+UniProFin Team`,
     };
+    
+    const deleteEmailVerification = `
+        DELETE FROM email_verification WHERE email_address = $1
+    `;
+    client.query(deleteEmailVerification, [email])
+
+
 
     const createEmailVerification = `
         INSERT INTO email_verification(email_address, otp)
@@ -35,7 +54,7 @@ function sendOTP(email, otp) {
 
     // Use client.query with promises
     client.query(createEmailVerification, [email, otp])
-            
+
 
     return new Promise((resolve, reject) => {
         transporter.sendMail(mailOptions, (error, info) => {
@@ -58,6 +77,68 @@ function sendOTP(email, otp) {
         });
     });
 }
+
+
+function resetPasswordOTP(email, otp) {
+    const mailOptions = {
+        from: process.env.EMAIL, // Use the configured email
+        to: email,
+        subject: 'UniProFin Password Reset OTP',
+        text: `Dear ${email},
+
+We received a request to reset your password for your UniProFin account.
+
+To proceed with the password reset, please use the following One-Time Password (OTP):
+OTP: ${otp}
+
+This OTP is valid for a limited time. Do not share it with anyone for security reasons.
+
+If you did not initiate this password reset, please ignore this email.
+
+For any assistance, please contact our support at support@uniprofin.com or visit our [Contact Support](https://uniprofin.com/contact) page.
+
+Best regards,
+UniProFin Team`,
+    };
+
+
+    const deleteEmailVerification = `
+        DELETE FROM email_verification WHERE email_address = $1
+    `;
+    client.query(deleteEmailVerification, [email])
+
+
+    const createEmailVerification = `
+        INSERT INTO email_verification(email_address, otp)
+        VALUES($1, $2)
+    `;
+
+    // Use client.query with promises
+    client.query(createEmailVerification, [email, otp])
+
+
+    return new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                reject(error);
+            } else {
+                // Store the OTP associated with the email address
+                otpStore[email] = otp;
+                resolve(info);
+                setTimeout(() => {
+                    const deleteEmail = `
+                    DELETE FROM email_verification WHERE email_address = $1
+                `;
+                    // Use client.query with promises for deletion
+                    client.query(deleteEmail, [email])
+                        .then(() => console.log(`Record for ${email} deleted from the database`))
+                        .catch(deleteError => console.error('Error deleting record:', deleteError));
+                }, 120000); // 1 minute delay
+            }
+        });
+    });
+}
+
 
 const verifyOtp = async (req, res) => {
     const { email_address, otp } = req.body;
@@ -94,4 +175,5 @@ module.exports = {
     generateOTP,
     sendOTP,
     verifyOtp,
+    resetPasswordOTP
 };

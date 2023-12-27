@@ -271,7 +271,7 @@ const StaffDashboard = () => {
 
     return (
         <MainContainer>
-            <h2>Welcome <CurrentUser>{currentUser} </CurrentUser><p style={{ fontSize: '18px', color: 'grey' }}>(Team: {user.staff_team ? user.staff_team : "Your Not a team member"})</p></h2>
+            <h2>Welcome <CurrentUser>{currentUser} </CurrentUser><p style={{ fontSize: '18px', color: 'grey' }}>(Team: {user ? user.staff_team : "Your Not a team member"})</p></h2>
             <DashboardContainer>
                 {Object.entries(data).map(([key, value]) => (
                     <SectionCard

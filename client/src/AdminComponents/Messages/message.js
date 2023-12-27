@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import Sidebar from '../../userComponents/SideBar/sidebar';
 import domain from '../../domain/domain';
 import { H1 } from '../ClientTaxDocuments/styledComponents';
+import { useNavigate } from 'react-router-dom';
 
 // Styled components
 const Container = styled.div`
@@ -80,7 +81,20 @@ const ContactView = () => {
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('customerJwtToken');
 
+    const user = JSON.parse(localStorage.getItem('currentUser'))
+
+    const navigate = useNavigate()
+
+
     useEffect(() => {
+        if (user) {
+            ;
+            if (user.role === 'STAFF') {
+                navigate('/staff/dashboard');
+            } else if (user.role === 'CUSTOMER') {
+                navigate('/user/dashboard');
+            }
+        }
         const fetchContacts = async () => {
             try {
                 const response = await axios.get(`${domain.domain}/contact/message`, {
@@ -97,7 +111,7 @@ const ContactView = () => {
         };
 
         fetchContacts();
-    }, [token]);
+    }, [token,navigate]);
 
     const handleDeleteContact = async (id) => {
         try {

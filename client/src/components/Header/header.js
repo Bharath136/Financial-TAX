@@ -2,12 +2,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { Nav, Navbar } from 'react-bootstrap';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { BiLogIn } from 'react-icons/bi';
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoReorderThreeSharp } from "react-icons/io5";
 import { useEffect, useState } from 'react';
 import AuthContext from '../../AuthContext/AuthContext';
 import EditModal from '../../SweetPopup/sweetPopup';
-import logo from '../../Assets/logo7.png'
+import logo from '../../Assets/logo4.png'
 import './header.css';
 
 const Header = ({ setShowNav }) => {
@@ -71,12 +70,6 @@ const Header = ({ setShowNav }) => {
                                 <Navbar.Brand>
                                     <NavLink to="/" className='logo-link'>
                                     <img src={logo} alt='logo' className='logo-image'/>
-                                        {/* <div className="logo-text">
-                                            <p className="m-0 p-0" style={{ fontSize: '34px' }}>
-                                                TAX
-                                            </p>
-                                            <p className="m-0 p-0">Return</p>
-                                        </div> */}
                                     </NavLink>
                                 </Navbar.Brand>
                                 {token && 

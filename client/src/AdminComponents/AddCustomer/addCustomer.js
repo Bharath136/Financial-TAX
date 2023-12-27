@@ -4,6 +4,7 @@ import axios from 'axios';
 import showAlert from '../../SweetAlert/sweetalert';
 import { AddStaffButton, AddStaffCard, AddStaffContainer, AddStaffHeader, ButtonContainer, FormLabel, MarginBottom2 } from '../AddStaff/styledComponents';
 import { useNavigate } from 'react-router-dom';
+import { H1 } from '../Staff/styledComponents';
 
 const AddCustomer = () => {
     const initialFormFields = [
@@ -59,7 +60,7 @@ const AddCustomer = () => {
     return (
         <AddStaffContainer>
             <AddStaffCard className='shadow'>
-                <AddStaffHeader>Add Customer</AddStaffHeader>
+                <H1>Add Customer</H1>
                 <form onSubmit={handleSubmit}>
                     <div className='row'>
                         {initialFormFields.map((field, index) => (

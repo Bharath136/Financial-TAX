@@ -101,8 +101,10 @@ const ClientDocuments = () => {
                 navigate('/user/dashboard')
             }
         }
-        fetchDocuments();
-        fetchClients();
+        if(accessToken){
+            fetchDocuments();
+            fetchClients();
+        }
     }, [navigate]);
 
     const handleDownloadClick = async (document) => {

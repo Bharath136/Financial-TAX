@@ -22,6 +22,7 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 import DocumentTableComponent from './documentTable';
 import ClientTaxDocumentHeader from './documentHeader';
 import formatDateTime from '../../FormatDateTime/DateTime';
+import FailureComponent from '../../FailureComponent/failureComponent';
 
 
 const apiStatusConstants = {
@@ -39,6 +40,8 @@ const ClientTaxDocuments = ({ clientId }) => {
     const [filteredDocuments, setFilteredDocuments] = useState([]);
     const [clients, setClients] = useState([]);
     const [selectedClient, setSelectedClient] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+
     const navigate = useNavigate();
 
     const fetchDocuments = async () => {
@@ -56,7 +59,7 @@ const ClientTaxDocuments = ({ clientId }) => {
                 setApiStatus(apiStatusConstants.failure);
             }
         } catch (error) {
-            console.error('Error fetching documents:', error);
+            setErrorMsg(error)
             setApiStatus(apiStatusConstants.failure);
         }
     };
@@ -78,7 +81,7 @@ const ClientTaxDocuments = ({ clientId }) => {
                 setApiStatus(apiStatusConstants.failure);
             }
         } catch (error) {
-            console.error('Error fetching clients:', error);
+            setErrorMsg(error)
             setApiStatus(apiStatusConstants.failure);
         }
 
@@ -95,7 +98,7 @@ const ClientTaxDocuments = ({ clientId }) => {
                     setFilteredDocuments(documents);
                 }
             } catch (error) {
-                console.error('Error fetching documents for specific client:', error);
+                setErrorMsg(error)
                 setApiStatus(apiStatusConstants.failure);
             }
         }
@@ -116,7 +119,8 @@ const ClientTaxDocuments = ({ clientId }) => {
             fetchDocuments();
             setApiStatus(apiStatusConstants.success)
         } catch (error) {
-            console.error('Error updating document status:', error.message);
+            setErrorMsg(error)
+            setApiStatus(apiStatusConstants.failure)
         }
     };
 
@@ -180,6 +184,30 @@ const ClientTaxDocuments = ({ clientId }) => {
         }
     };
 
+    const onDeleteDocument = async (id) => {
+        console.log(id)
+        setApiStatus(apiStatusConstants.inProgress)
+        try{
+            const response = await axios.delete(`${domain.domain}/customer-tax-document/${id}`, {
+                headers:{
+                    Authorization:`Bearer ${accessToken}`
+                }
+            })
+            if(response){
+                setApiStatus(apiStatusConstants.success)
+                showAlert({
+                    title: 'Document deleted Successfully!',
+                    text: '',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                });
+            }
+        }catch(error){
+            setErrorMsg(error)
+            setApiStatus(apiStatusConstants.failure)
+        }
+    }
+
     const handleClientChange = async (e) => {
         setApiStatus(apiStatusConstants.inProgress)
         const id = e.target.value;
@@ -201,19 +229,29 @@ const ClientTaxDocuments = ({ clientId }) => {
 
     const successRender = () => {
         return (
-            <CtaSection className="shadow">
-                <DocumentTableContainer >
-                    <ClientTaxDocumentsHeaderContainer>
-                        <H1>Uploaded Documents</H1>
-                        {!clientId && <ClientTaxDocumentHeader clients={clients} selectedClient={selectedClient} handleClientChange={handleClientChange} />}
-                    </ClientTaxDocumentsHeaderContainer>
-                    {filteredDocuments.length > 0 ? (
-                        <DocumentTableComponent onChangeDocumentStatus={onChangeDocumentStatus} documents={documents} formatDateTime={formatDateTime} handleDownloadClick={handleDownloadClick} renderDocumentThumbnail={renderDocumentThumbnail} />
-                    ) : (
-                        <div>No Documents uploaded by this client</div>
+            <ClientDocumentContainer >
+                <H1>Tax Documents</H1>
+                {documents.length > 0 ?
+                    <CtaSection className="shadow">
+                        <DocumentTableContainer >
+                            <ClientTaxDocumentsHeaderContainer>
+                                <H1>Uploaded Documents</H1>
+                                {!clientId && <ClientTaxDocumentHeader clients={clients} selectedClient={selectedClient} handleClientChange={handleClientChange} />}
+                            </ClientTaxDocumentsHeaderContainer>
+                            {filteredDocuments.length > 0 ? (
+                                <DocumentTableComponent onDeleteDocument={onDeleteDocument} onChangeDocumentStatus={onChangeDocumentStatus} documents={documents} formatDateTime={formatDateTime} handleDownloadClick={handleDownloadClick} renderDocumentThumbnail={renderDocumentThumbnail} />
+                            ) : (
+                                <div>No Documents uploaded by this client</div>
+                            )}
+                        </DocumentTableContainer>
+                    </CtaSection> : (
+                        <NoDocuments>
+                            <img src={noDoc} alt='no-doc' className='img-fluid' />
+                            <H1>No Documents!</H1>
+                            <label>No documents have been uploaded by the client. Please upload relevant documents to proceed.</label>
+                        </NoDocuments>
                     )}
-                </DocumentTableContainer>
-            </CtaSection>
+            </ClientDocumentContainer>
         )
     }
 
@@ -224,25 +262,14 @@ const ClientTaxDocuments = ({ clientId }) => {
             case apiStatusConstants.success:
                 return successRender()
             case apiStatusConstants.failure:
-                return <div>failure..</div>
+                return <FailureComponent errorMsg={errorMsg} />
             default:
                 return null
         }
     }
 
     return (
-        <ClientDocumentContainer >
-            <H1>Tax Documents</H1>
-            {documents.length > 0 ?
-                onRenderComponents()
-                : (
-                    <NoDocuments>
-                        <img src={noDoc} alt='no-doc' className='img-fluid' />
-                        <H1>No Documents!</H1>
-                        <label>No documents have been uploaded by the client. Please upload relevant documents to proceed.</label>
-                    </NoDocuments>
-                )}
-        </ClientDocumentContainer>
+        onRenderComponents()
     );
 };
 

@@ -6,6 +6,7 @@ import { ClientListContainer, H1, NoClientContainer, Table, TableContainer, Td, 
 import noClient from '../../Assets/no-customers.png'
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import { useNavigate } from 'react-router-dom';
+import FailureComponent from '../../FailureComponent/failureComponent';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -20,12 +21,13 @@ const AssignedClientList = () => {
     const [myClients, setMyClients] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(null);
+    const [errorMsg, setErrorMsg] = useState('');
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(currentUser){
+        if (currentUser) {
             if (currentUser.role === 'ADMIN') {
                 navigate('/admin/dashboard')
             } else if (currentUser.role === 'CUSTOMER') {
@@ -45,7 +47,7 @@ const AssignedClientList = () => {
                     setMyClients(filteredClients);
                 }
             } catch (error) {
-                console.error('Error fetching assigned clients:', error);
+                setErrorMsg(error)
                 setApiStatus(apiStatusConstants.failure);
             }
         };
@@ -63,40 +65,49 @@ const AssignedClientList = () => {
     };
 
     const renderClients = () => (
-        <TableContainer className='shadow'>
-            <Table>
-                <thead>
-                    <tr>
-                        <Th>ID</Th>
-                        <Th>Name</Th>
-                        <Th>Email</Th>
-                        <Th>Phone</Th>
-                        <Th>Actions</Th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {myClients.map(client => (
-                        <tr key={client.user_id}>
-                            <Td>{client.user_id}</Td>
-                            <Td>{client.first_name}</Td>
-                            <Td>{client.email_address}</Td>
-                            <Td>{client.contact_number}</Td>
-                            <Td>
-                                <ViewButton onClick={() => handleEditClick(client.user_id)}>
-                                    View Profile
-                                </ViewButton>
-                            </Td>
+        <ClientListContainer>
+            <H1>Clients</H1>
+            {myClients.length > 0 ? <TableContainer className='shadow'>
+                <Table>
+                    <thead>
+                        <tr>
+                            <Th>ID</Th>
+                            <Th>Name</Th>
+                            <Th>Email</Th>
+                            <Th>Phone</Th>
+                            <Th>Actions</Th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
-        </TableContainer>
+                    </thead>
+                    <tbody>
+                        {myClients.map(client => (
+                            <tr key={client.user_id}>
+                                <Td>{client.user_id}</Td>
+                                <Td>{client.first_name}</Td>
+                                <Td>{client.email_address}</Td>
+                                <Td>{client.contact_number}</Td>
+                                <Td>
+                                    <ViewButton onClick={() => handleEditClick(client.user_id)}>
+                                        View Profile
+                                    </ViewButton>
+                                </Td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </TableContainer> :
+                <NoClientContainer>
+                    <img src={noClient} alt='img' className='img-fluid' />
+                    <H1>No Clients Assigned</H1>
+                    <p>Oops! It seems there are no clients assigned to you.</p>
+                </NoClientContainer>
+            }
+        </ClientListContainer>
     );
 
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return <div>failure</div>;
+                return <FailureComponent errorMsg={errorMsg} />;
             case apiStatusConstants.inProgress:
                 return <SweetLoading />;
             case apiStatusConstants.success:
@@ -108,16 +119,7 @@ const AssignedClientList = () => {
 
     return (
         <>
-            <ClientListContainer>
-                <H1>Clients</H1>
-                {myClients.length > 0 ? renderComponents() :
-                    <NoClientContainer>
-                        <img src={noClient} alt='img' className='img-fluid' />
-                        <H1>No Clients Assigned</H1>
-                        <p>Oops! It seems there are no clients assigned to you.</p>
-                    </NoClientContainer>
-                }
-            </ClientListContainer>
+            {renderComponents()}
             <EditModal
                 isOpen={isEditModalOpen}
                 profileId={profileId}

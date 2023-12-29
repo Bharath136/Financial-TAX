@@ -300,6 +300,7 @@ const getCustomerDocumentByUserId = async (req, res) => {
 // Delete document by id api
 const deleteCustomerDocumentById = async (req, res) => {
     const id = req.params.id
+    console.log(id)
 
     try {
         const deleteDocumentQuery = 'DELETE FROM customer_tax_documents WHERE document_id = $1';

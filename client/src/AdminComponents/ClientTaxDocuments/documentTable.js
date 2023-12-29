@@ -4,7 +4,7 @@ import { DocumentName, DocumentTable, Td, Th } from './styledComponents';
 import domain from '../../domain/domain';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 
-const DocumentTableComponent = ({ documents, formatDateTime, handleDownloadClick, onChangeDocumentStatus, renderDocumentThumbnail }) => (
+const DocumentTableComponent = ({ onDeleteDocument, documents, formatDateTime, handleDownloadClick, onChangeDocumentStatus, renderDocumentThumbnail }) => (
     <DocumentTable>
         <thead>
             <tr>
@@ -13,6 +13,7 @@ const DocumentTableComponent = ({ documents, formatDateTime, handleDownloadClick
                 <Th>Date</Th>
                 <Th>Review Status</Th>
                 <Th>Change Status</Th>
+                <Th>Delete</Th>
             </tr>
         </thead>
         <tbody>
@@ -51,6 +52,11 @@ const DocumentTableComponent = ({ documents, formatDateTime, handleDownloadClick
                                     </Dropdown.Item>
                                 ))}
                             </DropdownButton>
+                        </div>
+                    </Td>
+                    <Td>
+                        <div className='d-flex justify-content-center align-items-center'>
+                            <button type='button' className='btn text-danger' onClick={() => onDeleteDocument(document.document_id)}>Delete</button>
                         </div>
                     </Td>
                 </tr>

@@ -13,6 +13,7 @@ import { MdDelete } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { ClientTaxDocumentsHeaderContainer, ClientsHeaderContainer, Select } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
 import formatDateTime from '../../FormatDateTime/DateTime';
+import FailureComponent from '../../FailureComponent/failureComponent';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -32,6 +33,7 @@ const ClientDocuments = () => {
     const [selectedClient, setSelectedClient] = useState('');
     const [filteredDocuments, setFilteredDocuments] = useState([]);
     const [clients, setClients] = useState([]);
+    const [errorMsg, setErrorMsg] = useState('');
 
     const fetchDocuments = async () => {
         setApiStatus(apiStatusConstants.inProgress)
@@ -49,23 +51,29 @@ const ClientDocuments = () => {
             }
 
         } catch (error) {
-            console.error('Error fetching documents:', error);
+            setErrorMsg(error)
+            setApiStatus(apiStatusConstants.failure)
         }
     };
 
     // Fetch clients from the server
     const fetchClients = async () => {
         setApiStatus(apiStatusConstants.inProgress)
-        const response = await axios.get(`${domain.domain}/user`, {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-
-        if (response.status === 200) {
-            const filteredClients = response.data.filter((client) => {
-                return client.role === 'CUSTOMER';
+        try{
+            const response = await axios.get(`${domain.domain}/user`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
             });
-            setClients(filteredClients);
-            setApiStatus(apiStatusConstants.success)
+
+            if (response.status === 200) {
+                const filteredClients = response.data.filter((client) => {
+                    return client.role === 'CUSTOMER';
+                });
+                setClients(filteredClients);
+                setApiStatus(apiStatusConstants.success)
+            }
+        }catch(error){
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
 
     };
@@ -87,7 +95,8 @@ const ClientDocuments = () => {
             });
             fetchDocuments();
         } catch (error) {
-            console.error('Error updating document status:', error.message);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
@@ -172,7 +181,8 @@ const ClientDocuments = () => {
             }
 
         } catch (error) {
-            console.error('Error getting comments:', error);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
@@ -186,7 +196,8 @@ const ClientDocuments = () => {
             handleGetComments(selectedDocument);
             showAlert({ title: 'Comment Deleted Successfully!', icon: 'success', confirmButtonText: 'Ok' });
         } catch (error) {
-            console.error('Error deleting comment:', error);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
@@ -208,8 +219,8 @@ const ClientDocuments = () => {
                 setApiStatus(apiStatusConstants.failure);
             }
         } catch (error) {
-            console.error('Error updating comment status:', error);
-            // You might want to handle the error more gracefully, e.g., setApiStatus(apiStatusConstants.error)
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error)
         }
     };
 
@@ -229,17 +240,21 @@ const ClientDocuments = () => {
                 setFilteredDocuments(documents);
             }
         } catch (error) {
-            console.error('Error fetching documents:', error);
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error)
         }
     };
 
-
-    const renderComponents = () => {
-        switch (apiStatus) {
-            case apiStatusConstants.failure:
-                return <div>failure</div>
-            case apiStatusConstants.success:
-                return <CtaSection className="shadow">
+    const renderSuccess = () => {
+        return(
+            <ClientDocumentContainer >
+                <H1>Tax Documents</H1>
+                <Description >
+                    Welcome to our Tax Interview service! Download the tax notes below, fill in
+                    the required information, and upload the necessary tax documents to get
+                    started on your tax return process.
+                </Description>
+                {documents.length > 0 ? <CtaSection className="shadow">
 
                     <DocumentTableContainer className="document-table-container">
                         <ClientTaxDocumentsHeaderContainer>
@@ -397,6 +412,24 @@ const ClientDocuments = () => {
                         )}
                     </DocumentTableContainer>
                 </CtaSection>
+                    :
+                    <NoDocumentsContainer>
+                        <img src={noDocuments} alt='img' className='img-fluid' />
+                        <H1>No Documents Uploaded</H1>
+                        <p>Oops! It seems there are no documents uploaded.</p>
+                    </NoDocumentsContainer>
+                }
+            </ClientDocumentContainer>
+        )
+    }
+
+
+    const renderComponents = () => {
+        switch (apiStatus) {
+            case apiStatusConstants.failure:
+                return <FailureComponent errorMsg={errorMsg} />
+            case apiStatusConstants.success:
+                return renderSuccess();                
             case apiStatusConstants.inProgress:
                 return <SweetLoading />
             default:
@@ -404,21 +437,7 @@ const ClientDocuments = () => {
         }
     }
     return (
-        <ClientDocumentContainer >
-            <H1>Tax Documents</H1>
-            <Description >
-                Welcome to our Tax Interview service! Download the tax notes below, fill in
-                the required information, and upload the necessary tax documents to get
-                started on your tax return process.
-            </Description>
-            {documents.length > 0 ? renderComponents() :
-                <NoDocumentsContainer>
-                    <img src={noDocuments} alt='img' className='img-fluid' />
-                    <H1>No Documents Uploaded</H1>
-                    <p>Oops! It seems there are no documents uploaded.</p>
-                </NoDocumentsContainer>
-            }
-        </ClientDocumentContainer>
+        renderComponents() 
     );
 };
 

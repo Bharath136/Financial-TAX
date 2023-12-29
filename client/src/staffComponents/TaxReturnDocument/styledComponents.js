@@ -16,12 +16,18 @@ export const H1 = styled.h1`
     font-size: 26px;
     margin: 10px 0;
     margin-bottom: 20px;
-    font-family:Arial, Helvetica, sans-serif
+    font-family:Arial, Helvetica, sans-serif;
+    @media screen and (max-width:768px){
+        font-size:18px;
+    }
 `;
 
 export const TaxDescription = styled.p`
     font-size: 16px;
     margin-bottom: 20px;
+    @media screen and (max-width:768px){
+        font-size:14px;
+    }
 `;
 
 export const ClientsHeaderContainer = styled.div`

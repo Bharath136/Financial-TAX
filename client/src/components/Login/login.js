@@ -32,7 +32,7 @@ const Login = ({ setShowNav }) => {
 
     useEffect(() => {
         if (token) {
-            navigate('/user-dashboard');
+            navigate('/user/dashboard');
         }
     }, [token, navigate]);
 

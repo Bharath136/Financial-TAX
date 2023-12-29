@@ -9,6 +9,7 @@ import domain from '../../domain/domain';
 import EditModal from '../../SweetPopup/sweetPopup';
 import showAlert from '../../SweetAlert/sweetalert';
 import SweetLoading from '../../SweetLoading/SweetLoading';
+import FailureComponent from '../../FailureComponent/failureComponent'
 
 // Assets
 import noClient from '../../Assets/no-customers.png'
@@ -113,7 +114,7 @@ const Staff = () => {
                 },
             });
 
-            const [staffData, assignedClientsData] = await Promise.all([staffResponse, assignedClientsResponse]);
+            const [staffData] = await Promise.all([staffResponse, assignedClientsResponse]);
 
             // Filter staff and clients
             const filteredStaff = staffData.data.filter((user) => user.role === 'STAFF');
@@ -122,13 +123,8 @@ const Staff = () => {
             setFilteredStaff(filteredStaff)
             setStaff(filteredStaff);
 
-            // Find unassigned clients
-            const assignedClients = assignedClientsData.data;
-            const unassignedClients = filteredClients.filter((client) => {
-                return !assignedClients.some((assignedClient) => assignedClient.client_id === client.user_id);
-            });
+           
             setApiStatus(apiStatusConstants.success)
-            // setUnassignedClients(unassignedClients);
         } catch (error) {
             setApiStatus(apiStatusConstants.failure)
             setErrorMsg(error)
@@ -304,7 +300,8 @@ const Staff = () => {
             fetchData()
             setTeam()
         } catch (error) {
-            setApiStatus(apiStatusConstants.failure); // Set error status if there's an error
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error)
             showAlert({
                 title: 'Error',
                 text: 'There was an error updating the staff team. Please try again.',
@@ -333,143 +330,131 @@ const Staff = () => {
     };
 
 
-    // Render different components based on API status
-    const renderComponents = () => {
-        switch (apiStatus) {
-            case apiStatusConstants.failure:
-                return <div>failure</div>
-            case apiStatusConstants.inProgress:
-                return <SweetLoading />
-            case apiStatusConstants.success:
-                return <TableContainer className='shadow'>
-                    <ClientsHeaderContainer>
-                        <SearchBarContainer>
-                            <SearchBar
-                                type="text"
-                                placeholder="Search client by N.., E.., P.."
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                            />
-                            <SearchButton onClick={onSearch}><BiSearch size={25} /></SearchButton>
-                        </SearchBarContainer>
-                        <div>
-                            <label htmlFor="filterDropdown">
-                                <MdFilterList size={20} />
-                            </label>
-                            <FilterSelect
-                                id="filterDropdown"
-                                value={selectedFilter}
-                                onChange={(e) => handleFilterChange(e.target.value)}
-                            >
-                                <option value="">All Staff</option>
-                                <option value="assigned">Assigned Staff</option>
-                                <option value="unassigned">Unassigned Staff</option>
-                            </FilterSelect>
-                        </div>
-                    </ClientsHeaderContainer>
-                    <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize: '14px' }} className='p-3 mt-2'>
-                        <strong>Note: </strong>
-                        <ScrollingTextContainer>
-                            <ScrollingText>Ensure that team selection is performed only once. Repeatedly changing it may result in data issues. If it is necessary to make changes, please ensure that there are no clients assigned to the staff.</ScrollingText>
-
-                        </ScrollingTextContainer>
-                        </div>
-
-                    <Container>
-                        {filteredStaff.length > 0 ?
-                            <Table>
-                                <thead>
-                                    <tr>
-                                        <Th>ID</Th>
-                                        <Th>Name</Th>
-                                        <Th>Email</Th>
-                                        {/* <Th>Phone</Th> */}
-                                        {/* <Th>Secret Code</Th> */}
-                                        <Th>Team</Th>
-                                        <Th>Select Team</Th>
-                                        {/* <Th>Assign Clients</Th> */}
-                                        <Th>Assigned Clients</Th>
-                                        <Th>Profile Actions</Th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredStaff.map((staff) => (
-                                        <tr key={staff.user_id}>
-                                            <Td>{staff.user_id}</Td>
-                                            <Td>{staff.first_name}</Td>
-                                            <Td>{staff.email_address}</Td>
-                                            {/* <Td>{staff.contact_number}</Td> */}
-                                            {/* <Td>{staff.secret_code}</Td> */}
-                                             <Td>{staff.staff_team}</Td> 
-                                              <Td>
-                                                <div className='d-flex'>
-                                                    <Select
-                                                        options={dataOrder.map((team) => ({
-                                                            value: team,
-                                                            label: team,
-                                                            data: team,
-                                                        }))}
-                                                        onChange={handleTeamChange}
-                                                        placeholder="Select Team"
-                                                        required
-                                                    />
-                                                    <ExecuteButton
-                                                        onClick={() => handleStaffTeamUpdate(staff.user_id)}
-                                                        disabled={!team}
-                                                    >
-                                                        Add
-                                                    </ExecuteButton>
-                                                </div>
-                                            </Td>
-                                            <Td>
-                                                <ViewButton
-                                                    onClick={() => getAssignedClients(staff.user_id)}
-                                                >
-                                                    View
-                                                </ViewButton>
-                                            </Td>
-                                            <Td>
-                                                <div className='d-flex align-items-center justify-content-center'>
-                                                    <Select
-                                                        options={actionOptions}
-                                                        onChange={handleActionChange}
-                                                        placeholder="Select Action"
-                                                    />
-                                                    <ExecuteButton
-                                                        onClick={() => handleExecuteAction(staff.user_id)}
-                                                    >
-                                                        Execute
-                                                    </ExecuteButton>
-                                                </div>
-                                            </Td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                            :
-                            <NoClientContainer>
-                                <img src={noClient} alt='img' className='img-fluid' />
-                                <H1>No Staff Available!</H1>
-                                <p>Oops! It seems there are no staff Added here.</p>
-                            </NoClientContainer>}
-                    </Container>
-
-                    {viewAssignedClients && selectedStaff && <p className='mt-5'>Staff Member: {selectedStaff}</p>}
-
-                    <ClientTable assignedClients={assignedClients} viewAssignedClients={viewAssignedClients} selectedStaff={selectedStaff} />
-
-                    {viewAssignedClients && assignedClients.length === 0 && <p>No Clients Assigned</p>}
-                </TableContainer>
-            default:
-                return null
-        }
-    }
-
-    return (
-        <>
+    const renderSuccess = () => {
+        return (
             <StaffListContainer>
                 <H1>Staff</H1>
-                {staffList.length > 0 ? renderComponents() :
+                {staffList.length > 0 ?
+                    <TableContainer className='shadow'>
+                        <ClientsHeaderContainer>
+                            <SearchBarContainer>
+                                <SearchBar
+                                    type="text"
+                                    placeholder="Search client by N.., E.., P.."
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
+                                />
+                                <SearchButton onClick={onSearch}><BiSearch size={25} /></SearchButton>
+                            </SearchBarContainer>
+                            <div>
+                                <label htmlFor="filterDropdown">
+                                    <MdFilterList size={20} />
+                                </label>
+                                <FilterSelect
+                                    id="filterDropdown"
+                                    value={selectedFilter}
+                                    onChange={(e) => handleFilterChange(e.target.value)}
+                                >
+                                    <option value="">All Staff</option>
+                                    <option value="assigned">Assigned Staff</option>
+                                    <option value="unassigned">Unassigned Staff</option>
+                                </FilterSelect>
+                            </div>
+                        </ClientsHeaderContainer>
+                        <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize: '14px' }} className='p-3 mt-2'>
+                            <strong>Note: </strong>
+                            <ScrollingTextContainer>
+                                <ScrollingText>Ensure that team selection is performed only once. Repeatedly changing it may result in data issues. If it is necessary to make changes, please ensure that there are no clients assigned to the staff.</ScrollingText>
+
+                            </ScrollingTextContainer>
+                        </div>
+
+                        <Container>
+                            {filteredStaff.length > 0 ?
+                                <Table>
+                                    <thead>
+                                        <tr>
+                                            <Th>ID</Th>
+                                            <Th>Name</Th>
+                                            <Th>Email</Th>
+                                            {/* <Th>Phone</Th> */}
+                                            {/* <Th>Secret Code</Th> */}
+                                            <Th>Team</Th>
+                                            <Th>Select Team</Th>
+                                            {/* <Th>Assign Clients</Th> */}
+                                            <Th>Assigned Clients</Th>
+                                            <Th>Profile Actions</Th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredStaff.map((staff) => (
+                                            <tr key={staff.user_id}>
+                                                <Td>{staff.user_id}</Td>
+                                                <Td>{staff.first_name}</Td>
+                                                <Td>{staff.email_address}</Td>
+                                                {/* <Td>{staff.contact_number}</Td> */}
+                                                {/* <Td>{staff.secret_code}</Td> */}
+                                                <Td>{staff.staff_team}</Td>
+                                                <Td>
+                                                    <div className='d-flex'>
+                                                        <Select
+                                                            options={dataOrder.map((team) => ({
+                                                                value: team,
+                                                                label: team,
+                                                                data: team,
+                                                            }))}
+                                                            onChange={handleTeamChange}
+                                                            placeholder="Select Team"
+                                                            required
+                                                        />
+                                                        <ExecuteButton
+                                                            onClick={() => handleStaffTeamUpdate(staff.user_id)}
+                                                            disabled={!team}
+                                                        >
+                                                            Add
+                                                        </ExecuteButton>
+                                                    </div>
+                                                </Td>
+                                                <Td>
+                                                    <ViewButton
+                                                        onClick={() => getAssignedClients(staff.user_id)}
+                                                    >
+                                                        View
+                                                    </ViewButton>
+                                                </Td>
+                                                <Td>
+                                                    <div className='d-flex align-items-center justify-content-center'>
+                                                        <Select
+                                                            options={actionOptions}
+                                                            onChange={handleActionChange}
+                                                            placeholder="Select Action"
+                                                        />
+                                                        <ExecuteButton
+                                                            onClick={() => handleExecuteAction(staff.user_id)}
+                                                        >
+                                                            Execute
+                                                        </ExecuteButton>
+                                                    </div>
+                                                </Td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                                :
+                                <NoClientContainer>
+                                    <img src={noClient} alt='img' className='img-fluid' />
+                                    <H1>No Staff Available!</H1>
+                                    <p>Oops! It seems there are no staff Added here.</p>
+                                </NoClientContainer>}
+                        </Container>
+
+                        {viewAssignedClients && selectedStaff && <p className='mt-5'>Staff Member: {selectedStaff}</p>}
+
+                        <ClientTable assignedClients={assignedClients} viewAssignedClients={viewAssignedClients} selectedStaff={selectedStaff} />
+
+                        {viewAssignedClients && assignedClients.length === 0 && <p>No Clients Assigned</p>}
+                    </TableContainer>
+                    :
                     <NoClientContainer>
                         <img src={noClient} alt='img' className='img-fluid' />
                         <H1>No Staff Added</H1>
@@ -477,6 +462,28 @@ const Staff = () => {
                     </NoClientContainer>
                 }
             </StaffListContainer>
+        )
+    }
+
+
+    // Render different components based on API status
+    const renderComponents = () => {
+        switch (apiStatus) {
+            case apiStatusConstants.failure:
+                return <FailureComponent errorMsg={errorMsg} />
+            case apiStatusConstants.inProgress:
+                return <SweetLoading />
+            case apiStatusConstants.success:
+                return renderSuccess()
+
+            default:
+                return null
+        }
+    }
+
+    return (
+        <>
+            {renderComponents()}
 
             <EditModal
                 isOpen={isEditModalOpen}

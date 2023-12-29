@@ -26,13 +26,13 @@ const Footer = () => {
                         <Heading>Contact Us</Heading>
                         <Address>
                             <Paragraph><strong>Address:</strong> 123 Main St, City, Country</Paragraph>
-                            <Paragraph><strong>Email:</strong> info@yourwebsite.com</Paragraph>
+                            <Paragraph><strong>Email:</strong> info@uniprofin.com</Paragraph>
                             <Paragraph><strong>Phone:</strong> +1 (123) 456-7890</Paragraph>
                         </Address>
                     </Column>
                 </Row>
                 <CopyRightSection>
-                    <Paragraph>&copy; {new Date().getFullYear()} Tax Return. All rights reserved.</Paragraph>
+                    <Paragraph>&copy; {new Date().getFullYear()} UniProFin. All rights reserved.</Paragraph>
                     <Paragraph>For further assistance or if you have any questions, please don't hesitate to <a href="/contact">contact our support team</a>.</Paragraph>
                 </CopyRightSection>
             </FooterContainer>
@@ -42,12 +42,18 @@ const Footer = () => {
 
 export default Footer;
 
+export const email = 'info@uniprofin.com'
+export const support = 'support@uniprofin.com'
+export const phone = '+91 9512368745'
+export const location = '123 Main Street, City, Country'
+
 
 export const message = <MessageContainer className='shadow'>
 
     <Message> <strong className='text-start'>Note: </strong>
         Please feel free to contact us at{' '}
-        <ContactLink href="tel:Phone#">Phone#</ContactLink> for any further assistance or
-        send the documents to <ContactLink href="mailto:taxreturn@gmail.com">taxreturn@gmail.com</ContactLink>.
+        <ContactLink href=''>{phone}</ContactLink> for any further assistance or
+        send the documents to <ContactLink href={`mailto:${support}`}>{support}</ContactLink>.
     </Message>
 </MessageContainer>
+

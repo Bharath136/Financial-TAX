@@ -5,15 +5,25 @@ import { FaAnglesRight } from "react-icons/fa6";
 import { Link, useNavigate } from 'react-router-dom';
 import { CardBody, CardText, CardTitle, CardsContainer, CurrentUser, DashboardContainer, H1, IntroText, StepCard, StepDetails } from './styledComponents';
 import { message } from '../../components/Footer/footer';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+
+
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
 
 const UserDashboard = () => {
     const [currentUser, setCurrentUser] = useState('');
-
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const user = JSON.parse(localStorage.getItem('currentUser'));
 
     const navigate = useNavigate()
 
     useEffect(() => {
+        setApiStatus(apiStatusConstants.inProgress)
         if (user) {
             if (user.role === 'ADMIN') {
                 navigate('/admin/dashboard')
@@ -21,8 +31,11 @@ const UserDashboard = () => {
                 navigate('/staff/dashboard')
             }
             setCurrentUser(user.first_name);
+            setInterval(() => {
+                setApiStatus(apiStatusConstants.success)
+            },500)
         }
-    }, [user, navigate]);
+    }, [navigate]);
 
     const steps = [
         {
@@ -64,42 +77,60 @@ const UserDashboard = () => {
 
 
 
+    const renderSuccess = () => {
+        return (
+            <DashboardContainer>
+                <H1>Welcome <CurrentUser>{currentUser}</CurrentUser> <p style={{ fontSize: '14px', color: 'grey' }}>(Current Step: {user ? user.current_step : "Null"})</p></H1>
+                <div>
+                    <IntroText>
+                        Embark on a hassle-free tax filing journey with us. Our user-friendly platform ensures a seamless experience
+                        as you navigate through the various steps. Take control of your financial responsibilities and complete your
+                        tax filing effortlessly in 5 simple steps.
+                    </IntroText>
+                </div>
+
+                <div className='container p-0 m-0'>
+                    <CardsContainer>
+                        {steps.map((step) => (
+                            <div key={step.step} className='col-12 col-lg-4 col-md-6'>
+                                <StepCard>
+                                    <CardBody>
+                                        <CardTitle>
+                                            {step.icon} {step.name}
+                                        </CardTitle>
+                                        <CardText>{step.description}</CardText>
+                                        <StepDetails>
+                                            <div>Step: {step.step}</div>
+                                            <Link className='d-flex align-items-center justify-content-center p-2 text-light btn' to={step.link} style={{ textDecoration: 'none', backgroundColor: `var(--accent-background)`, }}>
+                                                Continue <FaAnglesRight />
+                                            </Link>
+                                        </StepDetails>
+                                    </CardBody>
+                                </StepCard>
+                            </div>
+                        ))}
+                    </CardsContainer>
+                </div>
+                {message}
+            </DashboardContainer>
+        )
+    }
+
+    const onRenderComponents = () => {
+        switch (apiStatus) {
+            case apiStatusConstants.inProgress:
+                return <SweetLoading />;
+            case apiStatusConstants.success:
+                return renderSuccess();
+            case apiStatusConstants.failure:
+                return null;
+            default:
+                return null;
+        }
+    }
 
     return (
-        <DashboardContainer>
-            <H1>Welcome <CurrentUser className="current-user">{currentUser}</CurrentUser> <p style={{ fontSize: '16px',color:'grey' }}>(Current Step: {user ? user.current_step : "Null"})</p></H1>
-            <div className="intro-section">
-                <IntroText>
-                    Embark on a hassle-free tax filing journey with us. Our user-friendly platform ensures a seamless experience
-                    as you navigate through the various steps. Take control of your financial responsibilities and complete your
-                    tax filing effortlessly in 5 simple steps.
-                </IntroText>
-            </div>
-
-            <div className='container p-0 m-0'>
-                <CardsContainer>
-                    {steps.map((step) => (
-                        <div key={step.step} className='col-12 col-lg-4 col-md-6'>
-                            <StepCard>
-                                <CardBody>
-                                    <CardTitle>
-                                        {step.icon} {step.name}
-                                    </CardTitle>
-                                    <CardText>{step.description}</CardText>
-                                    <StepDetails>
-                                        <div>Step: {step.step}</div>
-                                        <Link to={step.link}>
-                                            Continue <FaAnglesRight />
-                                        </Link>
-                                    </StepDetails>
-                                </CardBody>
-                            </StepCard>
-                        </div>
-                    ))}
-                </CardsContainer>
-            </div>
-            {message}
-        </DashboardContainer>
+        onRenderComponents()
     );
 };
 

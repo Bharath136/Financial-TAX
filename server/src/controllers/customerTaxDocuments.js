@@ -12,7 +12,7 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
                 data: "File Not Found :(",
             });
         }
-
+        
         // Store additional information about the uploaded file
         const fileInfo = {
             filename: req.file.filename,
@@ -26,6 +26,23 @@ const createCustomerNewTaxDocument = async (req, res, next) => {
             document_type
         } = req.body;
         try {
+
+            const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS customer_tax_documents (
+                document_id SERIAL PRIMARY KEY,
+                customer_id INT,
+                document_path VARCHAR(255),
+                financial_year VARCHAR(255),
+                document_name VARCHAR(255),
+                document_type VARCHAR(50),
+                review_status VARCHAR(50),
+                created_by INT,
+                updated_by INT,
+                created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            `;
+            await client.query(createTableQuery);
             const updatedUserQuery = 'SELECT * FROM user_logins WHERE user_id = $1';
             const resultUser = await client.query(updatedUserQuery, [customer_id]);
 

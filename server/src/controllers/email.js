@@ -39,7 +39,7 @@ Welcome to UniProFin! If you did not initiate this registration, please contact 
 Best regards,
 UniProFin Team`,
     };
-    
+
     const deleteEmailVerification = `
         DELETE FROM email_verification WHERE email_address = $1
     `;
@@ -140,6 +140,42 @@ UniProFin Team`,
 }
 
 
+function sendDocumentNotification(email, name, documentName, documentLink) {
+    const mailOptions = {
+        from: process.env.EMAIL, // Use the configured email
+        to: email,
+        subject: 'UniProFin Document Notification',
+        text: `Dear ${name},
+
+You have received a new document on your UniProFin account.
+
+Document Details:
+Name: ${documentName}
+Link: ${documentLink}
+
+Please log in to your account to view and manage the document.
+
+If you did not expect to receive this document, please contact our support at support@uniprofin.com.
+
+For any assistance, please contact our support at support@uniprofin.com or visit our [Contact Support](https://uniprofin.com/contact) page.
+
+Best regards,
+UniProFin Team`,
+    };
+
+    return new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(info);
+            }
+        });
+    });
+}
+
+
+
 const verifyOtp = async (req, res) => {
     const { email_address, otp } = req.body;
 
@@ -171,9 +207,55 @@ const verifyOtp = async (req, res) => {
 };
 
 
+function sendPassword(email, password, name) {
+    const mailOptions = {
+        from: process.env.EMAIL, // replace with your email
+        to: email,
+        subject: 'Registration Successful - Welcome to UniProFin!',
+        text: `Dear ${name},
+
+Congratulations! You have successfully registered on UniProFin.com.
+
+Thank you for choosing UniProFin as your financial partner. Now you can log in to your account and explore our financial services.
+
+Your login details:
+Email: ${email}
+Password: ${password}
+
+For security reasons, we recommend changing your password after logging in. You can update your password in the account settings.
+
+If you initiated this registration, you can ignore this email.
+
+If you have any questions or need assistance, feel free to contact our support team at support@uniprofin.com or visit our [Contact Support](https://uniprofin.com/contact) page.
+
+Welcome aboard!
+
+Best regards,
+UniProFin Team`,
+    };
+
+
+
+
+    // Send the email
+    return new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(info);
+            }
+        });
+    });
+
+}
+
+
 module.exports = {
     generateOTP,
     sendOTP,
     verifyOtp,
-    resetPasswordOTP
+    resetPasswordOTP,
+    sendDocumentNotification,
+    sendPassword
 };

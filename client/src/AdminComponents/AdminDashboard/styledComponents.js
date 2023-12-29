@@ -24,17 +24,18 @@ export const DashboardContainer = styled.ul`
 
 export const SectionCard = styled.div`
   flex: 0 0 calc(100% - 20px);
-  margin-bottom: 40px;
+  border:1px solid var(--border);
+  margin-bottom: 20px;
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 4px;
   box-shadow: 0 0px 20px var(--shadow);
   overflow: hidden;
   cursor: pointer;
   width:100%;
   
   &:hover{
-    transform: scale(1.04);
-    transition: .3s ease-in;
+    transform: scale(1.06);
+    transition: .2s ease-in;
     box-shadow: 0 0px 20px var(--main-background-shade);
   }
 
@@ -52,8 +53,8 @@ export const DashboardItem = styled.div`
   display: flex;
   align-items: center;
   justify-content:center;
-  gap:40px;
-  padding: 20px;
+  gap:20px;
+  padding: 16px;
 
   .dashboard-icon {
     margin-bottom: 10px;

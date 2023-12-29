@@ -2,6 +2,19 @@ const client = require('../database/connection');
 
 const createCustomerResponse = async (req, res) => {
     try {
+        const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS customer_response (
+            id SERIAL PRIMARY KEY,
+            client_id INT,
+            staff_id INT,
+            response TEXT,
+            created_by VARCHAR(255),
+            updated_by VARCHAR(255),
+            created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        `;
+        await client.query(createTableQuery);
         const { client_id, staff_id, response, created_by, updated_by } = req.body;
         const result = await client.query(
             'INSERT INTO customer_response (client_id, staff_id, response, created_by, updated_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',

@@ -14,47 +14,69 @@ code {
 
 :root {
   /* Background Colors  */
-  --background-white: #ffffff;
+  /* --background-white: #ffffff; */
   /* --main-background: #f9f9f9; */
-  --main-background: #f1f2f6;
+  /* --main-background: #f1f2f6;
   --main-background-shade: rgb(218, 213, 252);
   --shadow:rgb(233, 230, 255);
   --accent-background: rgb(88, 53, 227);
-  --page-background: rgb(242, 243, 248);
+  --page-background: rgb(242, 243, 248); */
 
   /* Text Colors  */
-  --main-text: #333333;
+  /* --main-text: #333333;
   --text-subtle: #5c5c5c;
   --heading: #0f1238;
   --headings: rgb(88, 53, 227);
   --button-text: aliceblue;
-  --main-link-text:rgb(88, 53, 227);
+  --main-link-text:rgb(88, 53, 227); */
 
    /* Border and Hover Colors  */
-  --border: #dedede;
+  /* --border: #dedede;
   --background-hover: #dedede;
-  --button-hover: rgb(75, 7, 201);
+  --button-hover: rgb(75, 7, 201); */
 }
 
 
 
 /* :root {
   --background-white: #ffffff;
-  --main-background: #f6f6f6;
-  --main-background-shade: #d3f8e2;
-  --accent-background: #228e4f;
+  --main-background: #eaebf1;
+  --main-background-shade: #cfd7ff;
+  --accent-background: #0f1b52;
   --page-background: #3498db;
 
   --main-text: #333333;
   --text-subtle: #5c5c5c;
   --heading: #0f1238;
-  --headings: #e74c3c;
+  --headings: #0f1a49;
 
   --button-text: aliceblue;
-  --main-link-text: #e74c3c;
+  --main-link-text: #0f1a49;
   
   --border: #dedede;
   --background-hover: #dedede;
-  --button-hover: #176e3b;
+  --button-hover: #0f1a49;
 
 } */
+
+
+:root {
+  --background-white: #ffffff;
+  --main-background: #eaebf1;
+  --main-background-shade: #bdc2e0;
+  --accent-background: #042e69;
+  --page-background: #3498db;
+
+  --main-text: #333333;
+  --text-subtle: #5c5c5c;
+  --heading: #0f1238;
+  --headings: #042e69;
+
+  --button-text: aliceblue;
+  --main-link-text: #042e69;
+
+  --border: #c0c9d2;
+  --background-hover: #c0c9d2;
+  --button-hover: #042e69;
+
+}

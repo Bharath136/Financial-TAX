@@ -8,7 +8,7 @@ import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
 import { ClientDocumentContainer, CtaSection, Description, DocumentName, DocumentTable, DocumentTableContainer, H1, Lable, NoDocumentsContainer, Td, Th, ViewButton } from './styledComponents';
 import SweetLoading from '../../SweetLoading/SweetLoading';
-import noDocuments from '../../Assets/no-documents.jpg'
+import noDocuments from '../../Assets/no-documents.png'
 import { MdDelete } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { ClientTaxDocumentsHeaderContainer, ClientsHeaderContainer, Select } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
@@ -414,8 +414,8 @@ const ClientDocuments = () => {
             {documents.length > 0 ? renderComponents() :
                 <NoDocumentsContainer>
                     <img src={noDocuments} alt='img' className='img-fluid' />
-                    <H1>No Clients Assigned</H1>
-                    <p>Oops! It seems there are no clients assigned to you.</p>
+                    <H1>No Documents Uploaded</H1>
+                    <p>Oops! It seems there are no documents uploaded.</p>
                 </NoDocumentsContainer>
             }
         </ClientDocumentContainer>

@@ -4,13 +4,14 @@ import { FaCalendarAlt, FaClock, FaFileAlt, FaTasks, FaClipboardList, FaMoneyBil
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import domain from '../../domain/domain';
-import noClient from '../../Assets/no-customers.jpg'
+import noClient from '../../Assets/no-customers.png'
 import { H1, NoClientContainer } from '../../staffComponents/AssignedClients/styledComponents';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import { CurrentUser, DashboardContainer, DashboardItem, DetailsContainer, MainContainer, SectionCard } from './styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
 import { ClientsHeaderContainer } from '../Staff/styledComponents';
+import FailureComponent from '../../FailureComponent/failureComponent';
 
 
 const apiStatusConstants = {
@@ -71,7 +72,6 @@ const AdminDashboard = () => {
                 setClients(filteredClients);
             }
         } catch (error) {
-            console.error('Error fetching assigned clients:', error);
             setApiStatus(apiStatusConstants.failure);
         }
     };
@@ -93,6 +93,7 @@ const AdminDashboard = () => {
     }, [navigate]);
 
     const getStaff = async () => {
+        setApiStatus(apiStatusConstants.inProgress);
         try {
             const response = await axios.get(`${domain.domain}/user/staff`, {
                 headers: {
@@ -100,8 +101,10 @@ const AdminDashboard = () => {
                 }
             })
             setStaff(response.data)
+            setApiStatus(apiStatusConstants.success);
         } catch (error) {
-            console.log(error)
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error)
         }
     }
 
@@ -123,15 +126,64 @@ const AdminDashboard = () => {
     };
 
     const data = {
-        Scheduling: { description: "Scheduling", total: calculateTotal(allClients, 'Scheduling'), icon: <FaCalendarAlt size={50} />, color: colorMapping["Scheduling"] },
-        TaxInterview: { description: 'TaxInterview', total: calculateTotal(allClients, 'TaxInterview'), icon: <FaClock size={50} />, color: colorMapping['TaxInterview'] },
-        Documents: { description: 'Documents', total: calculateTotal(allClients, 'Documents'), icon: <FaFileAlt size={50} />, color: colorMapping.Documents },
-        TaxPreparation: { description: 'TaxPreparation', total: calculateTotal(allClients, 'TaxPreparation'), icon: <FaTasks size={50} />, color: colorMapping['TaxPreparation'] },
-        Review: { description: 'Review', total: calculateTotal(allClients, 'Review'), icon: <FaCheck size={50} />, color: colorMapping.Review },
-        Payments: { description: 'Payments', total: calculateTotal(allClients, 'Payments'), icon: <FaMoneyBillAlt size={50} />, color: colorMapping.Payments },
-        ClientReview: { description: 'ClientReview', total: calculateTotal(allClients, 'ClientReview'), icon: <FaClipboardList size={50} />, color: colorMapping['ClientReview'] },
-        Filing: { description: 'Filing', total: calculateTotal(allClients, 'Filing'), icon: <FaFileAlt size={50} />, color: colorMapping.Filing },
+        Scheduling: {
+            title: "Scheduling",
+            description: "Schedule appointments and meetings with clients.",
+            total: calculateTotal(allClients, 'Scheduling'),
+            icon: <FaCalendarAlt size={50} />,
+            color: colorMapping["Scheduling"]
+        },
+        TaxInterview: {
+            title: 'Tax Interview',
+            description: 'Conduct tax interviews and gather necessary information.',
+            total: calculateTotal(allClients, 'TaxInterview'),
+            icon: <FaClock size={50} />,
+            color: colorMapping['TaxInterview']
+        },
+        Documents: {
+            title: 'Documents Collection',
+            description: 'Collect and organize required tax documents from clients.',
+            total: calculateTotal(allClients, 'Documents'),
+            icon: <FaFileAlt size={50} />,
+            color: colorMapping.Documents
+        },
+        TaxPreparation: {
+            title: 'Tax Preparation',
+            description: 'Prepare and calculate tax returns for clients.',
+            total: calculateTotal(allClients, 'TaxPreparation'),
+            icon: <FaTasks size={50} />,
+            color: colorMapping['TaxPreparation']
+        },
+        Review: {
+            title: 'Review',
+            description: 'Review and verify tax returns for accuracy.',
+            total: calculateTotal(allClients, 'Review'),
+            icon: <FaCheck size={50} />,
+            color: colorMapping.Review
+        },
+        Payments: {
+            title: 'Payments Processing',
+            description: 'Process and handle client payments related to tax services.',
+            total: calculateTotal(allClients, 'Payments'),
+            icon: <FaMoneyBillAlt size={50} />,
+            color: colorMapping.Payments
+        },
+        ClientReview: {
+            title: 'Client Review',
+            description: 'Conduct client reviews and address any concerns or questions.',
+            total: calculateTotal(allClients, 'ClientReview'),
+            icon: <FaClipboardList size={50} />,
+            color: colorMapping['ClientReview']
+        },
+        Filing: {
+            title: 'Filing',
+            description: 'Submit and file tax returns on behalf of clients.',
+            total: calculateTotal(allClients, 'Filing'),
+            icon: <FaFileAlt size={50} />,
+            color: colorMapping.Filing
+        },
     };
+
 
 
 
@@ -218,7 +270,7 @@ const AdminDashboard = () => {
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
-            setApiStatus(apiStatusConstants.error);
+            setApiStatus(apiStatusConstants.failure);
             setAvailableSteps([])
         }
     };
@@ -248,8 +300,8 @@ const AdminDashboard = () => {
                     confirmButtonText: 'OK',
                 });
             } catch (error) {
-                console.error('Error Deleting staff:', error);
                 setApiStatus(apiStatusConstants.failure);
+                setErrorMsg(error)
 
                 // Show error alert
                 showAlert({
@@ -291,11 +343,12 @@ const AdminDashboard = () => {
             console.error('Error assigning clients:', error);
             showAlert({
                 title: 'Error Assigning Clients',
-                text: `${error.response.data.message}`,
+                text: `${error.response.data.error}`,
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
             setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
@@ -307,7 +360,7 @@ const AdminDashboard = () => {
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return renderClients();
+                return <FailureComponent errorMsg={errorMsg}/>;
             case apiStatusConstants.inProgress:
                 return <SweetLoading />;
             case apiStatusConstants.success:
@@ -386,10 +439,11 @@ const AdminDashboard = () => {
                         }}
                     >
 
-                        <DashboardItem title={value.description} >
+                        <DashboardItem title={value.title} >
                             <div className="dashboard-icon" style={{ color: value.color }}>{value.icon}</div>
                             <div className="dashboard-text">
-                                <h4>{value.description}</h4>
+                                <h4 style={{color:`var(--headings)`}}>{value.title}</h4>
+                                <p style={{fontSize:'14px',color:'grey'}}>{value.description}</p>
                                 <p><strong>Total: </strong>{value.total}</p>
                             </div>
                         </DashboardItem>
@@ -399,7 +453,7 @@ const AdminDashboard = () => {
             {selectedCard ? (
                 <DetailsContainer id="details-container">
                     <ClientsHeaderContainer className=' p-3 d-flex align-items-center justify-content-between'>
-                        <H1>{data[selectedCard].description} Details:</H1>
+                        <H1>{data[selectedCard].title} Details:</H1>
                         {clients.length > 0 && <div>
                             <h6>Number of customer assign to a staff</h6>
                             <div className='d-flex' style={{ gap: '10px' }}>
@@ -438,7 +492,7 @@ const AdminDashboard = () => {
                     )}
                 </DetailsContainer>
             ) :
-                <div className='bg-light'>
+                <div >
                     {clients.length > 0 && <div>
                         <div style={{ backgroundColor: `var(--main-background-shade)` }} className='d-flex align-items-center justify-content-between p-3'>
                             <H1>Unassigned clients</H1>

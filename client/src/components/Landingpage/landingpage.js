@@ -1,124 +1,3 @@
-// import React, { useEffect } from 'react';
-// import './landingpage.css';
-// import { Carousel } from 'react-responsive-carousel';
-// import { FaHandshake, FaChartBar, FaClock, FaLock, FaUsers } from 'react-icons/fa';
-// import 'react-responsive-carousel/lib/styles/carousel.min.css';
-// import 'slick-carousel/slick/slick.css';
-// import 'slick-carousel/slick/slick-theme.css';
-// import Footer from '../Footer/footer';
-// import { useNavigate } from 'react-router-dom';
-
-// const Landingpage = () => {
-//     const carouselItems = [
-//         {
-//             image: 'https://www.shoonyatax.com/images/slider/swiper/bgnew4.jpg',
-//             title: 'Welcome to Our Tax Management',
-//             description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-//         },
-//         {
-//             image: 'https://www.shoonyatax.com/img/s4.jpg',
-//             title: 'Welcome to Our Tax Management',
-//             description: 'Praesent commodo cursus magna, vel scelerisque nisl consectetur.',
-//         }
-//     ];
-
-//     const features = [
-//         {
-//             id:1,
-//             icon: <FaHandshake size={280} className="icon" />,
-//             title: 'Expert Support',
-//             description:
-//                 'Get expert support and guidance from our dedicated team to address your concerns. Our knowledgeable professionals are here to assist you at every step of the way.',
-//         },
-//         {
-//             id: 2,
-//             icon: <FaChartBar size={280} className="icon" />,
-//             title: 'Comprehensive Reporting',
-//             description:
-//                 'Access detailed tax reports and analysis to make informed financial decisions. Our comprehensive reporting tools provide you with a clear understanding of your financial data.',
-//         },
-//         {
-//             id: 3,
-//             icon: <FaClock size={280} className="icon" />,
-//             title: 'Time-saving Solutions',
-//             description:
-//                 'Save time with our efficient solutions. We understand the value of your time, and our tools are designed to streamline your financial processes, giving you more time for what matters.',
-//         },
-//         {
-//             id: 4,
-//             icon: <FaLock size={280} className="icon" />,
-//             title: 'Secure Transactions',
-//             description:
-//                 'Ensure the security of your transactions. We prioritize the safety of your financial data and implement robust security measures to protect your information from unauthorized access.',
-//         },
-//         {
-//             id: 5,
-//             icon: <FaUsers size={280} className="icon" />,
-//             title: 'Collaborative Environment',
-//             description:
-//                 'Experience a collaborative environment. Our platform allows seamless collaboration between different users, making it easy for teams to work together on financial tasks.',
-//         }
-//     ];
-
-
-//     const isEven = (id) => {
-//         return id % 2 === 0;
-//     }
-
-//     const navigate = useNavigate();
-
-//     useEffect(() => {
-//         const token = localStorage.getItem('customerJwtToken')
-//         if(token){
-//             navigate('/user-dashboard')
-//         }
-//     })
-
-//     return (
-//         <div>
-//             <div className='home-container'>
-//                 <Carousel showStatus={false} showThumbs={false} infiniteLoop autoPlay>
-//                     {carouselItems.map((item, index) => (
-//                         <div key={index}>
-//                             <img src={item.image} alt='images' className='image-slide' />
-//                             <div className="carousel-caption">
-//                                 <h5>{item.title}</h5>
-//                                 <p>{item.description}</p>
-//                             </div>
-//                         </div>
-//                     ))}
-//                 </Carousel>
-
-//                 <section id="why-choose-us" className="why-choose-us-container">
-//                     <div className="container">
-//                         <h2 className="section-title">WHY CHOOSE US</h2>
-//                         <div className="features-container">
-//                             {features.map((feature, index) => (
-//                                 <div key={index} className={`feature-item ${isEven(feature.id) && 'feature-item-reverse'} `}>
-//                                     <div className='feature-icon'>
-//                                         {feature.icon}
-//                                     </div>
-//                                     <div className="feature">
-                                        
-//                                         <h3>{feature.title}</h3>
-//                                         <p>{feature.description}</p>
-//                                     </div>
-                                    
-//                                 </div>
-//                             ))}
-                            
-//                         </div>
-//                     </div>
-//                 </section>
-
-//             </div>
-//             <Footer/>
-//         </div>
-//     );
-// };
-
-// export default Landingpage;
-
 
 
 
@@ -131,11 +10,15 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Footer from '../Footer/footer';
 import { useNavigate } from 'react-router-dom';
+import bannerImage from '../../Assets/banner-image2.png'
+import bannerImage2 from '../../Assets/banner-image3.png'
+import bannerImage3 from '../../Assets/banner-image4.png'
+import Slider from 'react-slick';
 
 // Styled components
 const HomeContainer = styled.div`
   position: relative;
-  margin-top:10vh;
+  background-color:var(--main-background);
 `;
 
 const ImageSlide = styled.img`
@@ -153,7 +36,7 @@ const CarouselCaption = styled.div`
 `;
 
 const Section = styled.section`
-  background-color: #f9f9f9;
+   background-color:var(--main-background);
   padding: 60px 20px;
 `;
 
@@ -241,7 +124,108 @@ const Description = styled.p`
         font-size:0.8rem;
   }
 `
+const MainSection = styled.section`
+  padding: 20px;
+  width: 100%;
+  min-height: 100vh;
+  color: var(--background-with);
+  background-color: var(--accent-background);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 
+  @media (min-width: 768px) {
+    flex-direction: row;
+    padding:50px;
+  }
+`;
+
+const H1 = styled.h1`
+  color: white;
+  font-size: 5.5vw;
+  margin-bottom: 30px;
+  position: relative;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; /* Adjust the distance from the text */
+    left: 32%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 10px; /* Adjust the height of the underline */
+    background-color: #ffa500; /* Adjust the color of the underline */
+    border-radius: 50%;
+    box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.3); /* Add shadow to the underline */
+  }
+
+  @media (min-width: 768px) {
+    font-size: 60px;
+
+    &::after {
+      width: 500px;
+      height: 20px;
+      left: 50%;
+      border-radius: 50%;
+    }
+  }
+`;
+
+
+
+const Description2 = styled.p`
+  color: white;
+  font-size: 3vw;
+
+  @media (min-width: 768px) {
+    font-size: 30px;
+  }
+`;
+
+const BannerSectionTextContainer = styled.div`
+  padding: 10px;
+  width: 100%;
+  order:2;
+
+  @media (min-width: 768px) {
+    width: 50vw;
+    order:1;
+  }
+`;
+
+const BannerSectionImageContainer = styled.div`
+  width: 100%;
+  text-align: center;
+  order:1;
+  padding:20px;
+
+  @media (min-width: 768px) {
+    width: 50vw;
+    order:2;
+  }
+`;
+
+const CTAButton = styled.a`
+  display: inline-block;
+  background-color: #ffa500;
+  color: #ffffff;
+  padding: 15px 30px;
+  font-size: 3vw;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #ff7f00;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 20px;
+  }
+`;
 const Landingpage = () => {
 
     const carouselItems = [
@@ -302,10 +286,6 @@ const Landingpage = () => {
         },
     ];
 
-    // const isEven = (id) => {
-    //     return id % 2 === 0;
-    // }
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -315,10 +295,60 @@ const Landingpage = () => {
         }
     })
 
+  // Slider images data
+  const sliderImages = [
+    {
+      src: bannerImage,
+      alt: 'Image1',
+    },
+    {
+      src: bannerImage2,
+      alt: 'Image2',
+    },
+    {
+      src: bannerImage3,
+      alt: 'Image3',
+    },
+    // Add more slider images as needed
+  ];
+
+
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+  };
 
     return (
         <HomeContainer>
-            <Carousel showStatus={false} showThumbs={false} infiniteLoop autoPlay>
+
+        <MainSection id="your-cta-section">
+            <BannerSectionTextContainer>
+              <H1>Welcome to UniProFin</H1>
+              <Description2>
+                Unlock the power of financial freedom with UniProFin. Our expert services guide you towards informed decisions for a secure financial future.
+              </Description2>
+              <CTAButton onClick={() => navigate('/accounts/login')}>Get Started</CTAButton>
+            </BannerSectionTextContainer>
+          <BannerSectionImageContainer>
+            <Slider {...sliderSettings}>
+              {sliderImages.map((image, index) => (
+                <div key={index}>
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="slider-image"
+                  />
+                </div>
+              ))}
+            </Slider>
+          </BannerSectionImageContainer>
+        </MainSection>
+            {/* <Carousel showStatus={false} showThumbs={false} infiniteLoop autoPlay>
                 {carouselItems.map((item, index) => (
                     <div key={index}>
                         <ImageSlide src={item.image} alt='images' />
@@ -328,7 +358,7 @@ const Landingpage = () => {
                         </CarouselCaption>
                     </div>
                 ))}
-            </Carousel>
+            </Carousel> */}
 
             <Section id="why-choose-us">
                 <Container>

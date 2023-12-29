@@ -86,7 +86,7 @@ const SuccessPage = () => {
   }, [navigate]);
 
   const handleReturnHome = () => {
-    navigate('/user/dashboard');
+    navigate('/user/tax-return-review');
   };
 
   const handleExecutePayment = async () => {
@@ -133,7 +133,7 @@ const SuccessPage = () => {
           </>
         )}
         {showReturnButton ? (
-          <ReturnHomeButton onClick={handleReturnHome}>Return Home</ReturnHomeButton>
+          <ReturnHomeButton onClick={handleReturnHome}>Return Back</ReturnHomeButton>
         ) : (
           <Button onClick={handleExecutePayment} disabled={loading} className='w-100'>
             {loading ? (

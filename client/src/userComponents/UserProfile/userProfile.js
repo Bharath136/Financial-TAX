@@ -168,7 +168,7 @@ const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
                     )}
                 </div>
 
-                {userData.secret_code && !isCustomer && (
+                {(userData.secret_code !== 'null' && userData.role !== 'CUSTOMER')  && (
                     <div className="user-profile-item">
                         <strong style={{ width: '200px', textAlign: "start" }}>Secret Code: </strong>
                         {isEditing ? (
@@ -180,7 +180,7 @@ const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
                                 onChange={handleInputChange}
                             />
                         ) : (
-                            <label style={{ width: '200px', textAlign: "start" }}>{userData.secret_code}</label>
+                                userData.role !== 'CUSTOMER' && <label style={{ width: '200px', textAlign: "start" }}>{userData.secret_code}</label>
                         )}
                     </div>
                 )}

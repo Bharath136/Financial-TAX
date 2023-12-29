@@ -4,7 +4,10 @@ import styled from 'styled-components';
 import domain from '../../domain/domain';
 import formatDateTime from '../../FormatDateTime/DateTime';
 import { useNavigate } from 'react-router-dom';
-import { Description, H1 } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
+import { Description } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
+import FailureComponent from '../../FailureComponent/failureComponent';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+import { H1 } from '../CommentDocument/styledComponents';
 
 const TableWrapper = styled.div`
   padding:20px;
@@ -12,6 +15,7 @@ const TableWrapper = styled.div`
   width:100%;
   height:90vh;
   overflow:auto;
+  background-color:var(--main-background);
 `;
 
 const Table = styled.table`
@@ -48,9 +52,18 @@ const NoPaymentsContainer = styled.div`
     align-items:center;
 `
 
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
+
 const MyPaymentDetails = () => {
     const token = localStorage.getItem('customerJwtToken');
     const [paymentDetails, setPaymentDetails] = useState([]);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
     const user = JSON.parse(localStorage.getItem('currentUser'))
 
@@ -67,51 +80,77 @@ const MyPaymentDetails = () => {
             }
         }
         const getDetails = async () => {
-            try {
-                const response = await axios.get(`${domain.domain}/paypal/payment-details`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-                setPaymentDetails(response.data)
-            } catch (error) {
-                console.log(error)
-            }
+            setApiStatus(apiStatusConstants.inProgress)
+           setInterval(async () => {
+               try {
+                   const response = await axios.get(`${domain.domain}/paypal/payment-details`, {
+                       headers: {
+                           Authorization: `Bearer ${token}`
+                       }
+                   })
+                   const fiteredDocuments = response.data.filter((document) => document.payer_id !== null)
+                   setPaymentDetails(fiteredDocuments)
+                   setApiStatus(apiStatusConstants.success)
+               } catch (error) {
+                   setApiStatus(apiStatusConstants.failure)
+                   setErrorMsg(error)
+               }
+           },1000)
         }
         getDetails()
     }, []);
 
-    return (
-        <TableWrapper>
-            <H1>Payments</H1>
-            {paymentDetails.length > 0 ? <Table>
-                <TableHead>
-                    <tr>
-                        <TableHeaderCell>User ID</TableHeaderCell>
-                        <TableHeaderCell>Document ID</TableHeaderCell>
-                        <TableHeaderCell>Payment ID</TableHeaderCell>
-                        <TableHeaderCell>Payer ID</TableHeaderCell>
-                        <TableHeaderCell>Amount</TableHeaderCell>
-                        <TableHeaderCell>Date</TableHeaderCell>
-                    </tr>
-                </TableHead>
-                <TableBody>
-                    {paymentDetails.map((payment) => (
-                        <tr key={payment.payment_id}>
-                            <TableCell>{payment.user_id}</TableCell>
-                            <TableCell>{payment.document_id}</TableCell>
-                            <TableCell>{payment.payment_id}</TableCell>
-                            <TableCell>{payment.payer_id}</TableCell>
-                            <TableCell>{payment.amount}</TableCell>
-                            <TableCell>{formatDateTime(payment.date)} </TableCell>
+
+    const renderPayments = () => {
+        return(
+            <TableWrapper>
+                <H1>Payments</H1>
+                {paymentDetails.length > 0 ? <Table>
+                    <TableHead>
+                        <tr>
+                            <TableHeaderCell>User ID</TableHeaderCell>
+                            <TableHeaderCell>Document ID</TableHeaderCell>
+                            <TableHeaderCell>Payment ID</TableHeaderCell>
+                            <TableHeaderCell>Payer ID</TableHeaderCell>
+                            <TableHeaderCell>Amount</TableHeaderCell>
+                            <TableHeaderCell>Date</TableHeaderCell>
                         </tr>
-                    ))}
-                </TableBody>
-            </Table> : <NoPaymentsContainer>
-                <H1>No Payments</H1>
-                <Description>No payment details are available at the moment.</Description>
-            </NoPaymentsContainer>}
-        </TableWrapper>
+                    </TableHead>
+                    <TableBody>
+                        {paymentDetails.map((payment) => (
+                            <tr key={payment.payment_id}>
+                                <TableCell>{payment.user_id}</TableCell>
+                                <TableCell>{payment.document_id}</TableCell>
+                                <TableCell>{payment.payment_id}</TableCell>
+                                <TableCell>{payment.payer_id}</TableCell>
+                                <TableCell>{payment.amount}</TableCell>
+                                <TableCell>{formatDateTime(payment.date)} </TableCell>
+                            </tr>
+                        ))}
+                    </TableBody>
+                </Table> : <NoPaymentsContainer>
+                    <H1>No Payments</H1>
+                    <Description>No payment details are available at the moment.</Description>
+                </NoPaymentsContainer>}
+            </TableWrapper>
+        )
+    }
+
+    const onRenderComponents = () => {
+        switch(apiStatus){
+            case apiStatusConstants.inProgress:
+                return <SweetLoading/>;
+            case apiStatusConstants.success:
+                return renderPayments();
+            case apiStatusConstants.failure:
+                return <FailureComponent errorMsg={errorMsg} />;
+            default:
+                return null;
+        }
+    }
+
+    return (
+        onRenderComponents()
     );
 };
 

@@ -3,6 +3,17 @@ const client = require('../database/connection');
 // Create (Insert) Contact
 const createMessage = async (req, res) => {
     try {
+        const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS contacts (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255),
+            mobile_number VARCHAR(20),
+            email_address VARCHAR(255),
+            subject VARCHAR(255),
+            message TEXT
+        );
+        `;
+        await client.query(createTableQuery);
         const { name, mobile_number, email_address, subject, message } = req.body;
         const result = await client.query(
             'INSERT INTO contact (name, mobile_number, email_address, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *',

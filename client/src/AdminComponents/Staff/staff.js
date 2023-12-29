@@ -11,7 +11,7 @@ import showAlert from '../../SweetAlert/sweetalert';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 
 // Assets
-import noClient from '../../Assets/no-customers.jpg'
+import noClient from '../../Assets/no-customers.png'
 import { BiSearch } from 'react-icons/bi';
 import { MdFilterList } from 'react-icons/md';
 
@@ -73,6 +73,7 @@ const Staff = () => {
     // const [unassignedClients, setUnassignedClients] = useState([]);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const [selectedFilter, setFilterType] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
     const token = localStorage.getItem('customerJwtToken');
 
     // Handle search term change
@@ -112,7 +113,7 @@ const Staff = () => {
                 },
             });
 
-            const [staffData] = await Promise.all([staffResponse, assignedClientsResponse]);
+            const [staffData, assignedClientsData] = await Promise.all([staffResponse, assignedClientsResponse]);
 
             // Filter staff and clients
             const filteredStaff = staffData.data.filter((user) => user.role === 'STAFF');
@@ -122,14 +123,15 @@ const Staff = () => {
             setStaff(filteredStaff);
 
             // Find unassigned clients
-            // const assignedClients = assignedClientsData.data;
-            // const unassignedClients = filteredClients.filter((client) => {
-            //     return !assignedClients.some((assignedClient) => assignedClient.client_id === client.user_id);
-            // });
+            const assignedClients = assignedClientsData.data;
+            const unassignedClients = filteredClients.filter((client) => {
+                return !assignedClients.some((assignedClient) => assignedClient.client_id === client.user_id);
+            });
             setApiStatus(apiStatusConstants.success)
             // setUnassignedClients(unassignedClients);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
@@ -184,7 +186,7 @@ const Staff = () => {
                 confirmButtonText: 'OK',
             });
         } catch (error) {
-            console.error('Error Deleting staff:', error);
+            setErrorMsg(error)
             setApiStatus(apiStatusConstants.failure);
 
             // Show error alert
@@ -238,7 +240,6 @@ const Staff = () => {
     // };
 
     // Get assigned clients for a staff member
-    
     const getAssignedClients = async (id) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -261,34 +262,10 @@ const Staff = () => {
             setAssignedClients(assignedClients);
             setViewAssignedClients(!viewAssignedClients);
         } catch (error) {
-            console.error('Error fetching assigned clients:', error);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
-
-    // Handle assigning a client to a staff member
-    // const handleAssign = async (staffId) => {
-    //     const assignData = { client_id: selectedAction.data.user_id, staff_id: staffId }
-    //     setApiStatus(apiStatusConstants.inProgress)
-    //     try {
-    //         const response = await axios.post(`${domain.domain}/staff-customer-assignments/assign`, assignData, {
-    //             headers: {
-    //                 Authorization: `Bearer ${token}`,
-    //             },
-    //         });
-    //         if (response.status === 200) {
-    //             setApiStatus(apiStatusConstants.success)
-    //             showAlert({
-    //                 title: 'Client Assigned Successfully!',
-    //                 text: 'The selected client has been successfully assigned.',
-    //                 icon: 'success',
-    //                 confirmButtonText: 'Ok',
-    //             });
-    //             fetchData()
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
 
     const [team, setTeam] = useState('')
 
@@ -327,7 +304,7 @@ const Staff = () => {
             fetchData()
             setTeam()
         } catch (error) {
-            setApiStatus(apiStatusConstants.error); // Set error status if there's an error
+            setApiStatus(apiStatusConstants.failure); // Set error status if there's an error
             showAlert({
                 title: 'Error',
                 text: 'There was an error updating the staff team. Please try again.',
@@ -393,7 +370,8 @@ const Staff = () => {
                     <div style={{ backgroundColor: `var(--main-background-shade)`, fontSize: '14px' }} className='p-3 mt-2'>
                         <strong>Note: </strong>
                         <ScrollingTextContainer>
-                            <ScrollingText>Ensure that team selection is performed only once. Repeatedly changing it may result in data issues. If it is necessary to make changes, please ensure that there are no clients assigned to the staff.  </ScrollingText>
+                            <ScrollingText>Ensure that team selection is performed only once. Repeatedly changing it may result in data issues. If it is necessary to make changes, please ensure that there are no clients assigned to the staff.</ScrollingText>
+
                         </ScrollingTextContainer>
                         </div>
 
@@ -443,26 +421,6 @@ const Staff = () => {
                                                     </ExecuteButton>
                                                 </div>
                                             </Td>
-                                            {/* <Td>
-                                                <div className='d-flex'>
-                                                    <Select
-                                                        options={unassignedClients.map((client) => ({
-                                                            value: client.user_id,
-                                                            label: getClientLabel(client),
-                                                            data: client,
-                                                        }))}
-                                                        onChange={handleActionChange}
-                                                        placeholder="Select Client"
-                                                    />
-                                                    <ExecuteButton
-                                                        onClick={() => handleAssign(staff.user_id)}
-                                                        disabled={!selectedAction}
-                                                    >
-                                                        Assign
-                                                    </ExecuteButton>
-
-                                                </div>
-                                            </Td> */}
                                             <Td>
                                                 <ViewButton
                                                     onClick={() => getAssignedClients(staff.user_id)}

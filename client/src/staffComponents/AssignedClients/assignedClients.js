@@ -3,7 +3,7 @@ import axios from 'axios';
 import EditModal from '../../SweetPopup/sweetPopup';
 import domain from '../../domain/domain';
 import { ClientListContainer, H1, NoClientContainer, Table, TableContainer, Td, Th, ViewButton } from './styledComponents';
-import noClient from '../../Assets/no-customers.jpg'
+import noClient from '../../Assets/no-customers.png'
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import { useNavigate } from 'react-router-dom';
 

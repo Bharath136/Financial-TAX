@@ -9,7 +9,7 @@ const paypalClientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
 // Configure PayPal with your credentials
 paypal.configure({
-    mode: 'sandbox', // Set to 'live' for production
+    mode: 'live', // Set to 'live' for production
     client_id: paypalClientId,
     client_secret: paypalClientSecret,
 });
@@ -18,14 +18,28 @@ paypal.configure({
 const createTaxReturnPayment = async (req, res) => {
     const { user, amount,document_id } = req.body;
     try {
+        const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS payments (
+            id SERIAL PRIMARY KEY,
+            user_id INT,
+            payment_id VARCHAR(50),
+            payer_id VARCHAR(50),
+            amount DECIMAL(10, 2),
+            date DATE,
+            document_id SERIAL,
+            created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_by VARCHAR(255)
+        );
+        `; 
+        await client.query(createTableQuery);
         const paymentData = {
             intent: 'sale',
             payer: {
                 payment_method: 'paypal',
             },
             redirect_urls: {
-                return_url: 'http://localhost:3000/user/tax-return/success',
-                cancel_url: 'http://localhost:3000/user/tax-return/cancel',
+                return_url: 'https://uniprofin.com/user/tax-return/success',
+                cancel_url: 'https://uniprofin.com/user/tax-return/cancel',
             },
             transactions: [{
                 item_list: {
@@ -92,7 +106,7 @@ const executeTaxReturnPayment = async (req, res) => {
                 res.status(500).json({ error: `Failed to execute tax return payment: ${error.message}` });
             } else {
                 res.json({ payment });
-                await updateTaxreturnDocumentPaymentStatus(document.document_id, "", 'Paid');
+                await updateTaxreturnDocumentPaymentStatus(document.rows[0].document_id, "", 'Paid');
             }
         });
     } catch (error) {
@@ -108,7 +122,6 @@ const paymentDetails = async (req, res) => {
             'INSERT INTO payments (user_id, payment_id, payer_id, amount, date) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *',
             [userId, paymentId, payerId, paymentAmount]
         );
-        console.log(result)
 
         await updateTaxreturnDocumentPaymentStatus(taxReturnId, updatedBy, 'Paid');
 

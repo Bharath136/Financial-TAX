@@ -124,6 +124,7 @@ const TaxReturnDocument = () => {
                 });
                 setSelectedFile(null);
                 setFormData({})
+                fetchDocuments()
             }
 
         } catch (error) {
@@ -132,15 +133,29 @@ const TaxReturnDocument = () => {
     };
 
     const documentTypes = [
-        { value: 'homeLoan', label: 'Home Loan' },
-        { value: 'goldLoan', label: 'Gold Loan' },
-        { value: 'carLoan', label: 'Car Loan' },
-        { value: 'personalLoan', label: 'Personal Loan' },
-        { value: 'educationLoan', label: 'Education Loan' },
-        { value: 'businessLoan', label: 'Business Loan' },
-        { value: 'mortgage', label: 'Mortgage' },
-        { value: 'autoLoan', label: 'Auto Loan' },
-        { value: 'creditCard', label: 'Credit Card' }
+        { value: 'Personal Tax Notes', label: 'Personal Tax Notes' },
+        { value: 'Business Tax Notes', label: 'Business Tax Notes' },
+        { value: 'Rental Income Tax Notes', label: 'Rental Income Tax Notes' },
+        { value: 'SSN Card', label: 'SSN Card' },
+        { value: 'ITIN document', label: 'ITIN document' },
+        { value: 'Wages W-2, W-2C, Paystubs', label: 'Wages W-2, W-2C, Paystubs' },
+        { value: 'Interest income-1099 INT Dividends - 1099 DIV', label: 'Interest income-1099 INT Dividends - 1099 DIV' },
+        { value: 'Taxable refunds - 1099 G', label: 'Taxable refunds - 1099 G' },
+        { value: 'Charity receipts', label: 'Charity receipts' },
+        { value: 'Health care document -1095 A', label: 'Health care document -1095 A' },
+        { value: 'Stocks/Capital gains 1099 B', label: 'Stocks/Capital gains 1099 B' },
+        { value: 'IRA contributions', label: 'IRA contributions' },
+        { value: 'Contract worker -1099 MISC', label: 'Contract worker -1099 MISC' },
+        { value: 'Gambling income W-2G', label: 'Gambling income W-2G' },
+        { value: 'HAS 1098 HAS', label: 'HAS 1098 HAS' },
+        { value: 'Tuition fee 1098 T Student loan Interest 1098 E', label: 'Tuition fee 1098 T Student loan Interest 1098 E' },
+        { value: 'Form 1099 K', label: 'Form 1099 K' },
+        { value: 'Home mortgage Interest 1098 HMI', label: 'Home mortgage Interest 1098 HMI' },
+        { value: 'Social Security benefits 1099 SA', label: 'Social Security benefits 1099 SA' },
+        { value: 'Electric vehicle', label: 'Electric vehicle' },
+        { value: 'Solar products', label: 'Solar products' },
+        { value: 'Medical receipts', label: 'Medical receipts' },
+        { value: 'Other Documents', label: 'Other Documents' },
     ];
 
     const initialFormFields = [

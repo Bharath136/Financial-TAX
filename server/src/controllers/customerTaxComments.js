@@ -11,6 +11,20 @@ const createCustomerNewTaxComment = async (req, res) => {
     } = req.body;
 
     try {
+        const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS customer_tax_comments (
+            comment_id SERIAL PRIMARY KEY,
+            customer_id INT,
+            staff_id INT,
+            document_id INT,
+            comment TEXT,
+            financial_year VARCHAR(255),
+            comment_status VARCHAR(50),
+            created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        `;
+        await client.query(createTableQuery);
         const commentQuery = `
             INSERT INTO customer_tax_comments (customer_id, staff_id, document_id, comment, financial_year, comment_status, created_on, updated_on)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)

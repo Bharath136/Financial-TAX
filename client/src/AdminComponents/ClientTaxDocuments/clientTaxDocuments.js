@@ -1,18 +1,14 @@
-// Libraries
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-// Components
 import domain from '../../domain/domain';
 import showAlert from '../../SweetAlert/sweetalert';
-
-// Assets
 import pdf from '../../Assets/PDF_file_icon.svg.png';
 import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png';
-import noDoc from '../../Assets/no-documents.jpg';
+import noDoc from '../../Assets/no-documents.png';
 
-// Styled Components
 import {
     ClientDocumentContainer,
     ClientTaxDocumentsHeaderContainer,
@@ -21,13 +17,13 @@ import {
     H1,
     NoDocuments,
 } from './styledComponents';
-import { useNavigate } from 'react-router-dom';
+
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import DocumentTableComponent from './documentTable';
 import ClientTaxDocumentHeader from './documentHeader';
 import formatDateTime from '../../FormatDateTime/DateTime';
 
-// Constants for API status
+
 const apiStatusConstants = {
     initial: 'INITIAL',
     success: 'SUCCESS',
@@ -36,7 +32,6 @@ const apiStatusConstants = {
 };
 
 const ClientTaxDocuments = ({ clientId }) => {
-    // State and variables
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const accessToken = localStorage.getItem('customerJwtToken');
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
@@ -44,8 +39,8 @@ const ClientTaxDocuments = ({ clientId }) => {
     const [filteredDocuments, setFilteredDocuments] = useState([]);
     const [clients, setClients] = useState([]);
     const [selectedClient, setSelectedClient] = useState('');
+    const navigate = useNavigate();
 
-    // Fetch documents from the server
     const fetchDocuments = async () => {
         setApiStatus(apiStatusConstants.inProgress);
         try {
@@ -66,7 +61,6 @@ const ClientTaxDocuments = ({ clientId }) => {
         }
     };
 
-    // Fetch clients from the server
     const fetchClients = async () => {
         setApiStatus(apiStatusConstants.inProgress);
         try {
@@ -107,7 +101,6 @@ const ClientTaxDocuments = ({ clientId }) => {
         }
     };
 
-    // Handle document status change
     const onChangeDocumentStatus = async (id, status) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -127,11 +120,7 @@ const ClientTaxDocuments = ({ clientId }) => {
         }
     };
 
-    // Navigation hook
-    const navigate = useNavigate();
-
     useEffect(() => {
-        // Redirect users based on role
         if (user) {
             if (user.role === 'STAFF') {
                 navigate('/staff/dashboard');
@@ -139,34 +128,34 @@ const ClientTaxDocuments = ({ clientId }) => {
                 navigate('/user/dashboard');
             }
         }
-        // Fetch documents and clients
         fetchDocuments();
         fetchClients();
     }, [navigate]);
 
-    // Handle download click
     const handleDownloadClick = async (document) => {
-        setApiStatus(apiStatusConstants.inProgress)
+
         try {
             const downloadUrl = `${domain.domain}/customer-tax-document/download/${document.document_id}`;
             const headers = { Authorization: `Bearer ${accessToken}` };
             const response = await fetch(downloadUrl, { headers });
             const blob = await response.blob();
 
-            const url = window.URL.createObjectURL(new Blob([blob]));
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
+
             link.href = url;
-            link.setAttribute('download', `${document.document_id}.pdf`);
+            link.download = `${document.document_id}.pdf`;
+
             document.body.appendChild(link);
             link.click();
-            link.parentNode.removeChild(link);
-            setApiStatus(apiStatusConstants.success)
+            document.body.removeChild(link);
+
         } catch (error) {
             console.error('Error downloading file:', error);
         }
     };
 
-    // Render document thumbnail based on file type
+
     const renderDocumentThumbnail = (document) => {
         const fileExtension = document.document_path.split('.').pop().toLowerCase();
         const fileTypeIcons = {
@@ -178,7 +167,6 @@ const ClientTaxDocuments = ({ clientId }) => {
             png: '🖼️',
         };
 
-        // Check if the file extension is in the supported types
         if (fileExtension in fileTypeIcons) {
             return (
                 <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
@@ -192,7 +180,6 @@ const ClientTaxDocuments = ({ clientId }) => {
         }
     };
 
-    // Handle client change for filtering documents
     const handleClientChange = async (e) => {
         setApiStatus(apiStatusConstants.inProgress)
         const id = e.target.value;
@@ -208,7 +195,7 @@ const ClientTaxDocuments = ({ clientId }) => {
                 setFilteredDocuments(documents);
             }
         } catch (error) {
-            console.error('Error fetching documents:', error);
+            setApiStatus(apiStatusConstants.failure)
         }
     };
 
@@ -245,10 +232,7 @@ const ClientTaxDocuments = ({ clientId }) => {
 
     return (
         <ClientDocumentContainer >
-            {/* <H1>Tax Documents</H1>
-            <Description >
-                Welcome to our Tax Interview service! Download the tax notes below, fill in the required information, and upload the necessary tax documents to get started on your tax return process.
-            </Description> */}
+            <H1>Tax Documents</H1>
             {documents.length > 0 ?
                 onRenderComponents()
                 : (

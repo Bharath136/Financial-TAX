@@ -1,6 +1,7 @@
 const client = require('../database/connection');
 const path = require('path');
 const fs = require('fs');
+const { sendDocumentNotification } = require('./email')
 
 // Create a new tax return document
 const createTaxReturnDocument = async (req, res, next) => {
@@ -59,6 +60,14 @@ const createTaxReturnDocument = async (req, res, next) => {
             document_name,
             document_type
         } = req.body;
+
+
+        const user = await client.query(`
+            SELECT * FROM user_logins WHERE user_id = $1
+        `, [customer_id])
+
+        const customer = user.rows[0]
+
         try {
             const updatedUserQuery = 'SELECT * FROM user_logins WHERE user_id = $1';
             const resultUser = await client.query(updatedUserQuery, [staff_id]);
@@ -83,11 +92,9 @@ const createTaxReturnDocument = async (req, res, next) => {
                     document_type,
                     review_status,
                     created_by,
-                    updated_by,
-                    created_on,
-                    updated_on
+                    updated_by
                 )
-                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 RETURNING taxreturn_id
             `;
 
@@ -105,10 +112,11 @@ const createTaxReturnDocument = async (req, res, next) => {
                 review_status,
                 updated_by,
                 updated_by,
-                new Date(),
-                new Date(),
             ];
             const result = await client.query(documentQuery, values);
+
+            sendDocumentNotification(customer.email_address, customer.first_name,document_name,'https://uniprofin.com/user/tax-return-review')
+            
             res.status(201).json({ message: 'Document created successfully.', taxreturn_id: result.rows[0].taxreturn_id });
         } catch (error) {
             console.error(error);

@@ -5,17 +5,18 @@ import Footer from '../Footer/footer';
 
 
 const ServicesSection = styled.section`
-  margin-top: 10vh;
-  background-color: #f9f9f9;
+  padding-top: 10vh;
+  background-color: var(--main-background);
   padding: 0;
+  min-height: 100vh;
 `;
 
 const ServicesContainer = styled.div`
   max-width: 1200px;
-  margin: 0 auto;
+  margin:80px auto;
   text-align: center;
   padding: 80px 20px;
-  min-height: 90vh;
+
   @media screen and (max-width:768px){
     padding:20px;
   }

@@ -1,7 +1,7 @@
 // NotFound.js
 
 import React from 'react';
-import notFoundImage from '../Assets/not-found-image.jpg';
+import notFoundImage from '../Assets/not-found-image.png';
 
 
 const NotFound = () => {

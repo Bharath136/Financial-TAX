@@ -7,6 +7,16 @@ const assignClientToStaff = async (req, res) => {
     const { staff_id, client_id } = req.body;
     const created_at = new Date().toISOString();
     try {
+        const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS staff_customer_assignments (
+            assignment_id SERIAL PRIMARY KEY,
+            staff_id INT REFERENCES user_logins(staff_id),
+            client_id INT REFERENCES user_logins(client_id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_by VARCHAR(255)
+        );
+        `;
+        await client.query(createTableQuery);
         const { rows } = await client.query('INSERT INTO staff_customer_assignments (staff_id, client_id, created_at) VALUES ($1, $2, $3) RETURNING *', [staff_id, client_id, created_at]);
         res.json(rows[0]);
     } catch (error) {

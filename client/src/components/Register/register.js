@@ -129,9 +129,10 @@ const Register = () => {
 
 
     const handleSubmit = async () => {
+        setApiStatus(apiStatusConstants.inProgress);
         try {
             const res = await axios.post(`${domain.domain}/user/register`, formData);
-            console.log(res);
+
 
             if (res.status === 201) {
                 showAlert({
@@ -178,8 +179,9 @@ const Register = () => {
             
             if (response) {
                 
-                setApiStatus(apiStatusConstants.success);
                 handleSubmit()
+                setApiStatus(apiStatusConstants.success);
+                
                 
                 
             } else {

@@ -3,7 +3,7 @@ import domain from '../../domain/domain'
 import axios from 'axios'
 import showAlert from '../../SweetAlert/sweetalert';
 import './contact.css'; 
-import Footer from '../Footer/footer';
+import Footer, { email, location, phone } from '../Footer/footer';
 
 const Contact = () => {
     const initialFormFields = [
@@ -51,7 +51,7 @@ const Contact = () => {
                                                 name={field.name}
                                                 placeholder={field.placeholder}
                                                 rows={5}
-                                                className="form-control mb-4 shadow"
+                                                className="form-control mb-4"
                                                 value={formData[field.name] || ''}
                                                 onChange={handleChange}
                                                 required
@@ -61,7 +61,7 @@ const Contact = () => {
                                                 type={field.type}
                                                 name={field.name}
                                                 placeholder={field.placeholder}
-                                                className="form-control mb-4 shadow"
+                                                className="form-control mb-4"
                                                 value={formData[field.name] || ''}
                                                 onChange={handleChange}
                                                 required
@@ -70,7 +70,7 @@ const Contact = () => {
                                     </div>
                                 ))}
                                 <div className='d-flex align-items-center justify-content-end'>
-                                    <button type="submit" className="btn text-center" style={{ backgroundColor: '#dad6ff', color:`var(--accent-background)`,fontWeight:'500', padding:'10px 30px'}}>SUBMIT</button>
+                                    <button type="submit" className="btn text-center" style={{ backgroundColor: `var(--main-background-shade)`, color:`var(--accent-background)`,fontWeight:'500', padding:'10px 30px'}}>SUBMIT</button>
                                 </div>
                             </form>
                         </div>
@@ -83,10 +83,10 @@ const Contact = () => {
                                     Our team is dedicated to providing top-notch customer support and addressing any inquiries or concerns you may have.
                                 </p>
                                 <p>
-                                    <span className='span-text'>Address:</span> 123 Main Street, City, Country
+                                    <span className='span-text'>Address:</span> {location}
                                 </p>
-                                <p><span className='span-text'>Phone:</span> +1 (123) 456-7890</p>
-                                <p><span className='span-text'>Email:</span> info@yourwebsite.com</p>
+                                <p><span className='span-text'>Phone:</span> {phone}</p>
+                                <p><span className='span-text'>Email:</span> {email}</p>
                             </div>
                         </div>
                     </div>

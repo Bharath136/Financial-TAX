@@ -9,7 +9,7 @@ import EditModal from '../../SweetPopup/sweetPopup';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 
 // Assets
-import noClient from '../../Assets/no-customers.jpg'
+import noClient from '../../Assets/no-customers.png'
 
 // Styled Components
 import {
@@ -21,6 +21,7 @@ import {
 import showAlert from '../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
 import ClientFilter from './clientFilter';
+import FailureComponent from '../../FailureComponent/failureComponent';
 
 
 // Constants for API status
@@ -40,6 +41,7 @@ const Clients = () => {
     const [profileId, setProfileId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFilter, setFilterType] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const token = localStorage.getItem('customerJwtToken');
 
@@ -50,7 +52,7 @@ const Clients = () => {
     const navigate = useNavigate();
 
     const fetchClients = async () => {
-        setApiStatus(apiStatusConstants.initial)
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             const response = await axios.get(`${domain.domain}/user`, {
                 headers: {
@@ -66,23 +68,23 @@ const Clients = () => {
                 setFilteredClients(filteredData)
             }
         } catch (error) {
-            console.error('Error fetching clients:', error);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
     useEffect(() => {
         // Redirect based on user role
-        if(user){
+        if (user) {
             if (user.role === 'STAFF') {
                 navigate('/staff/dashboard')
             } else if (user.role === 'CUSTOMER') {
                 navigate('/user/dashboard')
             }
-        }else{
+        } else {
             navigate('/')
         }
 
-        // Fetch assigned clients and all clients
         getAllAssignedClients();
         fetchClients();
     }, [token, navigate]);
@@ -115,21 +117,24 @@ const Clients = () => {
     // Fetch all assigned clients
     const getAllAssignedClients = async () => {
         setApiStatus(apiStatusConstants.inProgress)
-        try {
-            const assignedClientsResponse = await axios.get(`${domain.domain}/staff-customer-assignments`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (assignedClientsResponse.status === 200) {
-                setApiStatus(apiStatusConstants.success)
-                const assignedClients = assignedClientsResponse.data;
-                setAssignedClients(assignedClients);
-            }
+        setInterval(async () => {
+            try {
+                const assignedClientsResponse = await axios.get(`${domain.domain}/staff-customer-assignments`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (assignedClientsResponse.status === 200) {
+                    setApiStatus(apiStatusConstants.success)
+                    const assignedClients = assignedClientsResponse.data;
+                    setAssignedClients(assignedClients);
+                }
 
-        } catch (error) {
-            console.error('Error fetching assigned clients:', error);
-        }
+            } catch (error) {
+                setApiStatus(apiStatusConstants.failure)
+                setErrorMsg(error)
+            }
+        }, 500)
     };
 
     // Handle edit button click
@@ -160,7 +165,7 @@ const Clients = () => {
     // Handle staff deletion
     const onDeleteClient = async (id) => {
         const userConfirmed = window.confirm("Are you sure you want to delete?");
-        if (userConfirmed){
+        if (userConfirmed) {
             setApiStatus(apiStatusConstants.inProgress);
 
             try {
@@ -181,7 +186,7 @@ const Clients = () => {
                 });
                 fetchClients()
             } catch (error) {
-                console.error('Error Deleting Client:', error);
+                setErrorMsg(error)
                 setApiStatus(apiStatusConstants.failure);
 
                 // Show error alert
@@ -196,31 +201,55 @@ const Clients = () => {
     };
 
 
+    const renderSuccess = () => {
+        return (
+            <ClientListContainer>
+                <H1>Clients</H1>
+                {filteredClients.length > 0 ?
+                    <TableContainer className="shadow">
+                        <ClientFilter
+                            selectedFilter={selectedFilter}
+                            handleFilterChange={handleFilterChange}
+                            handleSearchChange={handleSearchChange}
+                            onSearch={onSearch}
+                            searchTerm={searchTerm}
+                        />
+                        <ClientTable
+                            clients={filteredClients}
+                            onDeleteClient={onDeleteClient}
+                            handleEditClick={handleEditClick}
+                            setProfileId={setProfileId}
+                        />
+                    </TableContainer>
+                    :
+                    <NoClientContainer>
+                        <img src={noClient} alt='img' className='img-fluid' />
+                        <H1>No Clients Registered</H1>
+                        <p>Oops! It seems there are no clients registered here.</p>
+                    </NoClientContainer>}
+
+                <EditModal
+                    isOpen={isEditModalOpen}
+                    profileId={profileId}
+                    onRequestClose={handleEditModalClose}
+                    handleOpenClick={handleEditClick}
+                    isEditable={true}
+                />
+            </ClientListContainer>
+        )
+    }
+
 
     // Render different components based on API status
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return <div>failure</div>
+                return <FailureComponent errorMsg={errorMsg} />;
             case apiStatusConstants.inProgress:
-                return <SweetLoading />
+                return <SweetLoading />;
             case apiStatusConstants.success:
-                return <TableContainer className="shadow">
-                    <ClientFilter
-                        selectedFilter={selectedFilter}
-                        handleFilterChange={handleFilterChange}
-                        handleSearchChange={handleSearchChange}
-                        onSearch={onSearch}
-                        searchTerm={searchTerm}
-                    />
-                    <ClientTable
-                        clients={filteredClients}
-                        onDeleteClient={onDeleteClient}
-                        handleEditClick={handleEditClick}
-                        setProfileId={setProfileId}
-                    />
+                return renderSuccess();
 
-                </TableContainer>
             default:
                 return null
         }
@@ -228,28 +257,7 @@ const Clients = () => {
 
     // Return JSX for the component
     return (
-        <>
-            <ClientListContainer>
-                <H1>Clients</H1>
-
-                {clients.length > 0 ? renderComponents() :
-                    <NoClientContainer>
-                        <img src={noClient} alt='img' className='img-fluid' />
-                        <H1>No Clients Registered</H1>
-                        <p>Oops! It seems there are no clients registered here.</p>
-                    </NoClientContainer>
-                }
-
-            </ClientListContainer>
-
-            <EditModal
-                isOpen={isEditModalOpen}
-                profileId={profileId}
-                onRequestClose={handleEditModalClose}
-                handleOpenClick={handleEditClick}
-                isEditable={true}
-            />
-        </>
+        renderComponents()
     );
 };
 

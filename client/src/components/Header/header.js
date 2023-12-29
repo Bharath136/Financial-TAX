@@ -6,7 +6,7 @@ import { IoReorderThreeSharp } from "react-icons/io5";
 import { useEffect, useState } from 'react';
 import AuthContext from '../../AuthContext/AuthContext';
 import EditModal from '../../SweetPopup/sweetPopup';
-import logo from '../../Assets/logo.png'
+import logo from '../../Assets/logo6.png'
 import './header.css';
 
 const Header = ({ setShowNav }) => {
@@ -63,7 +63,7 @@ const Header = ({ setShowNav }) => {
                             fixed="top"
                             className="navbar-container"
                             expand="lg"
-                            variant="light"
+                            variant="dark"
                           
                         >
                             <div className="container-fluid">
@@ -89,7 +89,6 @@ const Header = ({ setShowNav }) => {
                                     <div className="w-100 d-flex align-items-start justify-content-lg-end">
                                         <Nav className="ml-auto">
                                             <div className='d-flex align-items-center' onClick={() => handleEditClick(currentUser.user_id)} style={{ cursor: 'pointer' }}>
-                                                {/* <img src='https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small/default-avatar-profile-icon-of-social-media-user-vector.jpg' width={40} className='profile-image' alt='profile' /> */}
                                                 <div className='profile'  style={{backgroundColor:`${randomColor}` }}>
                                                     <label style={{ cursor: 'pointer' }}>{profile}</label>
                                                 </div>

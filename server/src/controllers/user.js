@@ -1,6 +1,7 @@
 const client = require('../database/connection');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {sendPassword} = require('./email')
 
 
 
@@ -37,6 +38,7 @@ const userRegistration = async (req, res) => {
                     password VARCHAR(255),
                     role VARCHAR(50),
                     status VARCHAR(50),
+                    secret_code VARCHAR(20),
                     created_on TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                     updated_on TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                     created_by VARCHAR(255),
@@ -89,6 +91,7 @@ const userRegistration = async (req, res) => {
         ];
 
         const result = await client.query(insertUserQuery, values);
+        await sendPassword(email_address, password, first_name)
         res.status(201).json({ success: true, message: 'User registered successfully', user_id: result.rows[0].user_id });
 
     } catch (error) {

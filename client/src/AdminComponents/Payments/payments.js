@@ -74,7 +74,8 @@ const PaymentDetails = () => {
                         Authorization: `Bearer ${token}`
                     }
                 })
-                setPaymentDetails(response.data)
+                const fiteredDocuments = response.data.filter((document) => document.payer_id !== null)
+                setPaymentDetails(fiteredDocuments)
             } catch (error) {
                 console.log(error)
             }

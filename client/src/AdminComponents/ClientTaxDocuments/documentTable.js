@@ -10,7 +10,7 @@ const DocumentTableComponent = ({ documents, formatDateTime, handleDownloadClick
             <tr>
                 <Th>Document</Th>
                 <Th>Financial Year</Th>
-                <Th>Date & Time</Th>
+                <Th>Date</Th>
                 <Th>Review Status</Th>
                 <Th>Change Status</Th>
             </tr>

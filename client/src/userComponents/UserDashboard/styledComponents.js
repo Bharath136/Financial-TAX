@@ -12,6 +12,7 @@ const CardsContainer = styled.div`
     display:flex;
     align-items:flex-start;
     flex-wrap:wrap;
+    padding:0;
 `
 const StepCard = styled.div`
     display: flex;
@@ -19,24 +20,29 @@ const StepCard = styled.div`
     justify-content:space-between;
     border: 1px solid var(--border);
     background-color: var(--background-white);
-    border-radius: 8px;
+    border-radius: 4px;
     margin: 10px;
     overflow: hidden;
     transition: box-shadow 0.3s;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     padding: 20px;
-    min-height:180px;
+    min-height:200px;
     flex:1;
+    
 
     &:hover {
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transform:scale(1.1);
+        transition:.3s ease-in;
     }
 `;
 
 const CardBody = styled.div`
     padding: 5px;
     flex:1;
+    display:flex;
+    flex-direction:column;
 `;
 
 const CardTitle = styled.h2`
@@ -57,7 +63,7 @@ const ArrowIcon = styled.div`
 
 const StepDetails = styled.div`
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     color: black;
 `;
@@ -68,7 +74,7 @@ const H1 = styled.h1`
 `
 
 const CurrentUser = styled.span`
-    color: var(--accent-background);
+    color: green;
 `
 
 const Shadow = styled.div`
@@ -76,7 +82,7 @@ const Shadow = styled.div`
 `
 
 const IntroText = styled.p`
-    font-size:18px;
+    font-size:16px;
     color:grey;
     @media screen and (max-width:768px){
         font-size:14px;

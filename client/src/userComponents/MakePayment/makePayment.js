@@ -86,8 +86,6 @@ const MakePayment = () => {
   const user = JSON.parse(localStorage.getItem('currentUser'));
   const token = localStorage.getItem('customerJwtToken');
   const [approvalUrl, setApprovalUrl] = useState('');
-  const [paymentId, setPaymentId] = useState('');
-  const [payerId, setPayerId] = useState('');
   const [selectedDoc, setSelectedDoc] = useState({});
   // const [amount, setAmount] = useState(selectedDoc?.payment_amount || '');
   const [loading, setLoading] = useState(false);
@@ -102,7 +100,6 @@ const MakePayment = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.documents)
       setSelectedDoc(response.data.documents[0]);
     } catch (error) {
       console.log(error);
@@ -112,49 +109,20 @@ const MakePayment = () => {
   const createPayment = async () => {
     try {
       setLoading(true);
-      console.log(selectedDoc)
       const response = await axios.post(`${domain.domain}/paypal/create-payment`, {
         user: user,
         amount: selectedDoc.payment_amount,
         document_id: selectedDoc.taxreturn_id
       });
 
-      const { approvalUrl, paymentId, payerId } = response.data;
+      const { approvalUrl } = response.data;
       setApprovalUrl(approvalUrl);
-      setPaymentId(paymentId);
-      setPayerId(payerId);
     } catch (error) {
-      console.error('Error creating payment:', error);
       setError('Failed to create payment. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  const executePayment = async () => {
-    try {
-      setLoading(true);
-
-      const response = await axios.get(`${domain.domain}/paypal/execute-payment`, {
-        params: {
-          paymentId: paymentId,
-          payerId: payerId,
-          userId: user.user_id,
-          paymentAmount: selectedDoc.payment_amount,
-          updatedBy: user.first_name,
-          taxReturnId: selectedDoc.taxreturn_id,
-        },
-      });
-
-      console.log('Payment executed successfully:', response.data.payment);
-    } catch (error) {
-      console.error('Error executing payment:', error);
-      setError('Failed to execute payment. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
 
   const navigate = useNavigate();
 
@@ -189,17 +157,14 @@ const MakePayment = () => {
         {approvalUrl ? (
           <>
             <p>Payment created successfully!</p>
-            <a href={approvalUrl} target="_blank" rel="noopener noreferrer">
-              Click here to approve the payment
-            </a>
-            <button onClick={executePayment} disabled={loading} className="w-100">
+            <button disabled={loading} className="w-100">
               {loading ? (
                 <div className="spinner-border text-primary" role="status">
                   <span className="sr-only"></span>
                 </div>
-              ) : (
-                'Execute Payment'
-              )}
+              ) : <a href={approvalUrl} target="_self" rel="noopener noreferrer">
+                Click here to approve the payment
+              </a>}
             </button>
           </>
         ) : (

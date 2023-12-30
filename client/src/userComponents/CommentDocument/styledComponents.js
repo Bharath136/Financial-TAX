@@ -168,6 +168,7 @@ export const Td = styled.td`
 export const EmptyDocumentContainer = styled.div`
     width:100%;
     min-height:60vh;
+    text-align:center;
     display:flex;
     flex-direction:column;
     align-items:center;

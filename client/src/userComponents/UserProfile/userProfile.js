@@ -8,14 +8,15 @@ import ResponseDisplay from '../Response/rensponse';
 import { H1 } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineClose, MdOutlineEdit } from 'react-icons/md';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [userData, setUserData] = useState({});
     const [editedData, setEditedData] = useState({});
     const [responseData, setCustomerResponse] = useState([]);
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    const token = localStorage.getItem('customerJwtToken');
+    const currentUser = getUserData();
+    const token = getToken();
 
     const handleEditClick = () => {
         setIsEditing(!isEditing);
@@ -60,8 +61,6 @@ const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
     }, []);
 
     const handleApplyClick = async () => {
-        const token = localStorage.getItem('customerJwtToken');
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         try {
             const newData = { ...editedData, updated_by: currentUser.first_name };
             const response = await axios.put(
@@ -83,7 +82,8 @@ const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
                     confirmButtonText: 'OK',
                 });
                 const user = JSON.stringify(response.data.user)
-                localStorage.setItem('currentUser', user.user_id === currentUser.user_id ? user : JSON.stringify(currentUser));
+                localStorage.setItem('currentUser', user.user_id === currentUser.user_id ? user : currentUser);
+                setUserData()
                 isOpen();
             }
         } catch (error) {
@@ -237,7 +237,7 @@ const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
                     </div>
                 )}
             </div>
-            {responseData.length > 0 && user.role !== 'CUSTOMER' && 
+            {responseData.length > 0 && currentUser.role !== 'CUSTOMER' && 
                             <ul className='p-0 m-0 w-100 p-3' style={{listStyleType:'none', backgroundColor:`var(--main-background)`}}>
                                 <H1>Customer Response</H1>
                                 {responseData.map((response) => (
@@ -245,7 +245,7 @@ const UserProfile = ({ isOpen, profileId, isEditable, isCustomer }) => {
                                 ))}
                             </ul>
             }
-            {userData && user.role !== 'CUSTOMER' && profileId !== user.user_id && <ClientTaxDocuments clientId={profileId} />}
+            {userData && currentUser.role !== 'CUSTOMER' && profileId !== currentUser.user_id && <ClientTaxDocuments clientId={profileId} />}
         </div>
     );
 };

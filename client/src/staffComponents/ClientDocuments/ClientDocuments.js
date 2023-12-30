@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { ClientTaxDocumentsHeaderContainer, ClientsHeaderContainer, Select } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
 import formatDateTime from '../../FormatDateTime/DateTime';
 import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -23,8 +24,9 @@ const apiStatusConstants = {
 };
 
 const ClientDocuments = () => {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    const accessToken = localStorage.getItem('customerJwtToken');
+    const user = getUserData();
+    const accessToken = getToken();
+    
     const [documents, setDocuments] = useState([]);
     const [comments, setComments] = useState([]);
     const [showComments, setShowComments] = useState(false);
@@ -59,7 +61,7 @@ const ClientDocuments = () => {
     // Fetch clients from the server
     const fetchClients = async () => {
         setApiStatus(apiStatusConstants.inProgress)
-        try{
+        try {
             const response = await axios.get(`${domain.domain}/user`, {
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
@@ -71,7 +73,7 @@ const ClientDocuments = () => {
                 setClients(filteredClients);
                 setApiStatus(apiStatusConstants.success)
             }
-        }catch(error){
+        } catch (error) {
             setApiStatus(apiStatusConstants.failure)
             setErrorMsg(error)
         }
@@ -110,7 +112,7 @@ const ClientDocuments = () => {
                 navigate('/user/dashboard')
             }
         }
-        if(accessToken){
+        if (accessToken) {
             fetchDocuments();
             fetchClients();
         }
@@ -167,9 +169,8 @@ const ClientDocuments = () => {
     const handleGetComments = async (document) => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
-            const token = localStorage.getItem('customerJwtToken');
             const response = await axios.get(`${domain.domain}/customer-tax-comment/get-comments/${document.document_id}`, {
-                headers: { 'Authorization': `Bearer ${token}` },
+                headers: { 'Authorization': `Bearer ${accessToken}` },
             });
             if (response.status === 200) {
                 setComments(response.data);
@@ -196,8 +197,8 @@ const ClientDocuments = () => {
             handleGetComments(selectedDocument);
             showAlert({ title: 'Comment Deleted Successfully!', icon: 'success', confirmButtonText: 'Ok' });
         } catch (error) {
-            setApiStatus(apiStatusConstants.failure)
-            setErrorMsg(error)
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error || 'An unexpected error occurred. Please try again later.');
         }
     };
 
@@ -220,7 +221,7 @@ const ClientDocuments = () => {
             }
         } catch (error) {
             setApiStatus(apiStatusConstants.failure);
-            setErrorMsg(error)
+            setErrorMsg(error || 'An unexpected error occurred. Please try again later.');
         }
     };
 
@@ -241,12 +242,12 @@ const ClientDocuments = () => {
             }
         } catch (error) {
             setApiStatus(apiStatusConstants.failure);
-            setErrorMsg(error)
+            setErrorMsg(error || 'An unexpected error occurred. Please try again later.');
         }
     };
 
     const renderSuccess = () => {
-        return(
+        return (
             <ClientDocumentContainer >
                 <H1>Tax Documents</H1>
                 <Description >
@@ -429,7 +430,7 @@ const ClientDocuments = () => {
             case apiStatusConstants.failure:
                 return <FailureComponent errorMsg={errorMsg} />
             case apiStatusConstants.success:
-                return renderSuccess();                
+                return renderSuccess();
             case apiStatusConstants.inProgress:
                 return <SweetLoading />
             default:
@@ -437,7 +438,7 @@ const ClientDocuments = () => {
         }
     }
     return (
-        renderComponents() 
+        renderComponents()
     );
 };
 

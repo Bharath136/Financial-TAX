@@ -10,6 +10,7 @@ import SweetLoading from '../../SweetLoading/SweetLoading';
 import pdfIcon from '../../Assets/PDF_file_icon.svg.png';
 import docIcon from '../../Assets/doc.png';
 import docxIcon from '../../Assets/docx.png';
+import { documentType } from '../../CommonData/commonData';
 
 import {
     TaxInterviewContainer,
@@ -32,6 +33,8 @@ import {
     Label,
     Select
 } from './styledComponents';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
+import { handleDownloadClick } from '../../CommonFunctions/commonFunctions';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -46,8 +49,8 @@ const UploadDocument = () => {
     const [errorMsg, setErrorMsg] = useState(null);
     const [documents, setDocuments] = useState([]);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    const accessToken = localStorage.getItem('customerJwtToken');
+    const user = getUserData();
+    const accessToken = getToken();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -63,23 +66,21 @@ const UploadDocument = () => {
 
     const fetchDocuments = async () => {
         setApiStatus(apiStatusConstants.inProgress);
-        setInterval(async () => {
-            try {
-                const response = await axios.get(`${domain.domain}/customer-tax-document`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                    }
-                });
-                if (response.status === 200) {
-                    const filteredData = response.data.documents.filter(document => document.customer_id === user.user_id);
-                    setDocuments(filteredData);
-                    setApiStatus(apiStatusConstants.success);
+        try {
+            const response = await axios.get(`${domain.domain}/customer-tax-document`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
                 }
-            } catch (error) {
-                setApiStatus(apiStatusConstants.failure);
-                setErrorMsg(error)
+            });
+            if (response.status === 200) {
+                const filteredData = response.data.documents.filter(document => document.customer_id === user.user_id);
+                setDocuments(filteredData);
+                setApiStatus(apiStatusConstants.success);
             }
-        },500)
+        } catch (error) {
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error)
+        }
     };
 
     const handleChange = (e) => {
@@ -142,39 +143,14 @@ const UploadDocument = () => {
         }
     };
 
-    const documentTypes = [
-        { value: 'Personal Tax Notes', label: 'Personal Tax Notes' },
-        // ... (other document types)
-    ];
-
     const initialFormFields = [
         { label: 'Document Name', name: 'document_name', type: 'text', placeholder: 'Enter Document Name' },
-        { label: 'Document Type', name: 'document_type', type: 'select', options: documentTypes, placeholder: 'Document Type' },
+        { label: 'Document Type', name: 'document_type', type: 'select', options: documentType, placeholder: 'Document Type' },
         { label: 'Year', name: 'financial_year', type: 'number', placeholder: 'Ex:- 2023' },
         // ... (other form fields)
     ];
 
-    const handleDownloadClick = async (document) => {
-        try {
-            const downloadUrl = `${domain.domain}/customer-tax-document/download/${document.document_id}`;
-            const headers = {
-                Authorization: `Bearer ${accessToken}`,
-            };
-            const response = await fetch(downloadUrl, { headers });
-            const blob = await response.blob();
-
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `${document.document_id}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
-        } catch (error) {
-            console.log(error)
-        }
-    };
-
+    
     const renderDocumentThumbnail = (document) => {
         const fileExtension = document.document_path.split('.').pop().toLowerCase();
         const fileTypeIcons = {
@@ -194,7 +170,7 @@ const UploadDocument = () => {
     };
 
     const renderSuccess = () => {
-        return(
+        return (
             <TaxInterviewContainer onDragOver={handleDragOver} onDrop={handleDrop}>
                 <BreadCrumb />
                 <H1>Upload Tax Document</H1>
@@ -314,9 +290,9 @@ const UploadDocument = () => {
     };
 
     return (
-        
-            renderComponents()
-           
+
+        renderComponents()
+
     );
 }
 

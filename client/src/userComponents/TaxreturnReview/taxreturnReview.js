@@ -6,9 +6,7 @@ import BreadCrumb from '../../breadCrumb/breadCrumb';
 import domain from '../../domain/domain';
 import { message } from '../../components/Footer/footer';
 
-import pdfIcon from '../../Assets/PDF_file_icon.svg.png';
-import docIcon from '../../Assets/doc.png';
-import docxIcon from '../../Assets/docx.png';
+
 import noDocIcon from '../../Assets/no-documents.png';
 
 import {
@@ -31,6 +29,8 @@ import {
 import formatDateTime from '../../FormatDateTime/DateTime';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
+import { handleDownloadClick, renderDocumentThumbnail } from '../../CommonFunctions/commonFunctions';
 
 
 const apiStatusConstants = {
@@ -47,20 +47,21 @@ const TaxreturnReview = () => {
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
     const navigate = useNavigate();
 
+    const token = getToken();
+    const user = getUserData();
+
     const fetchDocuments = async () => {
         setApiStatus(apiStatusConstants.inProgress);
         setInterval(async () => {
             try {
-                const accessToken = localStorage.getItem('customerJwtToken');
-                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
                 const response = await axios.get(`${domain.domain}/tax-return-document`, {
                     headers: {
-                        'Authorization': `Bearer ${accessToken}`,
+                        'Authorization': `Bearer ${token}`,
                     },
                 });
 
                 if (response.status === 200) {
-                    const filteredData = response.data.documents.filter(document => document.customer_id === currentUser.user_id);
+                    const filteredData = response.data.documents.filter(document => document.customer_id === user.user_id);
                     setDocuments(filteredData);
                     setApiStatus(apiStatusConstants.success);
                 }
@@ -72,7 +73,6 @@ const TaxreturnReview = () => {
     };
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
         if (user) {
             if (user.role === 'ADMIN') {
                 navigate('/admin/dashboard');
@@ -83,48 +83,7 @@ const TaxreturnReview = () => {
         fetchDocuments();
     }, []);
 
-    const handleDownloadClick = async (document) => {
-        setApiStatus(apiStatusConstants.inProgress);
-        try {
-            const accessToken = localStorage.getItem('customerJwtToken');
-            const downloadUrl = `${domain.domain}/tax-return-document/download/${document.taxreturn_id}`;
-            const headers = {
-                Authorization: `Bearer ${accessToken}`,
-            };
-            const response = await fetch(downloadUrl, { headers });
-            const blob = await response.blob();
 
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `${document.taxreturn_id}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
-            setApiStatus(apiStatusConstants.success);
-        } catch (error) {
-            setApiStatus(apiStatusConstants.failure);
-            setErrorMsg(error)
-        }
-    };
-
-    const renderDocumentThumbnail = (document) => {
-        const fileExtension = document.document_path.split('.').pop().toLowerCase();
-        const fileTypeIcons = {
-            pdf: <img src={pdfIcon} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
-            doc: <img src={docIcon} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
-            docx: <img src={docxIcon} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
-            jpg: '🖼️',
-            jpeg: '🖼️',
-            png: '🖼️',
-        };
-
-        return fileExtension in fileTypeIcons ? (
-            <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>
-        ) : (
-            <span>📁</span>
-        );
-    };
 
     const EmptyDocumentsState = () => (
         <EmptyDocumentContainer>

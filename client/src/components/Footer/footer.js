@@ -53,7 +53,7 @@ export const message = <MessageContainer className='shadow'>
     <Message> <strong className='text-start'>Note: </strong>
         Please feel free to contact us at{' '}
         <ContactLink href=''>{phone}</ContactLink> for any further assistance or
-        send the documents to <ContactLink href={`mailto:${support}`}>{support}</ContactLink>.
+        send the documents or mail to <ContactLink href={`mailto:${support}`}>{support}</ContactLink>.
     </Message>
 </MessageContainer>
 

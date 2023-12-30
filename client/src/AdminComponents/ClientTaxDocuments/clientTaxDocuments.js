@@ -23,6 +23,7 @@ import DocumentTableComponent from './documentTable';
 import ClientTaxDocumentHeader from './documentHeader';
 import formatDateTime from '../../FormatDateTime/DateTime';
 import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 
 const apiStatusConstants = {
@@ -33,8 +34,8 @@ const apiStatusConstants = {
 };
 
 const ClientTaxDocuments = ({ clientId }) => {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    const accessToken = localStorage.getItem('customerJwtToken');
+    const user = getUserData();
+    const accessToken = getToken();
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
     const [documents, setDocuments] = useState([]);
     const [filteredDocuments, setFilteredDocuments] = useState([]);
@@ -67,7 +68,7 @@ const ClientTaxDocuments = ({ clientId }) => {
     const fetchClients = async () => {
         setApiStatus(apiStatusConstants.inProgress);
         try {
-            const response = await axios.get(`${domain.domain}/user`, {
+            const response = await axios.get(`${domain.domain}/user`,{
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
 
@@ -77,8 +78,6 @@ const ClientTaxDocuments = ({ clientId }) => {
                 });
                 setClients(filteredClients);
                 setApiStatus(apiStatusConstants.success);
-            } else {
-                setApiStatus(apiStatusConstants.failure);
             }
         } catch (error) {
             setErrorMsg(error)
@@ -185,7 +184,6 @@ const ClientTaxDocuments = ({ clientId }) => {
     };
 
     const onDeleteDocument = async (id) => {
-        console.log(id)
         setApiStatus(apiStatusConstants.inProgress)
         try{
             const response = await axios.delete(`${domain.domain}/customer-tax-document/${id}`, {

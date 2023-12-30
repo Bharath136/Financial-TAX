@@ -59,11 +59,32 @@ code {
 
 } */
 
-
+/* 
 :root {
   --background-white: #ffffff;
   --main-background: #eaebf1;
   --main-background-shade: #bdc2e0;
+  --accent-background: #042e69;
+  --page-background: #3498db;
+
+  --main-text: #333333;
+  --text-subtle: #5c5c5c;
+  --heading: #0f1238;
+  --headings: #042e69;
+
+  --button-text: aliceblue;
+  --main-link-text: #042e69;
+
+  --border: #c0c9d2;
+  --background-hover: #c0c9d2;
+  --button-hover: #042e69;
+} */
+
+
+:root {
+  --background-white: #ffffff;
+  --main-background: #eaebf1;
+  --main-background-shade: #c3caea;
   --accent-background: #042e69;
   --page-background: #3498db;
 

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import domain from '../../domain/domain';
 import axios from 'axios';
 import showAlert from '../../SweetAlert/sweetalert';
-import { AddStaffButton, AddStaffCard, AddStaffContainer, AddStaffHeader, ButtonContainer, FormLabel, MarginBottom2 } from './styledComponents.js';
+import { AddStaffButton, AddStaffCard, AddStaffContainer, ButtonContainer, FormLabel, MarginBottom2 } from './styledComponents.js';
 import { useNavigate } from 'react-router-dom';
 import { H1 } from '../Staff/styledComponents.js';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism.js';
 
 const AddStaff = () => {
     const initialFormFields = [
@@ -17,7 +18,8 @@ const AddStaff = () => {
     ];
 
     const [formData, setFormData] = useState({});
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+    const currentUser = getUserData();
+    const token = getToken();
 
     const navigate = useNavigate();
 
@@ -37,13 +39,12 @@ const AddStaff = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'))
 
         const newFormData = { ...formData, created_by: currentUser.first_name }
         try {
             await axios.post(`${domain.domain}/user/add-staff`, newFormData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('customerJwtToken')}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
             showAlert({

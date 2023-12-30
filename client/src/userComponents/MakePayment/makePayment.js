@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import domain from '../../domain/domain';
 import PayPalLogo from '../../Assets/PayPal.svg.png';
+import { message } from '../../components/Footer/footer';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 const PaymentSectionContainer = styled.div`
   display: flex;
@@ -83,8 +85,8 @@ const PaymentForm = styled.div`
 `;
 
 const MakePayment = () => {
-  const user = JSON.parse(localStorage.getItem('currentUser'));
-  const token = localStorage.getItem('customerJwtToken');
+  const user = getUserData()
+  const token = getToken()
   const [approvalUrl, setApprovalUrl] = useState('');
   const [selectedDoc, setSelectedDoc] = useState({});
   // const [amount, setAmount] = useState(selectedDoc?.payment_amount || '');
@@ -137,10 +139,6 @@ const MakePayment = () => {
     }
   }, [navigate]);
 
-  // const onChangeAmount = (event) => {
-  //   setAmount(event.target.value);
-  // };
-
   return (
     <PaymentSectionContainer>
       <PaymentForm>
@@ -180,6 +178,7 @@ const MakePayment = () => {
         )}
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </PaymentForm>
+      {/* {message} */}
     </PaymentSectionContainer>
   );
 };

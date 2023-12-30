@@ -27,6 +27,7 @@ import noDoc from '../../Assets/no-documents.png';
 import pdf from '../../Assets/PDF_file_icon.svg.png';
 import { EmptyDocumentContainer } from '../CommentDocument/styledComponents';
 import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 
 const apiStatusConstants = {
@@ -41,8 +42,8 @@ const TaxInterview = () => {
     const [errorMsg, setErrorMsg] = useState('');
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
     const [showFooter, setShowFooter] = useState(false)
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    const accessToken = localStorage.getItem('customerJwtToken');
+    const user = getUserData()
+    const accessToken = getToken()
 
     const navigate = useNavigate()
 
@@ -58,24 +59,27 @@ const TaxInterview = () => {
     }, [navigate]);
 
     const fetchDocuments = async () => {
-        setApiStatus(apiStatusConstants.inProgress)
+        setApiStatus(apiStatusConstants.inProgress);
+
         try {
             const response = await axios.get(`${domain.domain}/customer-tax-document`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 }
             });
+
             if (response.status === 200) {
                 const filteredData = response.data.documents.filter(document => document.customer_id === user.user_id);
                 setDocuments(filteredData);
-                setApiStatus(apiStatusConstants.success)
-                setShowFooter(true)
+                setApiStatus(apiStatusConstants.success);
+                setShowFooter(true);
             }
         } catch (error) {
-            setApiStatus(apiStatusConstants.failure)
-            setErrorMsg(error)
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error || 'An unexpected error occurred. Please try again later.');
         }
     };
+
 
     const handleDownloadClick = async (document) => {
         try {
@@ -133,7 +137,7 @@ const TaxInterview = () => {
                             <thead>
                                 <tr>
                                     <Th>Document</Th>
-                                    <Th>Date & Time</Th>
+                                    <Th>Date</Th>
                                     <Th>Review Status</Th>
                                 </tr>
                             </thead>

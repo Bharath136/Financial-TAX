@@ -7,13 +7,12 @@ import Footer from '../Footer/footer';
 const ServicesSection = styled.section`
   padding-top: 10vh;
   background-color: var(--main-background);
-  padding: 0;
   min-height: 100vh;
 `;
 
 const ServicesContainer = styled.div`
   max-width: 1200px;
-  margin:80px auto;
+  margin:0 auto;
   text-align: center;
   padding: 80px 20px;
 
@@ -63,6 +62,14 @@ const ServiceCard = styled.li`
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: left;
+
+  @media screen and (max-width:879px){
+        width:45%;
+  }
+
+  @media screen and (max-width:768px){
+        width:100%;
+  }
 
   &:hover {
     transform: scale(1.04);

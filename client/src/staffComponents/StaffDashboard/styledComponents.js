@@ -7,6 +7,7 @@ export const MainContainer = styled.div`
     overflow-y: auto;
     background-color: var(--main-background);
     width: 100%;
+
 `
 
 export const CurrentUser = styled.span`
@@ -23,7 +24,6 @@ export const DashboardContainer = styled.ul`
 `;
 
 export const SectionCard = styled.div`
-  flex: 0 0 calc(100% - 20px);
   border:1px solid var(--border);
   margin-bottom: 20px;
   background-color: #fff;

@@ -22,6 +22,7 @@ import showAlert from '../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
 import ClientFilter from './clientFilter';
 import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 
 // Constants for API status
@@ -43,10 +44,8 @@ const Clients = () => {
     const [selectedFilter, setFilterType] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
-    const token = localStorage.getItem('customerJwtToken');
-
-    // User details
-    const user = JSON.parse(localStorage.getItem('currentUser'))
+    const token = getToken();
+    const user = getUserData();
 
     // Navigation hook
     const navigate = useNavigate();

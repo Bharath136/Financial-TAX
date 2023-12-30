@@ -6,18 +6,20 @@ import { IoReorderThreeSharp } from "react-icons/io5";
 import { useEffect, useState } from 'react';
 import AuthContext from '../../AuthContext/AuthContext';
 import EditModal from '../../SweetPopup/sweetPopup';
-import logo from '../../Assets/logo6.png'
+import logo from '../../Assets/logo7.png'
 import './header.css';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 const Header = ({ setShowNav }) => {
-    const token = localStorage.getItem('customerJwtToken');
+    
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(null)
     const [activeUser, setActiveUser] = useState('')
     const [profile, setProfile] = useState('');
     const [randomColor, setRandomColor] = useState('#03A9F4')
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const currentUser = getUserData()
 
+    const token = getToken()
     const profileBg = localStorage.getItem('profileBg')
 
     useEffect(() => {
@@ -61,7 +63,7 @@ const Header = ({ setShowNav }) => {
                     <div>
                         <Navbar
                             fixed="top"
-                            className="navbar-container"
+                            className={token ? 'navbar-container-login' : 'navbar-container'}
                             expand="lg"
                             variant="dark"
                           
@@ -78,10 +80,10 @@ const Header = ({ setShowNav }) => {
                                         <div className='profile'  style={{ backgroundColor: `${randomColor}`  }}>
                                             <label style={{ cursor: 'pointer' }}>{profile}</label>
                                         </div>
-                                        <label style={{ cursor: 'pointer' }}><strong>{activeUser}</strong></label>
+                                            <label style={{ cursor: 'pointer' }} className='profile-name'><strong>{activeUser}</strong></label>
                                     </div>
                                 <button className='d-block d-md-none three-dots align-items-center' style={{marginLeft:'10px'}} title='Close' onClick={toggleSidebar}>
-                                            <IoReorderThreeSharp size={24} />
+                                            <IoReorderThreeSharp size={28} />
                                 </button>
                                 </div>}
                                 {token && <Navbar.Toggle aria-controls="navbarSupportedContent" id="navbar-toggle" className='d-none d-md-block d-lg-none' />}
@@ -92,8 +94,11 @@ const Header = ({ setShowNav }) => {
                                                 <div className='profile'  style={{backgroundColor:`${randomColor}` }}>
                                                     <label style={{ cursor: 'pointer' }}>{profile}</label>
                                                 </div>
-                                                <label style={{ cursor: 'pointer' }}><strong>{activeUser}</strong></label>
+                                                <label style={{ cursor: 'pointer' }} className='profile-name'><strong>{activeUser}</strong></label>
                                             </div>
+                                            <button className='d-none d-lg-block three-dots align-items-center' style={{ marginLeft: '10px' }} title='Close' onClick={toggleSidebar}>
+                                                <IoReorderThreeSharp size={28} />
+                                            </button>
                                         </Nav>
                                     </div>
                                 </Navbar.Collapse>}

@@ -8,6 +8,8 @@ import { Description } from '../../AdminComponents/ClientTaxDocuments/styledComp
 import FailureComponent from '../../FailureComponent/failureComponent';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import { H1 } from '../CommentDocument/styledComponents';
+import { message } from '../../components/Footer/footer';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 const TableWrapper = styled.div`
   padding:20px;
@@ -50,6 +52,7 @@ const NoPaymentsContainer = styled.div`
     flex-direction:column;
     justify-content:center;
     align-items:center;
+    text-align:center;
 `
 
 const apiStatusConstants = {
@@ -60,15 +63,15 @@ const apiStatusConstants = {
 };
 
 const MyPaymentDetails = () => {
-    const token = localStorage.getItem('customerJwtToken');
+    
     const [paymentDetails, setPaymentDetails] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
-    const user = JSON.parse(localStorage.getItem('currentUser'))
+    const user = getUserData();
+    const token = getToken();
 
     const navigate = useNavigate()
-
 
     useEffect(() => {
         if (user) {
@@ -132,6 +135,7 @@ const MyPaymentDetails = () => {
                     <H1>No Payments</H1>
                     <Description>No payment details are available at the moment.</Description>
                 </NoPaymentsContainer>}
+                {message}
             </TableWrapper>
         )
     }

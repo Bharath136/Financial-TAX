@@ -35,6 +35,7 @@ import PaymentDetails from './AdminComponents/Payments/payments';
 import MyPaymentDetails from './userComponents/MyPayments/myPayments';
 import AddCustomer from './AdminComponents/AddCustomer/addCustomer';
 import ExcelUploader from './AdminComponents/ExcelUploader/excelUploader';
+import { getToken, removeToken, removeUserData } from './StorageMechanism/storageMechanism';
 
 function App() {
   const [currentToken, setCurrentToken] = useState('');
@@ -42,7 +43,7 @@ function App() {
   const [showNav, setShowNav] = useState(true);
 
   useEffect(() => {
-    const userToken = localStorage.getItem('customerJwtToken');
+    const userToken = getToken()
     setCurrentToken(userToken);
   }, [currentToken]);
 
@@ -55,8 +56,8 @@ function App() {
     };
     setShowNav(true);
     showAlert(popup);
-    localStorage.removeItem('customerJwtToken');
-    localStorage.removeItem('currentUser');
+    removeToken()
+    removeUserData()
     setCurrentToken('');
   };
 
@@ -99,7 +100,7 @@ function App() {
 
 
   const onLogin = () => {
-    const userToken = localStorage.getItem('customerJwtToken');
+    const userToken = getToken();
     setCurrentToken(userToken);
   };
 
@@ -131,13 +132,9 @@ function App() {
 }
 
 function UserSection() {
-  // const navigate = useNavigate();
-
-  // const isRouteMatch = !!navigate()?.routes?.find(route => route.matched);
 
   return (
     <div className='d-flex'>
-      {/* {isRouteMatch && <Sidebar />} */}
       <Sidebar />
       <Routes>
         <Route path="dashboard" element={<ProtectedRoute Component={UserDashboard} />} />

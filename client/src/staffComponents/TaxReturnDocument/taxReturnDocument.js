@@ -11,6 +11,8 @@ import doc from '../../Assets/doc.png';
 import docx from '../../Assets/docx.png'
 import { useNavigate } from 'react-router-dom';
 import formatDateTime from '../../FormatDateTime/DateTime';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
+import { documentType } from '../../CommonData/commonData';
 
 const TaxReturnDocument = () => {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -19,8 +21,8 @@ const TaxReturnDocument = () => {
     const [myClients, setMyClients] = useState([]);
     const [selectedClient, setSelectedClient] = useState({});
     const [documents, setDocuments] = useState([]);
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const accessToken = localStorage.getItem('customerJwtToken');
+    const currentUser = getUserData();
+    const accessToken = getToken();
 
     const navigate = useNavigate();
 
@@ -132,35 +134,10 @@ const TaxReturnDocument = () => {
         }
     };
 
-    const documentTypes = [
-        { value: 'Personal Tax Notes', label: 'Personal Tax Notes' },
-        { value: 'Business Tax Notes', label: 'Business Tax Notes' },
-        { value: 'Rental Income Tax Notes', label: 'Rental Income Tax Notes' },
-        { value: 'SSN Card', label: 'SSN Card' },
-        { value: 'ITIN document', label: 'ITIN document' },
-        { value: 'Wages W-2, W-2C, Paystubs', label: 'Wages W-2, W-2C, Paystubs' },
-        { value: 'Interest income-1099 INT Dividends - 1099 DIV', label: 'Interest income-1099 INT Dividends - 1099 DIV' },
-        { value: 'Taxable refunds - 1099 G', label: 'Taxable refunds - 1099 G' },
-        { value: 'Charity receipts', label: 'Charity receipts' },
-        { value: 'Health care document -1095 A', label: 'Health care document -1095 A' },
-        { value: 'Stocks/Capital gains 1099 B', label: 'Stocks/Capital gains 1099 B' },
-        { value: 'IRA contributions', label: 'IRA contributions' },
-        { value: 'Contract worker -1099 MISC', label: 'Contract worker -1099 MISC' },
-        { value: 'Gambling income W-2G', label: 'Gambling income W-2G' },
-        { value: 'HAS 1098 HAS', label: 'HAS 1098 HAS' },
-        { value: 'Tuition fee 1098 T Student loan Interest 1098 E', label: 'Tuition fee 1098 T Student loan Interest 1098 E' },
-        { value: 'Form 1099 K', label: 'Form 1099 K' },
-        { value: 'Home mortgage Interest 1098 HMI', label: 'Home mortgage Interest 1098 HMI' },
-        { value: 'Social Security benefits 1099 SA', label: 'Social Security benefits 1099 SA' },
-        { value: 'Electric vehicle', label: 'Electric vehicle' },
-        { value: 'Solar products', label: 'Solar products' },
-        { value: 'Medical receipts', label: 'Medical receipts' },
-        { value: 'Other Documents', label: 'Other Documents' },
-    ];
 
     const initialFormFields = [
         { label: 'Document Name', name: 'document_name', type: 'text', placeholder: 'Enter Document Name' },
-        { label: 'Document Type', name: 'document_type', type: 'select', options: documentTypes, placeholder: 'Document Type' },
+        { label: 'Document Type', name: 'document_type', type: 'select', options: documentType, placeholder: 'Document Type' },
         { label: 'Select Client', name: 'client', type: 'select', options: myClients, placeholder: 'Select a Client' },
         { label: 'Year', name: 'financial_year', type: 'number', placeholder: 'Ex:- 2023' },
         { label: 'Payment Amount', name: 'payment_amount', type: 'number', placeholder: 'Ex:- $120' }

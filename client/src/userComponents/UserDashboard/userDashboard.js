@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaUser, FaFileUpload, FaComment, FaClipboardCheck, FaMoneyBillAlt } from "react-icons/fa";
+import { setToken, getToken, setUserData, getUserData } from '../../StorageMechanism/storageMechanism';
 
 import { FaAnglesRight } from "react-icons/fa6";
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,7 +19,7 @@ const apiStatusConstants = {
 const UserDashboard = () => {
     const [currentUser, setCurrentUser] = useState('');
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
-    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const user = getUserData()
 
     const navigate = useNavigate()
 

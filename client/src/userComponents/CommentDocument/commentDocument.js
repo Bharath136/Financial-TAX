@@ -43,6 +43,8 @@ import {
 } from './styledComponents';
 
 import formatDateTime from '../../FormatDateTime/DateTime';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
+import { handleDownloadClick, renderDocumentThumbnail } from '../../CommonFunctions/commonFunctions';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -61,8 +63,9 @@ const CommentDocument = () => {
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
     const [errorMsg, setErrorMsg] = useState(null);
 
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    const accessToken = localStorage.getItem('customerJwtToken');
+    const user = getUserData();
+    const token = getToken();
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -79,7 +82,7 @@ const CommentDocument = () => {
             setInterval(async () => {
                 try {
                     const response = await axios.get(`${domain.domain}/customer-tax-document`, {
-                        headers: { Authorization: `Bearer ${accessToken}` },
+                        headers: { Authorization: `Bearer ${token}` },
                     });
 
                     const filteredData = response.data.documents.filter((doc) => doc.customer_id === user.user_id);
@@ -98,7 +101,7 @@ const CommentDocument = () => {
         };
 
         fetchData();
-    }, [accessToken]);
+    }, [token]);
 
     const handleToggleCommentInput = (document) => {
         setShowCommentInput(!showCommentInput);
@@ -113,7 +116,6 @@ const CommentDocument = () => {
 
         try {
             setApiStatus(apiStatusConstants.inProgress);
-            const token = localStorage.getItem('customerJwtToken');
             const newComment = {
                 customer_id: user.user_id,
                 staff_id: selectedDocument.assigned_staff,
@@ -130,7 +132,8 @@ const CommentDocument = () => {
             setApiStatus(apiStatusConstants.success);
             showAlert({ title: 'Comment Submitted Successfully!', icon: 'success', confirmButtonText: 'Ok' });
         } catch (error) {
-            console.error('Error submitting comment:', error);
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error)
         }
 
         setShowCommentInput(false);
@@ -139,7 +142,6 @@ const CommentDocument = () => {
     const handleGetComments = async (document) => {
         setApiStatus(apiStatusConstants.inProgress);
         try {
-            const token = localStorage.getItem('customerJwtToken');
             const response = await axios.get(`${domain.domain}/customer-tax-comment/get-comments/${document.document_id}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -154,15 +156,14 @@ const CommentDocument = () => {
                 setApiStatus(apiStatusConstants.failure);
             }
         } catch (error) {
-            console.error('Error getting comments:', error);
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error)
         }
     };
 
     const onDeleteDocumentComment = async (id) => {
         setApiStatus(apiStatusConstants.inProgress);
         try {
-            const token = localStorage.getItem('customerJwtToken');
-
             await axios.delete(`${domain.domain}/customer-tax-comment/${id}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -171,7 +172,8 @@ const CommentDocument = () => {
             handleGetComments(selectedDocument);
             showAlert({ title: 'Comment Deleted Successfully!', icon: 'success', confirmButtonText: 'Ok' });
         } catch (error) {
-            console.error('Error deleting comment:', error);
+            setApiStatus(apiStatusConstants.failure);
+            setErrorMsg(error)
         }
     };
 
@@ -182,48 +184,6 @@ const CommentDocument = () => {
     const initialFormFields = [
         { label: 'Year', name: 'financial_year', type: 'number', placeholder: 'Ex:- 2023' },
     ];
-
-    const handleDownloadClick = async (document) => {
-        try {
-            const downloadUrl = `${domain.domain}/customer-tax-document/download/${document.document_id}`;
-            const headers = {
-                Authorization: `Bearer ${accessToken}`,
-            };
-
-            const response = await fetch(downloadUrl, { headers });
-            const blob = await response.blob();
-
-            setApiStatus(apiStatusConstants.success);
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `${document.document_id}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
-        } catch (error) {
-            console.log(error)
-        }
-    };
-
-    const renderDocumentThumbnail = (document) => {
-        const fileExtension = document.document_path.split('.').pop().toLowerCase();
-
-        const fileTypeIcons = {
-            pdf: <img src={pdfIcon} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
-            doc: <img src={docIcon} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
-            docx: <img src={docxIcon} alt='pdf' className='img-fluid' style={{ height: '60px' }} />,
-            jpg: '🖼️',
-            jpeg: '🖼️',
-            png: '🖼️',
-        };
-
-        if (fileExtension in fileTypeIcons) {
-            return <span style={{ fontSize: '24px' }}>{fileTypeIcons[fileExtension]}</span>;
-        } else {
-            return <span>📁</span>;
-        }
-    };
 
     const renderSuccess = () => {
         return(
@@ -339,7 +299,6 @@ const CommentDocument = () => {
                                 <SendButton
                                     type="button"
                                     onClick={handleCommentSubmit}
-                                // disabled={!formData.comment?.trim()}
                                 >
                                     Send Comment
                                 </SendButton>

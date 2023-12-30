@@ -5,7 +5,14 @@
     min-height: 10vh;
     color: #ffffff;
     background-color: var(--accent-background);
-    /* opacity: .94; */
+    opacity: .94;
+}
+
+.navbar-container-login {
+    padding: 10px;
+    min-height: 10vh;
+    color: #ffffff;
+    background-color: var(--accent-background);
 }
 
 .navbar-image {
@@ -112,6 +119,20 @@
     margin-right: 10px;
     cursor: pointer;
 } 
+
+@media screen and (max-width:768px) {
+    .profile{
+        height: 28px;
+        width: 28px;
+        font-size: 12px;
+    }
+    .profile-name{
+        font-size: 12px;
+    }
+    .name{
+        margin: 0;
+    }
+}
 
 
 

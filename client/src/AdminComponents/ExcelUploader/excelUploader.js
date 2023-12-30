@@ -6,6 +6,7 @@ import { H1 } from '../ClientTaxDocuments/styledComponents';
 import domain from '../../domain/domain';
 import { useNavigate } from 'react-router-dom';
 import UnregisteredClients from './Clients/clients';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 const ExcelUploaderContainer = styled.div`
   margin-top: 10vh;
@@ -44,7 +45,8 @@ const UploadButton = styled.button`
 const ExcelUploader = () => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
-    const token = localStorage.getItem('customerJwtToken');
+    const token = getToken();
+    const user = getUserData();
 
     const onDrop = (acceptedFiles) => {
         setFile(acceptedFiles[0]);
@@ -83,7 +85,6 @@ const ExcelUploader = () => {
         }
     };
 
-    const user = JSON.parse(localStorage.getItem('currentUser'));
     const navigate = useNavigate();
 
     useEffect(() => {

@@ -11,6 +11,7 @@ import { CurrentUser, DashboardContainer, DashboardItem, DetailsContainer, MainC
 import showAlert from '../../SweetAlert/sweetalert';
 import SecretCode from '../SecretCodePopup/secretCodePopup';
 import ClientTable from './clientTable';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 
 const apiStatusConstants = {
@@ -45,8 +46,8 @@ const StaffDashboard = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [allClients, setAllClients] = useState([]);
 
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    const token = localStorage.getItem('customerJwtToken');
+    const user = getUserData();
+    const token = getToken();
 
     const getAllAssignedClients = async () => {
         setApiStatus(apiStatusConstants.inProgress);

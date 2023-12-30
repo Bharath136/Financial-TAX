@@ -5,10 +5,11 @@ import axios from 'axios';
 import domain from '../../domain/domain';
 import AuthContext from '../../AuthContext/AuthContext';
 import showAlert from '../../SweetAlert/sweetalert';
-// import authImage from '../../Assets/loginbg.png'
 import EyeButton from '../EyeButton/EyeButton';
 import renderLoader from '../../SweetLoading/ButtonLoader';
-import authImage from '../../Assets/login-img.png'
+import authImage from '../../Assets/login-image1.png'
+import { setToken, getToken, setUserData } from '../../StorageMechanism/storageMechanism';
+
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -27,7 +28,7 @@ const Login = ({ setShowNav }) => {
         { label: 'Password', name: 'password', type: 'password', placeholder: 'Password' },
     ];
 
-    const token = localStorage.getItem('customerJwtToken');
+    const token = getToken();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,9 +50,11 @@ const Login = ({ setShowNav }) => {
         setApiStatus(apiStatusConstants.inProgress);
         try {
             const response = await axios.post(`${domain.domain}/user/login`, formData);
-            localStorage.setItem('customerJwtToken', response.data.token);
             const user = response.data.user;
-            localStorage.setItem('currentUser', JSON.stringify(user));
+
+            setToken(response.data.token);
+            setUserData(user);
+
             setShowNav(false)
             let destination = '/user/dashboard';
             let successMessage = 'User Login Successful! Welcome to Financiltax User Portal. Explore your tax-related information and manage your profile.';
@@ -76,7 +79,6 @@ const Login = ({ setShowNav }) => {
             setApiStatus(apiStatusConstants.success);
         } catch (error) {
             setErrorMsg(error.response?.data?.message || 'An error occurred during login.');
-            console.error('Error:', error);
             setApiStatus(apiStatusConstants.failure);
         }
     };

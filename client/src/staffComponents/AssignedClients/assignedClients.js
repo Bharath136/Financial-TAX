@@ -7,6 +7,7 @@ import noClient from '../../Assets/no-customers.png'
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import { useNavigate } from 'react-router-dom';
 import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -16,8 +17,9 @@ const apiStatusConstants = {
 };
 
 const AssignedClientList = () => {
-    const token = localStorage.getItem('customerJwtToken');
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const token = getToken();
+    const currentUser = getUserData();
+
     const [myClients, setMyClients] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(null);
@@ -47,8 +49,8 @@ const AssignedClientList = () => {
                     setMyClients(filteredClients);
                 }
             } catch (error) {
-                setErrorMsg(error)
                 setApiStatus(apiStatusConstants.failure);
+                setErrorMsg(error || 'An unexpected error occurred. Please try again later.');
             }
         };
 

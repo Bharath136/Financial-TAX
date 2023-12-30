@@ -37,16 +37,14 @@ import {
 } from './styledComponents';
 import ClientTable from './clientsTable';
 import { ViewButton } from '../Clients/styledComponents';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
-
-// Constants for API status
 const apiStatusConstants = {
     initial: 'INITIAL',
     success: 'SUCCESS',
     failure: 'FAILURE',
     inProgress: 'IN_PROGRESS',
 };
-
 
 const dataOrder = [
     'Scheduling',
@@ -60,7 +58,7 @@ const dataOrder = [
 ];
 
 const Staff = () => {
-    // State variables
+
     const [staffList, setStaff] = useState([]);
     const [selectedAction, setSelectedAction] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -71,20 +69,17 @@ const Staff = () => {
     const [viewAssignedClients, setViewAssignedClients] = useState(false);
     const [selectedStaff, setSelectedStaff] = useState({})
     const [searchTerm, setSearchTerm] = useState('');
-    // const [unassignedClients, setUnassignedClients] = useState([]);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const [selectedFilter, setFilterType] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
-    const token = localStorage.getItem('customerJwtToken');
+    const token = getToken();
+    const user = getUserData();
 
-    // Handle search term change
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    // Handle search button click
     const onSearch = () => {
-        // Filter users by name, mobile number, or email
         if (searchTerm) {
             const filteredData = staffList.filter((staff) =>
                 staff?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -98,7 +93,6 @@ const Staff = () => {
     };
 
 
-    // Fetch data from API
     const fetchData = async () => {
         setApiStatus(apiStatusConstants.inProgress)
         try {
@@ -133,9 +127,6 @@ const Staff = () => {
 
     // Navigation hook
     const navigate = useNavigate();
-
-    // User details
-    const user = JSON.parse(localStorage.getItem('currentUser'))
 
     useEffect(() => {
         // Redirect based on user role

@@ -5,8 +5,9 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import domain from '../../domain/domain';
 import axios from 'axios';
 import showAlert from '../../SweetAlert/sweetalert';
-import authImage from '../../Assets/login-img.png';
+import authImage from '../../Assets/login-image2.png';
 import renderLoader from '../../SweetLoading/ButtonLoader'
+import { setProfileBg } from '../../StorageMechanism/storageMechanism';
 
 
 const apiStatusConstants = {
@@ -109,8 +110,8 @@ const Register = () => {
                 setApiStatusOTP(apiStatusConstants.success);
             }
         } catch (error) {
-            console.error('Error sending OTP:', error);
-            setApiStatusOTP(apiStatusConstants.success);
+            setErrorMsg(error);
+            setApiStatus(apiStatusConstants.failure);
         }
     };
 
@@ -127,7 +128,6 @@ const Register = () => {
         return true;
     };
 
-
     const handleSubmit = async () => {
         setApiStatus(apiStatusConstants.inProgress);
         try {
@@ -142,25 +142,19 @@ const Register = () => {
                     confirmButtonText: 'OK',
                 });
                 setApiStatus(apiStatusConstants.success);
-                localStorage.setItem('profileBg', getRandomColor());
+                setProfileBg('profileBg', getRandomColor());
                 navigate('/accounts/login');
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
-                console.error('Server error:', error.response);
                 setErrorMsg(error.response.data.error || 'Registration failed. Please try again.');
             } else {
-                console.error('Error registering user:', error);
                 setErrorMsg('Registration failed. Please try again.');
             }
-
+            setErrorMsg(error)
             setApiStatus(apiStatusConstants.failure);
         }
     };
-
-
-
-
 
     const handleVerifyOtp = async () => {
         try {
@@ -194,7 +188,6 @@ const Register = () => {
                 setApiStatus(apiStatusConstants.success);
             }
         } catch (error) {
-            console.error('Error verifying OTP:', error);
 
             if (error.response && error.response.status === 401) {
                 // Handle 400 Bad Request error

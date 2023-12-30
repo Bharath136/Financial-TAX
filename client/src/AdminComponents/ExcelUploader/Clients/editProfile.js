@@ -7,6 +7,7 @@ import { H1 } from '../../../AdminComponents/ClientTaxDocuments/styledComponents
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineClose, MdOutlineEdit } from 'react-icons/md';
 import renderLoader from '../../../SweetLoading/ButtonLoader';
+import { getToken, setProfileBg } from '../../../StorageMechanism/storageMechanism';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -28,7 +29,7 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [userData, setUserData] = useState({});
     const [editedData, setEditedData] = useState({});
-    const token = localStorage.getItem('customerJwtToken');
+    const token = getToken();
 
     const handleEditClick = () => {
         setIsEditing(!isEditing);
@@ -106,7 +107,6 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
                 return false;
             }
         }
-
         return true;
     };
 
@@ -166,7 +166,7 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
                     confirmButtonText: 'OK',
                 });
                 setApiStatus(apiStatusConstants.success);
-                localStorage.setItem('profileBg', getRandomColor());
+                setProfileBg(getRandomColor())
                 isOpen()
             }
         } catch (error) {

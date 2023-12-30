@@ -7,6 +7,7 @@ import { Description, H1 } from '../ClientTaxDocuments/styledComponents';
 import { useNavigate } from 'react-router-dom';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 
 const TableWrapper = styled.div`
@@ -60,12 +61,12 @@ const apiStatusConstants = {
 };
 
 const PaymentDetails = () => {
-    const token = localStorage.getItem('customerJwtToken');
+    const token = getToken();
     const [paymentDetails, setPaymentDetails] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
-    const user = JSON.parse(localStorage.getItem('currentUser'))
+    const user = getUserData();
 
     const navigate = useNavigate()
 

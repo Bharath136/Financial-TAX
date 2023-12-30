@@ -72,12 +72,13 @@ export const MessageContainer = styled.div`
   margin-top: 5rem;
   padding: 3rem;
   text-align: center;
-  background-color:#1f2336;
+  background-color:#1f2340;
+  ${'' /* background-color:#1f2336; */}
   border-radius:8px;
 `;
 
 export const Message = styled.div`
-  font-size: 1.2rem;
+  font-size: 1.0rem;
   color: #fff;
   @media screen and (max-width:768px){
     font-size:.8rem;

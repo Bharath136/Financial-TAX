@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import domain from '../../domain/domain';
+import { setToken, getToken, setUserData, getUserData } from '../../StorageMechanism/storageMechanism';
 
 import './sidebar.css';
 import {
@@ -59,8 +60,8 @@ const adminMenuItems = [
 
 const Sidebar = () => {
     const [activeMenuItems, setActiveMenuItems] = useState([]);
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-
+    const user = getUserData();
+    const token = getToken();
 
     const navigate = useNavigate();
 
@@ -69,7 +70,7 @@ const Sidebar = () => {
     const [currentUser, setCurrentUser] = useState('');
     const [profileId, setProfileId] = useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const token = localStorage.getItem('customerJwtToken');
+    
     // const [isDarkMode, setDarkMode] = useState(false);
 
     useEffect(() => {

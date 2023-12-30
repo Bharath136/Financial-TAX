@@ -7,6 +7,9 @@ import Sidebar from '../../userComponents/SideBar/sidebar';
 import domain from '../../domain/domain';
 import { H1 } from '../ClientTaxDocuments/styledComponents';
 import { useNavigate } from 'react-router-dom';
+import SweetLoading from '../../SweetLoading/SweetLoading';
+import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 // Styled components
 const Container = styled.div`
@@ -76,12 +79,20 @@ const DeleteButton = styled.button`
   border-radius: 3px;
 `;
 
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
+
 const ContactView = () => {
     const [contacts, setContacts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const token = localStorage.getItem('customerJwtToken');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+    const token = getToken();
 
-    const user = JSON.parse(localStorage.getItem('currentUser'))
+    const user = getUserData();
 
     const navigate = useNavigate()
 
@@ -96,6 +107,7 @@ const ContactView = () => {
             }
         }
         const fetchContacts = async () => {
+            setApiStatus(apiStatusConstants.inProgress)
             try {
                 const response = await axios.get(`${domain.domain}/contact/message`, {
                     headers: {
@@ -103,10 +115,11 @@ const ContactView = () => {
                     },
                 });
                 setContacts(response.data);
-                setLoading(false);
+                setApiStatus(apiStatusConstants.success)
+                
             } catch (error) {
-                console.error('Error fetching contact details:', error);
-                setLoading(false);
+                setApiStatus(apiStatusConstants.failure)
+                setErrorMsg(error)
             }
         };
 
@@ -114,47 +127,67 @@ const ContactView = () => {
     }, [token,navigate]);
 
     const handleDeleteContact = async (id) => {
+        setApiStatus(apiStatusConstants.inProgress)
         try {
             await axios.delete(`${domain.domain}/contact/message/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            // Update the contact list after deletion
+            setApiStatus(apiStatusConstants.success)
             setContacts((prevContacts) => prevContacts.filter((contact) => contact.id !== id));
         } catch (error) {
-            console.error('Error deleting contact:', error);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
+    const renderSuccess = () => {
+        return(
+            <Container>
+                <H1>Contact Details and Messages</H1>
+               {contacts.length === 0 ? (
+                    <NoContactsMessage>No messages available.</NoContactsMessage>
+                ) : (
+                    contacts.map((contact) => (
+                        <ContactCard key={contact.id}>
+                            <ContactName>{contact.name}</ContactName>
+                            <ContactDetails>
+                                <ContactInfo>
+                                    <strong>Email:</strong> {contact.email_address}
+                                </ContactInfo>
+                                <ContactInfo>
+                                    <strong>Mobile Number:</strong> {contact.mobile_number || 'N/A'}
+                                </ContactInfo>
+                                <ContactInfo>
+                                    <strong>ID:</strong> {contact.id}
+                                </ContactInfo>
+                            </ContactDetails>
+                            <Message>{contact.message}</Message>
+                            <DeleteButton onClick={() => handleDeleteContact(contact.id)}>Delete</DeleteButton>
+                        </ContactCard>
+                    )
+                ))}
+            </Container>
+        )
+    }
+
+
+    const onRenderComponents = () => {
+        switch (apiStatus) {
+            case apiStatusConstants.inProgress:
+                return <SweetLoading />;
+            case apiStatusConstants.success:
+                return renderSuccess();
+            case apiStatusConstants.failure:
+                return <FailureComponent errorMsg={errorMsg} />;
+            default:
+                return null;
+        }
+    }
+
     return (
-        <Container>
-            <H1>Contact Details and Messages</H1>
-            {loading ? (
-                <p>Loading...</p>
-            ) : contacts.length === 0 ? (
-                <NoContactsMessage>No messages available.</NoContactsMessage>
-            ) : (
-                contacts.map((contact) => (
-                    <ContactCard key={contact.id}>
-                        <ContactName>{contact.name}</ContactName>
-                        <ContactDetails>
-                            <ContactInfo>
-                                <strong>Email:</strong> {contact.email_address}
-                            </ContactInfo>
-                            <ContactInfo>
-                                <strong>Mobile Number:</strong> {contact.mobile_number || 'N/A'}
-                            </ContactInfo>
-                            <ContactInfo>
-                                <strong>ID:</strong> {contact.id}
-                            </ContactInfo>
-                        </ContactDetails>
-                        <Message>{contact.message}</Message>
-                        <DeleteButton onClick={() => handleDeleteContact(contact.id)}>Delete</DeleteButton>
-                    </ContactCard>
-                ))
-            )}
-        </Container>
+        onRenderComponents()
     );
 };
 

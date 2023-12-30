@@ -12,6 +12,7 @@ import showAlert from '../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
 import { ClientsHeaderContainer } from '../Staff/styledComponents';
 import FailureComponent from '../../FailureComponent/failureComponent';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 
 
 const apiStatusConstants = {
@@ -47,8 +48,8 @@ const AdminDashboard = () => {
     const [selectedRange, setSelectedRange] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
 
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    const token = localStorage.getItem('customerJwtToken');
+    const user = getUserData();
+    const token = getToken();
 
     const getAllAssignedClients = async () => {
         setApiStatus(apiStatusConstants.inProgress);
@@ -228,7 +229,6 @@ const AdminDashboard = () => {
     };
 
     const handleStepChange = async (selectedStep) => {
-        // Update the local state to reflect the change
         setSelectedClient((prevClient) => ({
             ...prevClient,
             current_step: selectedStep,
@@ -258,14 +258,11 @@ const AdminDashboard = () => {
                 setAvailableSteps([])
                 setApiStatus(apiStatusConstants.success);
             } else {
-                // Handle the case where the response does not contain data
-                console.error('Unexpected response format:', response);
                 setApiStatus(apiStatusConstants.error);
             }
         } catch (error) {
             showAlert({
                 title: 'Error',
-                // text: `No staff with the ${selectedStep} team is available. Please try again.`,
                 text: `${error.response.data.error}.  Please try again.`,
                 icon: 'error',
                 confirmButtonText: 'OK',
@@ -278,8 +275,6 @@ const AdminDashboard = () => {
 
     // Handle staff deletion
     const onDeleteClient = async (id) => {
-
-
         const isConfirmed = window.confirm('Are you sure you want to delete?');
         if (isConfirmed) {
             setApiStatus(apiStatusConstants.inProgress);

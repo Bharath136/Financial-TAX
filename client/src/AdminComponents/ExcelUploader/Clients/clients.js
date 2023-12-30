@@ -20,6 +20,7 @@ import {
 } from './styledComponents';
 import showAlert from '../../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
+import { getToken, getUserData } from '../../../StorageMechanism/storageMechanism';
 
 
 
@@ -37,10 +38,10 @@ const UnregisteredClients = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(null);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
-    const token = localStorage.getItem('customerJwtToken');
+    const token = getToken();
 
     // User details
-    const user = JSON.parse(localStorage.getItem('currentUser'))
+    const user = getUserData();
 
     // Navigation hook
     const navigate = useNavigate();

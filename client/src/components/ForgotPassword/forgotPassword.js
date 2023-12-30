@@ -6,7 +6,7 @@ import './forgotPassword.css';
 import showAlert from '../../SweetAlert/sweetalert';
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import { NavLink, useNavigate } from 'react-router-dom';
-import authImage from '../../Assets/login-img.png'
+import authImage from '../../Assets/reset-password.png'
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');

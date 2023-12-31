@@ -3,7 +3,7 @@
 .sidebar {
     width: 320px;
     background-color: #ffffff;
-    transition: width 0.3s ease;
+    transition: width 0.3s ease-in-out;
     margin-top: 10vh;
     height: 90vh;
     overflow: auto;

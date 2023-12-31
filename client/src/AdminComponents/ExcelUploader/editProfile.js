@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import domain from '../../../domain/domain';
-import showAlert from '../../../SweetAlert/sweetalert';
-import '../../../userComponents/UserProfile/userProfile.css'
-import { H1 } from '../../../AdminComponents/ClientTaxDocuments/styledComponents';
+import domain from '../../domain/domain';
+import showAlert from '../../SweetAlert/sweetalert';
+import '../../userComponents/UserProfile/userProfile.css'
+import { H1 } from '../../AdminComponents/ClientTaxDocuments/styledComponents';
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineClose, MdOutlineEdit } from 'react-icons/md';
-import renderLoader from '../../../SweetLoading/ButtonLoader';
-import { getToken, setProfileBg } from '../../../StorageMechanism/storageMechanism';
+import renderLoader from '../../SweetLoading/ButtonLoader';
+import { getToken, setProfileBg } from '../../StorageMechanism/storageMechanism';
 
 const apiStatusConstants = {
     initial: 'INITIAL',
@@ -150,6 +150,34 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
         }
     };
 
+    const changeStatus = async () => {
+        setApiStatusOTP(apiStatusConstants.inProgress);
+
+        try {
+            // Ensure that domain.domain is a valid URL, and profileId and token are defined
+            const response = await axios.put(
+                `${domain.domain}/dummy-users/status/${profileId}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            // Check the response status or data if needed
+            if (response.status === 200) {
+                setApiStatusOTP(apiStatusConstants.success);
+            } else {
+                setApiStatusOTP(apiStatusConstants.failure);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setApiStatusOTP(apiStatusConstants.failure);
+        }
+    };
+
+
     const handleSubmit = async () => {
         try {
             setApiStatus(apiStatusConstants.inProgress);
@@ -165,6 +193,7 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 });
+                changeStatus()
                 setApiStatus(apiStatusConstants.success);
                 setProfileBg(getRandomColor())
                 isOpen()
@@ -384,7 +413,7 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
                 )}
                 {otpSent ? renderOtpSection() : null}
                 {!otpSent && errorMsg && <span className='text-danger'>{errorMsg}</span>}
-                {!otpSent && <button type="button" onClick={handleGetOtp} className="register-button w-100 mt-2">
+                {!otpSent && <button type="button" onClick={changeStatus} className="register-button w-100 mt-2">
                     {apiStatusOTP === apiStatusConstants.inProgress ? renderLoader() : <span>Get OTP</span>}
                 </button>}
             </div>

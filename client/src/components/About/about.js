@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -9,6 +9,8 @@ import FeatureCard from './featureCard';
 import bannerImage from '../../Assets/banner-image2.png'
 import bannerImage2 from '../../Assets/banner-image3.png'
 import bannerImage3 from '../../Assets/banner-image4.png'
+import { getToken } from '../../StorageMechanism/storageMechanism';
+import { useNavigate } from 'react-router-dom';
 
 
 const About = () => {
@@ -52,6 +54,14 @@ const About = () => {
         { text: 'Integrated Electronic Filing', icon: <FaCloudDownloadAlt /> },
     ];
 
+    const navigate = useNavigate()
+    const token = getToken()
+
+    useEffect(() => {
+        if(token){
+            navigate('/user/dashboard')
+        }
+    })
 
 
     return (

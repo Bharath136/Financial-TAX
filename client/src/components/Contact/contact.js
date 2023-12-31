@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import domain from '../../domain/domain'
 import axios from 'axios'
 import showAlert from '../../SweetAlert/sweetalert';
 import './contact.css'; 
 import Footer, { email, location, phone } from '../Footer/footer';
+import { useNavigate } from 'react-router-dom';
+import { getToken } from '../../StorageMechanism/storageMechanism';
 
 const Contact = () => {
     const initialFormFields = [
@@ -13,8 +15,18 @@ const Contact = () => {
         { name: 'subject', label: 'Subject', type: 'text', placeholder: 'Subject', value: '' },
         { name: 'message', label: 'Message', type: 'textarea', placeholder: 'Type a Message...', value: '' },
     ];
+    const token = getToken()
+
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (token) {
+            navigate('/user/dashboard')
+        }
+    })
 
     const [formData, setFormData] = useState({});
+    const [errorMsg, setErrorMsg] = useState('');
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,16 +34,24 @@ const Contact = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await axios.post(`${domain.domain}/contact/message`,formData)
-        if(response.status === 200){
-            showAlert({
-                title: 'Message sent Successful!',
-                text: '',
-                icon: 'success',
-                confirmButtonText: 'OK',
-                cancelButtonText: 'Cancel'
-            });
-            setFormData({})
+        try{
+            const response = await axios.post(`${domain.domain}/contact/message`, formData)
+            if (response.status === 200) {
+                showAlert({
+                    title: 'Message sent Successful!',
+                    text: '',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'Cancel'
+                });
+                setFormData({})
+            }
+        }catch(error){
+           if(error.message){
+               setErrorMsg(`${error.message}, Please check your internet connection`)
+           }else{
+            setErrorMsg('')
+           }
         }
     };
 
@@ -69,6 +89,7 @@ const Contact = () => {
                                         )}
                                     </div>
                                 ))}
+                                {errorMsg && <p className='text-danger'>{errorMsg}</p>}
                                 <div className='d-flex align-items-center justify-content-end'>
                                     <button type="submit" className="btn text-center" style={{ backgroundColor: `var(--main-background-shade)`, color:`var(--accent-background)`,fontWeight:'500', padding:'10px 30px'}}>SUBMIT</button>
                                 </div>

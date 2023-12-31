@@ -260,7 +260,7 @@ const ClientTaxDocuments = ({ clientId }) => {
             case apiStatusConstants.success:
                 return successRender()
             case apiStatusConstants.failure:
-                return <FailureComponent errorMsg={errorMsg} />
+                return <FailureComponent errorMsg={errorMsg} fetchData={fetchDocuments} />
             default:
                 return null
         }

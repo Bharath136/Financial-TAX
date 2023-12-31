@@ -7,6 +7,7 @@ import showAlert from '../../SweetAlert/sweetalert';
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import { NavLink, useNavigate } from 'react-router-dom';
 import authImage from '../../Assets/reset-password.png'
+import { getUserData } from '../../StorageMechanism/storageMechanism'
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -19,10 +20,15 @@ const ForgotPassword = () => {
     const [otpSent, setOtpSent] = useState(false);
     const [loading, setLoading] = useState(false);
     const [timer, setTimer] = useState(0);
+    const token = getUserData();
 
     const navigate = useNavigate()
 
     useEffect(() => {
+        if (token) {
+            navigate('/user/dashboard')
+        }
+
         let timerInterval;
 
         if (timer > 0) {
@@ -48,10 +54,6 @@ const ForgotPassword = () => {
         setConfirmPassword(e.target.value);
     };
 
-    const handleOtpChange = (e) => {
-        setOtp(e.target.value);
-    };
-
     const toggleShowNewPassword = () => {
         setShowNewPassword(!showNewPassword);
     };
@@ -61,9 +63,12 @@ const ForgotPassword = () => {
     };
 
 
-
     const handleSendOtp = async () => {
         try {
+            if (email.trim() === '' || newPassword.trim() === '' || confirmPassword.trim() === '') {
+                setErrorMsg("All fields must be filled");
+                return;
+            }
             if(email.trim() === ''){
                 setErrorMsg('Email is required to get OTP.')
                 return
@@ -135,21 +140,15 @@ const ForgotPassword = () => {
         }
     };
 
-    const validateFields = () => {
-
-        if (email.trim() === '' || newPassword.trim() === '' || confirmPassword.trim() === '') {
-            setErrorMsg("All fields must be filled");
-            return false;
-        }
-        return true;
-    };
-
     const handleVerifyOtp = async () => {
         try {
-            if (!validateFields()) {
+            if (email.trim() === '' || newPassword.trim() === '' || confirmPassword.trim() === '') {
+                setErrorMsg("All fields must be filled");
+                return false;
+            }
+            if (newPassword !== confirmPassword) {
+                setErrorMsg('New password and confirm password must match.');
                 return;
-            } else {
-                setErrorMsg('')
             }
 
             const response = await axios.post(`${domain.domain}/email/verify-otp`, {

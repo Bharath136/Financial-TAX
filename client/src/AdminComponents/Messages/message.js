@@ -96,6 +96,22 @@ const ContactView = () => {
 
     const navigate = useNavigate()
 
+    const fetchContacts = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
+        try {
+            const response = await axios.get(`${domain.domain}/contact/message`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setContacts(response.data);
+            setApiStatus(apiStatusConstants.success)
+
+        } catch (error) {
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
+        }
+    };
 
     useEffect(() => {
         if (user) {
@@ -106,22 +122,7 @@ const ContactView = () => {
                 navigate('/user/dashboard');
             }
         }
-        const fetchContacts = async () => {
-            setApiStatus(apiStatusConstants.inProgress)
-            try {
-                const response = await axios.get(`${domain.domain}/contact/message`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setContacts(response.data);
-                setApiStatus(apiStatusConstants.success)
-                
-            } catch (error) {
-                setApiStatus(apiStatusConstants.failure)
-                setErrorMsg(error)
-            }
-        };
+
 
         fetchContacts();
     }, [token,navigate]);
@@ -180,7 +181,7 @@ const ContactView = () => {
             case apiStatusConstants.success:
                 return renderSuccess();
             case apiStatusConstants.failure:
-                return <FailureComponent errorMsg={errorMsg} />;
+                return <FailureComponent errorMsg={errorMsg} fetchData={fetchContacts}/>;
             default:
                 return null;
         }

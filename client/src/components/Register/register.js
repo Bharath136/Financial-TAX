@@ -78,7 +78,12 @@ const Register = () => {
 
 
     const handleGetOtp = async () => {
-        
+        if (!validateFields()) {
+            setErrorMsg("All fields must be filled.")
+            return;
+        } else {
+            setErrorMsg('')
+        }
         try {
             setApiStatusOTP(apiStatusConstants.inProgress);
             if(formData.email_address === undefined || ''){
@@ -111,7 +116,7 @@ const Register = () => {
             }
         } catch (error) {
             setErrorMsg(error);
-            setApiStatus(apiStatusConstants.failure);
+            setApiStatusOTP(apiStatusConstants.failure);
         }
     };
 
@@ -124,15 +129,13 @@ const Register = () => {
                 return false;
             }
         }
-
         return true;
     };
 
     const handleSubmit = async () => {
-        setApiStatus(apiStatusConstants.inProgress);
         try {
+            setApiStatus(apiStatusConstants.inProgress);
             const res = await axios.post(`${domain.domain}/user/register`, formData);
-
 
             if (res.status === 201) {
                 showAlert({
@@ -147,37 +150,39 @@ const Register = () => {
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
+                setApiStatus(apiStatusConstants.failure);
+                setTimer(0)
                 setErrorMsg(error.response.data.error || 'Registration failed. Please try again.');
             } else {
                 setErrorMsg('Registration failed. Please try again.');
             }
-            setErrorMsg(error)
-            setApiStatus(apiStatusConstants.failure);
         }
     };
 
     const handleVerifyOtp = async () => {
         try {
-            setApiStatus(apiStatusConstants.inProgress);
             if (!validateFields()) {
-                setApiStatus(apiStatusConstants.success);
                 return;
             }else{
                 setErrorMsg('')
             }
 
+            if(otp.trim() === ''){
+                setErrorMsg("OTP is required")
+                return;
+            } else {
+                setErrorMsg('')
+            }
+
+            setApiStatus(apiStatusConstants.inProgress);
             const response = await axios.post(`${domain.domain}/email/verify-otp`, {
                 email_address: formData.email_address,
                 otp,
             });
-            
+
             if (response) {
-                
                 handleSubmit()
                 setApiStatus(apiStatusConstants.success);
-                
-                
-                
             } else {
                 showAlert({
                     title: 'Error',
@@ -188,14 +193,12 @@ const Register = () => {
                 setApiStatus(apiStatusConstants.success);
             }
         } catch (error) {
-
             if (error.response && error.response.status === 401) {
-                // Handle 400 Bad Request error
+                setApiStatus(apiStatusConstants.failure);
                 const errorMessage = error.response.data.error || 'Invalid OTP. Please try again.';
                 setErrorMsg(errorMessage);
                 setApiStatus(apiStatusConstants.failure);
             } else {
-                // Handle other errors
                 const errorMessage = 'Error verifying OTP. Please try again.';
                 setErrorMsg(errorMessage);
                 setApiStatus(apiStatusConstants.failure);
@@ -248,8 +251,6 @@ const Register = () => {
             </button>
         </div>
     );
-
-
 
     const renderRegistrationForm = () => {
         return (

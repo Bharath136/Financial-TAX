@@ -70,6 +70,24 @@ const PaymentDetails = () => {
 
     const navigate = useNavigate()
 
+    const getDetails = async () => {
+        setApiStatus(apiStatusConstants.inProgress)
+        setInterval(async () => {
+            try {
+                const response = await axios.get(`${domain.domain}/paypal/payment-details`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                const fiteredDocuments = response.data.filter((document) => document.payer_id !== null)
+                setPaymentDetails(fiteredDocuments)
+                setApiStatus(apiStatusConstants.success)
+            } catch (error) {
+                setApiStatus(apiStatusConstants.failure)
+                setErrorMsg(error)
+            }
+        }, 1000)
+    }
 
     useEffect(() => {
         if (user) {
@@ -80,24 +98,7 @@ const PaymentDetails = () => {
                 navigate('/user/dashboard');
             }
         }
-        const getDetails = async () => {
-            setApiStatus(apiStatusConstants.inProgress)
-            setInterval(async () => {
-                try {
-                    const response = await axios.get(`${domain.domain}/paypal/payment-details`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    })
-                    const fiteredDocuments = response.data.filter((document) => document.payer_id !== null)
-                    setPaymentDetails(fiteredDocuments)
-                    setApiStatus(apiStatusConstants.success)
-                } catch (error) {
-                    setApiStatus(apiStatusConstants.failure)
-                    setErrorMsg(error)
-                }
-            }, 1000)
-        }
+        
         getDetails()
     }, []);
 
@@ -144,7 +145,7 @@ const PaymentDetails = () => {
             case apiStatusConstants.success:
                 return renderPayments();
             case apiStatusConstants.failure:
-                return <FailureComponent errorMsg={errorMsg} />;
+                return <FailureComponent errorMsg={errorMsg} fetchData={getDetails} />;
             default:
                 return null;
         }

@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaUser, FaBuilding, FaClipboard, FaBook, FaLightbulb, FaGavel, FaLandmark, FaHandshake } from 'react-icons/fa';
 import Footer from '../Footer/footer';
+import { getToken } from '../../StorageMechanism/storageMechanism';
+import { useNavigate } from 'react-router-dom';
 
 
 const ServicesSection = styled.section`
@@ -118,30 +120,41 @@ const serviceDescriptions = {
   NonprofitTaxServices: 'Tax services tailored for nonprofit organizations.',
 };
 
-const Services = () => (
-  <ServicesSection>
-    <ServicesContainer>
-      <ServicesHeader>OUR SERVICES</ServicesHeader>
-      <ServicesDescription>
-        At TaxReturn Management, we are dedicated to providing a comprehensive suite of services to meet your diverse tax needs. Our experienced team ensures accuracy, compliance, and peace of mind.
-      </ServicesDescription>
-      <ServicesList>
-        {Object.keys(iconMap).map((serviceName) => (
-          <ServiceCard key={serviceName}>
-            <ServiceIcon>
-              {React.createElement(iconMap[serviceName])}
-            </ServiceIcon>
-            <ServiceTitle>{serviceName}</ServiceTitle>
-            <ServiceDescription>{serviceDescriptions[serviceName]}</ServiceDescription>
-          </ServiceCard>
-        ))}
-      </ServicesList>
-      <ServicesDescription>
-        We tailor our services to your unique situation, ensuring you maximize your deductions and minimize your tax liability. Trust us to navigate the complexities of the tax code so you can focus on what matters most.
-      </ServicesDescription>
-    </ServicesContainer>
-    <Footer />
-  </ServicesSection>
-);
+const Services = () => {
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const token = getToken()
+    if (token) {
+      navigate('/user/dashboard')
+    }
+  })
+  return (
+    <ServicesSection>
+      <ServicesContainer>
+        <ServicesHeader>OUR SERVICES</ServicesHeader>
+        <ServicesDescription>
+          At TaxReturn Management, we are dedicated to providing a comprehensive suite of services to meet your diverse tax needs. Our experienced team ensures accuracy, compliance, and peace of mind.
+        </ServicesDescription>
+        <ServicesList>
+          {Object.keys(iconMap).map((serviceName) => (
+            <ServiceCard key={serviceName}>
+              <ServiceIcon>
+                {React.createElement(iconMap[serviceName])}
+              </ServiceIcon>
+              <ServiceTitle>{serviceName}</ServiceTitle>
+              <ServiceDescription>{serviceDescriptions[serviceName]}</ServiceDescription>
+            </ServiceCard>
+          ))}
+        </ServicesList>
+        <ServicesDescription>
+          We tailor our services to your unique situation, ensuring you maximize your deductions and minimize your tax liability. Trust us to navigate the complexities of the tax code so you can focus on what matters most.
+        </ServicesDescription>
+      </ServicesContainer>
+      <Footer />
+    </ServicesSection>
+  )
+}
 
 export default Services;

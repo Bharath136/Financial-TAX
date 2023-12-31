@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // Components
-import domain from '../../../domain/domain';
+import domain from '../../domain/domain';
 import EditPopup from './editPopup';
-import SweetLoading from '../../../SweetLoading/SweetLoading';
+import SweetLoading from '../../SweetLoading/SweetLoading';
 
 // Assets
-import noClient from '../../../Assets/no-customers.png'
+import noClient from '../../Assets/no-customers.png'
 
 // Styled Components
 import {
@@ -17,10 +17,12 @@ import {
     H1,
     NoClientContainer,
     TableContainer,
-} from './styledComponents';
-import showAlert from '../../../SweetAlert/sweetalert';
+} from '../Clients/styledComponents';
+import showAlert from '../../SweetAlert/sweetalert';
 import ClientTable from './clientTable';
-import { getToken, getUserData } from '../../../StorageMechanism/storageMechanism';
+import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
+import FailureComponent from '../../FailureComponent/failureComponent';
+import ExcelUploader from './excelUploader';
 
 
 
@@ -37,7 +39,8 @@ const UnregisteredClients = () => {
     const [clients, setClients] = useState([]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [profileId, setProfileId] = useState(null);
-    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
+    const [errorMsg, setErrorMsg] = useState('')
     const token = getToken();
 
     // User details
@@ -56,24 +59,27 @@ const UnregisteredClients = () => {
             });
 
             const data = response.data;
+            const filtered = data.filter((user) => user.status === 'registered')
+            console.log(filtered)
             if (response.status === 200) {
                 setApiStatus(apiStatusConstants.success)
-                setClients(data); 
+                setClients(data);
             }
         } catch (error) {
-            console.error('Error fetching clients:', error);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
     useEffect(() => {
         // Redirect based on user role
-        if(user){
+        if (user) {
             if (user.role === 'STAFF') {
                 navigate('/staff/dashboard')
             } else if (user.role === 'CUSTOMER') {
                 navigate('/user/dashboard')
             }
-        }else{
+        } else {
             navigate('/')
         }
 
@@ -95,7 +101,7 @@ const UnregisteredClients = () => {
     // Handle staff deletion
     const onDeleteClient = async (id) => {
         const userConfirmed = window.confirm("Are you sure you want to delete?");
-        if (userConfirmed){
+        if (userConfirmed) {
             setApiStatus(apiStatusConstants.inProgress);
 
             try {
@@ -116,7 +122,7 @@ const UnregisteredClients = () => {
                 });
                 fetchClients()
             } catch (error) {
-                console.error('Error Deleting Client:', error);
+                setErrorMsg(error)
                 setApiStatus(apiStatusConstants.failure);
 
                 // Show error alert
@@ -130,33 +136,39 @@ const UnregisteredClients = () => {
         }
     };
 
+    const renderSuccess = () => {
+        return (
 
+            <ClientListContainer>
+                <H1>Unregistered Clients</H1>
+
+                {clients.length <= 0 ? <NoClientContainer>
+                    <img src={noClient} alt='img' className='img-fluid' />
+                    <H1>No Clients Added</H1>
+                    <p>Oops! It seems there are no clients added here.</p>
+                </NoClientContainer> :
+                    <TableContainer className="shadow">
+                        <ExcelUploader />
+                        <ClientTable
+                            clients={clients}
+                            onDeleteClient={onDeleteClient}
+                            handleEditClick={handleEditClick}
+                            setProfileId={setProfileId}
+                        />
+                    </TableContainer>}
+            </ClientListContainer>
+        )
+    }
 
     // Render different components based on API status
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return <TableContainer className="shadow">
-                    <ClientTable
-                        clients={clients}
-                        onDeleteClient={onDeleteClient}
-                        handleEditClick={handleEditClick}
-                        setProfileId={setProfileId}
-                    />
-
-                </TableContainer>
+                return <FailureComponent errorMsg={errorMsg} />
             case apiStatusConstants.inProgress:
                 return <SweetLoading />
             case apiStatusConstants.success:
-                return <TableContainer className="shadow">
-                    <ClientTable
-                        clients={clients}
-                        onDeleteClient={onDeleteClient}
-                        handleEditClick={handleEditClick}
-                        setProfileId={setProfileId}
-                    />
-
-                </TableContainer>
+                return renderSuccess();
             default:
                 return null
         }
@@ -165,17 +177,7 @@ const UnregisteredClients = () => {
     // Return JSX for the component
     return (
         <>
-            <ClientListContainer>
-                <H1>Unregistered Clients</H1>
-
-                {clients.length <= 0 ? <NoClientContainer>
-                    <img src={noClient} alt='img' className='img-fluid' />
-                    <H1>No Clients Added</H1>
-                    <p>Oops! It seems there are no clients added here.</p>
-                </NoClientContainer> : renderComponents() 
-                }
-
-            </ClientListContainer>
+            {renderComponents()}
 
             <EditPopup
                 isOpen={isEditModalOpen}

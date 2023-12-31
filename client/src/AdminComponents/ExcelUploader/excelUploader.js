@@ -5,16 +5,14 @@ import styled from 'styled-components';
 import { H1 } from '../ClientTaxDocuments/styledComponents';
 import domain from '../../domain/domain';
 import { useNavigate } from 'react-router-dom';
-import UnregisteredClients from './Clients/clients';
 import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
+import { ViewButton } from '../Clients/styledComponents';
+import FailureComponent from '../../FailureComponent/failureComponent';
+import SweetLoading from '../../SweetLoading/SweetLoading';
 
 const ExcelUploaderContainer = styled.div`
-  margin-top: 10vh;
   width: 100%;
-  padding: 20px;
-  height: 90vh;
-  background-color: var(--main-background);
-  overflow: auto;
+  padding-botton:100px;
 `;
 
 const DropzoneContainer = styled.div`
@@ -31,20 +29,30 @@ const DropzoneContainer = styled.div`
   height: 200px;
 `;
 
-const UploadButton = styled.button`
-  background-color: #4caf50;
-  color: #fff;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s ease;
-`;
+// const UploadButton = styled.button`
+//   background-color: var(--main-background-shade);
+//   color: #fff;
+//   padding: 10px;
+//   border: none;
+//   border-radius: 4px;
+//   cursor: pointer;
+//   margin-top: 10px;
+//   transition: background-color 0.3s ease;
+// `;
+
+
+// Constants for API status
+const apiStatusConstants = {
+    initial: 'INITIAL',
+    success: 'SUCCESS',
+    failure: 'FAILURE',
+    inProgress: 'IN_PROGRESS',
+};
 
 const ExcelUploader = () => {
     const [file, setFile] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
+    const [errorMsg, setErrorMsg] = useState('')
     const token = getToken();
     const user = getUserData();
 
@@ -64,7 +72,7 @@ const ExcelUploader = () => {
             return;
         }
 
-        setLoading(true);
+        setApiStatus(apiStatusConstants.inProgress)
 
         const formData = new FormData();
         formData.append('file', file);
@@ -76,12 +84,11 @@ const ExcelUploader = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            setApiStatus(apiStatusConstants.success)
 
         } catch (error) {
-            console.error('Error uploading file:', error);
-            // Display an error message to the user
-        } finally {
-            setLoading(false);
+            setApiStatus(apiStatusConstants.failure)
+            setErrorMsg(error)
         }
     };
 
@@ -97,23 +104,41 @@ const ExcelUploader = () => {
         }
     }, [navigate]);
 
+    const renderSuccess = () => {
+        return(
+            <ExcelUploaderContainer>
+                <H1>Excel Uploader</H1>
+                <DropzoneContainer {...getRootProps()} style={dropzoneStyle}>
+                    <input {...getInputProps()} aria-labelledby="dropzone-title" />
+                    <p>Drag 'n' drop an Excel file here, or click to select one</p>
+                </DropzoneContainer>
+                {file && (
+                    <div className='d-flex align-items-center justify-content-between'>
+                        <p>Selected File: {file.name}</p>
+                        <ViewButton onClick={handleUpload} >
+                            Upload
+                        </ViewButton>
+                    </div>
+                )}
+            </ExcelUploaderContainer>
+        )
+    }
+
+    const renderComponents = () => {
+        switch (apiStatus) {
+            case apiStatusConstants.failure:
+                return <FailureComponent errorMsg={errorMsg} />
+            case apiStatusConstants.inProgress:
+                return <SweetLoading />
+            case apiStatusConstants.success:
+                return renderSuccess();
+            default:
+                return renderSuccess();
+        }
+    }
+
     return (
-        <ExcelUploaderContainer>
-            <H1>Excel Uploader</H1>
-            <DropzoneContainer {...getRootProps()} style={dropzoneStyle}>
-                <input {...getInputProps()} aria-labelledby="dropzone-title" />
-                <p>Drag 'n' drop an Excel file here, or click to select one</p>
-            </DropzoneContainer>
-            {file && (
-                <div>
-                    <p>Selected File: {file.name}</p>
-                    <UploadButton onClick={handleUpload} disabled={loading}>
-                        {loading ? 'Uploading...' : 'Upload'}
-                    </UploadButton>
-                </div>
-            )}
-            <UnregisteredClients />
-        </ExcelUploaderContainer>
+        renderComponents()
     );
 };
 

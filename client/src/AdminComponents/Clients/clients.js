@@ -243,7 +243,7 @@ const Clients = () => {
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return <FailureComponent errorMsg={errorMsg} />;
+                return <FailureComponent errorMsg={errorMsg} fetchData={fetchClients}/>;
             case apiStatusConstants.inProgress:
                 return <SweetLoading />;
             case apiStatusConstants.success:

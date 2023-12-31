@@ -1,7 +1,7 @@
 const client = require('../database/connection');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const {sendPassword} = require('./email')
+const {sendPassword,sendPasswordResetSuccessEmail} = require('./email')
 
 
 
@@ -132,6 +132,8 @@ const editPassword = async (req, res) => {
         `;
         const values = [hashedNewPassword, new Date(), 'admin', email_address];
         const result = await client.query(updatePasswordQuery, values);
+
+        await sendPasswordResetSuccessEmail(email_address, new_password, userResult.rows[0].first_name)
 
         res.status(200).json({
             success: true,

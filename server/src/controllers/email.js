@@ -139,6 +139,70 @@ UniProFin Team`,
     });
 }
 
+function sendPasswordResetSuccessEmail(email, password, name) {
+    const mailOptions = {
+        from: process.env.EMAIL, // Use the configured email
+        to: email,
+        subject: 'UniProFin Password Reset Success',
+        text: `Dear ${name},
+
+Your UniProFin account password has been successfully reset.
+
+you can now use your new password to log in securely.
+
+please contact our support team if you have queries at support@uniprofin.com or visit our [Contact Support](https://uniprofin.com/contact) page.
+
+Best regards,
+UniProFin Team`,
+    };
+
+    return new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(info);
+            }
+        });
+    });
+}
+
+
+async function sendAssignmentEmail({
+    clientFirstName,
+    clientEmail,
+    staffFirstName,
+    staffEmail,
+    staffContactNumber,
+}) {
+    const mailOptions = {
+        from: process.env.EMAIL,
+        to: clientEmail, // Ensure you have a valid email address here
+        subject: 'You have been assigned!',
+        text: `Dear ${clientFirstName},
+
+You have been assigned to a staff member. This is just a placeholder message for your assignment.
+
+Staff Information:
+Name: ${staffFirstName}
+Email: ${staffEmail}
+Contact Number: ${staffContactNumber}
+
+For any inquiries or assistance, please contact our support team at support@uniprofin.com or visit our [Contact Support](https://uniprofin.com/contact) page.
+
+Best regards,
+UniProFin Team`,
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Assignment email sent:', info);
+    } catch (error) {
+        console.error('Error sending assignment email:', error);
+        throw error; // Rethrow the error to handle it at the calling site
+    }
+}
+
 
 function sendDocumentNotification(email, name, documentName, documentLink) {
     const mailOptions = {
@@ -173,8 +237,6 @@ UniProFin Team`,
         });
     });
 }
-
-
 
 const verifyOtp = async (req, res) => {
     const { email_address, otp } = req.body;
@@ -257,5 +319,7 @@ module.exports = {
     verifyOtp,
     resetPasswordOTP,
     sendDocumentNotification,
-    sendPassword
+    sendPassword,
+    sendPasswordResetSuccessEmail,
+    sendAssignmentEmail
 };

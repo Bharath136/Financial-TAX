@@ -66,6 +66,30 @@ const createDummyUsersFromExcel = async (req, res) => {
             text: 'INSERT INTO dummy_users(first_name, last_name, email_address, contact_number, alt_contact_number) VALUES($1, $2, $3, $4, $5)',
         };
 
+        // for (const row of data) {
+        //     // Assuming the first column is named 'full_name'
+        //     const fullName = row['full_name'] || ''; // Replace 'full_name' with your actual first column name
+        //     const contact = row['contact_number'] || '';
+        //     const [contact_number, alt_contact_number] = contact.split('/');
+        //     const [firstName, lastName] = fullName.split(' ');
+
+        //     // Other columns from the sheet
+        //     const email = row['email_address'] || '';
+
+        //     const values = [firstName, lastName, email, contact_number, alt_contact_number];
+
+        //     try {
+        //         await client.query({ ...query, values });
+        //     } catch (error) {
+        //         if (error.code === '23505') { // Unique violation error code
+        //             // Handle duplicate email_address
+        //             console.error('Duplicate email_address:', email);
+        //         } else {
+        //             throw error; // Rethrow other errors
+        //         }
+        //     }
+        // }
+
         for (const row of data) {
             // Assuming the first column is named 'full_name'
             const fullName = row['full_name'] || ''; // Replace 'full_name' with your actual first column name
@@ -75,6 +99,12 @@ const createDummyUsersFromExcel = async (req, res) => {
 
             // Other columns from the sheet
             const email = row['email_address'] || '';
+
+            // Check if required fields are present
+            if (firstName.trim() === '' || email.trim() === '' || contact_number.trim() === '') {
+                console.error('Missing required fields for registration:', { firstName, email, contact_number });
+                continue; // Skip this iteration if required fields are missing
+            }
 
             const values = [firstName, lastName, email, contact_number, alt_contact_number];
 
@@ -89,6 +119,7 @@ const createDummyUsersFromExcel = async (req, res) => {
                 }
             }
         }
+
 
         res.status(200).send('File uploaded and data inserted successfully');
     } catch (error) {
@@ -177,6 +208,17 @@ const getAllDummyUsers = async (req, res) => {
     }
 };
 
+const updateStatus = async (req, res) => {
+    const userId = req.params.id;
+    try {
+        const result = await client.query('UPDATE dummy_users SET status = $1 WHERE user_id = $2', ['registered', userId]);
+        res.json({ success: true, message: `Status updated to 'registered' for user with ID ${userId}` });
+    } catch (error) {
+        console.error('Error updating status:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+}
+
 const updateDummyUser = async (req, res) => {
     const userId = req.params.id;
     const { first_name, last_name, email_address, contact_number, alt_contact_number } = req.body;
@@ -212,5 +254,6 @@ module.exports = {
     getAllDummyUsers,
     updateDummyUser,
     deleteDummyUser,
-    getDummyUserById
+    getDummyUserById,
+    updateStatus
 };

@@ -17,6 +17,7 @@ router.post('/from-excel', authenticate(['ADMIN']), upload.single('file'), dummy
 router.get('/', authenticate(['ADMIN']), dummyUserController.getAllDummyUsers);
 router.get('/:id', authenticate(['ADMIN']), dummyUserController.getDummyUserById);
 router.put('/:id', authenticate(['ADMIN']), dummyUserController.updateDummyUser);
+router.put('/status/:id', authenticate(['ADMIN']), dummyUserController.updateStatus);
 router.delete('/:id', authenticate(['ADMIN']), dummyUserController.deleteDummyUser);
 
 // Export the router for use in your main application file

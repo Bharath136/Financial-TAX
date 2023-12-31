@@ -387,7 +387,7 @@ const Staff = () => {
                                                 {/* <Td>{staff.secret_code}</Td> */}
                                                 <Td>{staff.staff_team}</Td>
                                                 <Td>
-                                                    <div className='d-flex'>
+                                                    <div className='d-flex align-items-center justify-content-center' style={{gap:'.8rem'}}>
                                                         <Select
                                                             options={dataOrder.map((team) => ({
                                                                 value: team,
@@ -414,7 +414,7 @@ const Staff = () => {
                                                     </ViewButton>
                                                 </Td>
                                                 <Td>
-                                                    <div className='d-flex align-items-center justify-content-center'>
+                                                    <div className='d-flex align-items-center justify-content-center' style={{ gap: '.8rem' }}>
                                                         <Select
                                                             options={actionOptions}
                                                             onChange={handleActionChange}
@@ -461,7 +461,7 @@ const Staff = () => {
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return <FailureComponent errorMsg={errorMsg} />
+                return <FailureComponent errorMsg={errorMsg} fetchData={fetchData} />
             case apiStatusConstants.inProgress:
                 return <SweetLoading />
             case apiStatusConstants.success:

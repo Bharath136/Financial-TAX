@@ -161,6 +161,32 @@ const Clients = () => {
         }
     };
 
+    const changeStatus = async () => {
+        setApiStatus(apiStatusConstants.inProgress);
+
+        try {
+            const response = await axios.put(
+                `${domain.domain}/dummy-users/status/${profileId}`,
+                { status: 'unregistered' },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            fetchClients()
+
+            if (response.status === 200) {
+                setApiStatus(apiStatusConstants.success);
+            } else {
+                setApiStatus(apiStatusConstants.failure);
+            }
+        } catch (error) {
+            setErrorMsg(error)
+            setApiStatus(apiStatusConstants.failure);
+        }
+    };
+
     // Handle staff deletion
     const onDeleteClient = async (id) => {
         const userConfirmed = window.confirm("Are you sure you want to delete?");
@@ -173,7 +199,7 @@ const Clients = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-
+                changeStatus()
                 setApiStatus(apiStatusConstants.success);
 
                 // Show success alert

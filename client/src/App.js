@@ -34,7 +34,6 @@ import Sidebar from './userComponents/SideBar/sidebar';
 import PaymentDetails from './AdminComponents/Payments/payments';
 import MyPaymentDetails from './userComponents/MyPayments/myPayments';
 import AddCustomer from './AdminComponents/AddCustomer/addCustomer';
-import ExcelUploader from './AdminComponents/ExcelUploader/excelUploader';
 import { getToken, removeToken, removeUserData } from './StorageMechanism/storageMechanism';
 import UnregisteredClients from './AdminComponents/ExcelUploader/clients';
 

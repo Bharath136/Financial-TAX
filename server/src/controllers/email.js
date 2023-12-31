@@ -194,13 +194,15 @@ Best regards,
 UniProFin Team`,
     };
 
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Assignment email sent:', info);
-    } catch (error) {
-        console.error('Error sending assignment email:', error);
-        throw error; // Rethrow the error to handle it at the calling site
-    }
+    return new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(info);
+            }
+        });
+    });
 }
 
 

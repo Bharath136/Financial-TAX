@@ -68,7 +68,7 @@ const createDummyUsersFromExcel = async (req, res) => {
 
         // for (const row of data) {
         //     // Assuming the first column is named 'full_name'
-        //     const fullName = row['full_name'] || ''; // Replace 'full_name' with your actual first column name
+        //     const fullName = row['full_name'] || ''; 
         //     const contact = row['contact_number'] || '';
         //     const [contact_number, alt_contact_number] = contact.split('/');
         //     const [firstName, lastName] = fullName.split(' ');
@@ -90,9 +90,10 @@ const createDummyUsersFromExcel = async (req, res) => {
         //     }
         // }
 
+
         for (const row of data) {
             // Assuming the first column is named 'full_name'
-            const fullName = row['full_name'] || ''; // Replace 'full_name' with your actual first column name
+            const fullName = row['full_name'] || '';
             const contact = row['contact_number'] || '';
             const [contact_number, alt_contact_number] = contact.split('/');
             const [firstName, lastName] = fullName.split(' ');
@@ -100,26 +101,29 @@ const createDummyUsersFromExcel = async (req, res) => {
             // Other columns from the sheet
             const email = row['email_address'] || '';
 
-            // Check if required fields are present
-            if (firstName.trim() === '' || email.trim() === '' || contact_number.trim() === '') {
-                console.error('Missing required fields for registration:', { firstName, email, contact_number });
-                continue; // Skip this iteration if required fields are missing
-            }
-
             const values = [firstName, lastName, email, contact_number, alt_contact_number];
 
             try {
-                await client.query({ ...query, values });
-            } catch (error) {
-                if (error.code === '23505') { // Unique violation error code
-                    // Handle duplicate email_address
-                    console.error('Duplicate email_address:', email);
+                // Check if the email_address already exists in the database
+                const checkEmailQuery = {
+                    text: 'SELECT * FROM dummy_users WHERE email_address = $1',
+                    values: [email],
+                };
+
+                const { rowCount } = await client.query(checkEmailQuery);
+
+                if (rowCount === 0) {
+                    // Email not found, proceed with the insert
+                    await client.query({ ...query, values });
                 } else {
-                    throw error; // Rethrow other errors
+                    // Email already exists, handle accordingly
+                    console.error('Duplicate email_address:', email);
                 }
+            } catch (error) {
+                // Handle other errors
+                console.error('Error processing row:', error);
             }
         }
-
 
         res.status(200).send('File uploaded and data inserted successfully');
     } catch (error) {
@@ -128,62 +132,6 @@ const createDummyUsersFromExcel = async (req, res) => {
     }
 };
 
-
-
-// const createDummyUsersFromExcel = async (req, res) => {
-
-//     try {
-//         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
-//         const sheetName = workbook.SheetNames[0];
-//         const sheet = workbook.Sheets[sheetName];
-//         const data = xlsx.utils.sheet_to_json(sheet);
-
-//         // Assuming your table in PostgreSQL is named 'contacts'
-//         const query = {
-//             text: 'INSERT INTO dummy_users(first_name, last_name, email_address, contact_number, alt_contact_number) VALUES($1, $2, $3, $4, $5)',
-//         };
-
-//         for (const row of data) {
-//             const values = Object.values(row);
-//             await client.query({ ...query, values });
-//         }
-
-//         res.status(200).send('File uploaded and data inserted successfully');
-//     } catch (error) {
-//         console.error('Error processing file and inserting data:', error);
-//         res.status(500).send('Internal Server Error');
-//     }
-// };
-
-// const createDummyUsersFromExcel = async (req, res) => {
-//     const userDetailsArray = req.body;
-//     console.log(userDetailsArray)
-//     try {
-//         const cs = new pgp.helpers.ColumnSet([
-//             'first_name',
-//             'last_name',
-//             'email_address',
-//             'contact_number',
-//             'alt_contact_number'
-//         ], { table: 'dummy_users' });
-
-//         const values = userDetailsArray.map((userDetails) => ({
-//             first_name: userDetails.first_name,
-//             last_name: userDetails.last_name,
-//             email_address: userDetails.email_address,
-//             contact_number: userDetails.contact_number,
-//             alt_contact_number: userDetails.alt_contact_number
-//         }));
-
-//         const query = pgp.helpers.insert(values, cs) + ' RETURNING *';
-//         const result = await db.query(query);
-
-//         res.status(201).json({ success: true, message: 'Users created successfully', users: result });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ success: false, error: 'Error creating users' });
-//     }
-// };
 
 const getDummyUserById = async (req, res) => {
     const id = req.params.id
@@ -210,8 +158,9 @@ const getAllDummyUsers = async (req, res) => {
 
 const updateStatus = async (req, res) => {
     const userId = req.params.id;
+    const {status} = req.body
     try {
-        const result = await client.query('UPDATE dummy_users SET status = $1 WHERE user_id = $2', ['registered', userId]);
+        const result = await client.query('UPDATE dummy_users SET status = $1 WHERE user_id = $2', [status, userId]);
         res.json({ success: true, message: `Status updated to 'registered' for user with ID ${userId}` });
     } catch (error) {
         console.error('Error updating status:', error);

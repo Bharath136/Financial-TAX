@@ -8,14 +8,12 @@ import domain from '../../domain/domain';
 import EditPopup from './editPopup';
 import SweetLoading from '../../SweetLoading/SweetLoading';
 
-// Assets
-import noClient from '../../Assets/no-customers.png'
-
 // Styled Components
 import {
     ClientListContainer,
     H1,
-    NoClientContainer,
+    SearchBar,
+    SearchButton,
     TableContainer,
 } from '../Clients/styledComponents';
 import showAlert from '../../SweetAlert/sweetalert';
@@ -23,6 +21,8 @@ import ClientTable from './clientTable';
 import { getToken, getUserData } from '../../StorageMechanism/storageMechanism';
 import FailureComponent from '../../FailureComponent/failureComponent';
 import ExcelUploader from './excelUploader';
+import { SearchBarContainer } from '../Staff/styledComponents';
+import { BiSearch } from 'react-icons/bi';
 
 
 
@@ -41,6 +41,8 @@ const UnregisteredClients = () => {
     const [profileId, setProfileId] = useState(null);
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial);
     const [errorMsg, setErrorMsg] = useState('')
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredClients, setFilteredClients] = useState([]);
     const token = getToken();
 
     // User details
@@ -64,6 +66,7 @@ const UnregisteredClients = () => {
             if (response.status === 200) {
                 setApiStatus(apiStatusConstants.success)
                 setClients(data);
+                setFilteredClients(data)
             }
         } catch (error) {
             setApiStatus(apiStatusConstants.failure)
@@ -136,26 +139,50 @@ const UnregisteredClients = () => {
         }
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const onSearch = () => {
+        if (searchTerm) {
+            const filteredData = clients.filter((staff) =>
+                staff?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                staff?.contact_number?.includes(searchTerm) ||
+                staff?.email_address?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setFilteredClients(filteredData);
+        } else {
+            setFilteredClients(clients);
+        }
+    };
+
+
     const renderSuccess = () => {
         return (
 
             <ClientListContainer>
-                <H1>Unregistered Clients</H1>
-
-                {clients.length <= 0 ? <NoClientContainer>
-                    <img src={noClient} alt='img' className='img-fluid' />
-                    <H1>No Clients Added</H1>
-                    <p>Oops! It seems there are no clients added here.</p>
-                </NoClientContainer> :
-                    <TableContainer className="shadow">
-                        <ExcelUploader />
-                        <ClientTable
-                            clients={clients}
-                            onDeleteClient={onDeleteClient}
-                            handleEditClick={handleEditClick}
-                            setProfileId={setProfileId}
-                        />
-                    </TableContainer>}
+                <ExcelUploader fetchClients={fetchClients}/>
+                {filteredClients.length > 0 &&
+                        <TableContainer className="shadow mt-5">
+                            <div className='d-flex align-items-center justify-content-between'>
+                            <H1>Unregistered Clients</H1>
+                            <SearchBarContainer>
+                                <SearchBar
+                                    type="text"
+                                    placeholder="Search client by N.., E.., P.."
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
+                                />
+                                <SearchButton onClick={onSearch}><BiSearch size={25} /></SearchButton>
+                            </SearchBarContainer>
+                            </div>
+                            <ClientTable
+                                clients={filteredClients}
+                                onDeleteClient={onDeleteClient}
+                                handleEditClick={handleEditClick}
+                                setProfileId={setProfileId}
+                            />
+                        </TableContainer>}
             </ClientListContainer>
         )
     }
@@ -164,19 +191,20 @@ const UnregisteredClients = () => {
     const renderComponents = () => {
         switch (apiStatus) {
             case apiStatusConstants.failure:
-                return <FailureComponent errorMsg={errorMsg} />
+                return <FailureComponent errorMsg={errorMsg} fetchData={fetchClients}/>
             case apiStatusConstants.inProgress:
                 return <SweetLoading />
             case apiStatusConstants.success:
                 return renderSuccess();
             default:
-                return null
+                return null;
         }
     }
 
     // Return JSX for the component
     return (
         <>
+            
             {renderComponents()}
 
             <EditPopup
@@ -185,6 +213,7 @@ const UnregisteredClients = () => {
                 onRequestClose={handleEditModalClose}
                 handleOpenClick={handleEditClick}
                 isEditable={true}
+                fetchData={fetchClients}
             />
         </>
     );

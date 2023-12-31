@@ -3,11 +3,10 @@ import React from 'react';
 import { MdDelete } from 'react-icons/md';
 import { Th, Table, Td, ViewButton } from '../Clients/styledComponents';
 import { FaCheck } from "react-icons/fa";
-import { ExecuteButton } from '../Staff/styledComponents';
 
 const ClientTable = ({ clients, onDeleteClient, handleEditClick, setProfileId }) => {
     return (
-        <Table className='mt-5'>
+        <Table>
             <thead>
                 <tr>
                     <Th>ID</Th>
@@ -28,9 +27,13 @@ const ClientTable = ({ clients, onDeleteClient, handleEditClick, setProfileId })
                         <Td>{client.contact_number}</Td>
                         <Td>{client.alt_contact_number}</Td>
                         <Td>
-                            {client.status === 'registered' ? <ExecuteButton className='bg-success' disabled={true}>
-                                <FaCheck />
-                            </ExecuteButton> :
+                            {client.status === 'registered' ? 
+                                <div className='d-flex align-items-center justify-content-center'>
+                                    <button className='btn bg-success text-light' disabled={true}>
+                                        <FaCheck />
+                                    </button>
+                                </div>
+                             :
                                 <ViewButton onClick={() => { handleEditClick(); setProfileId(client.user_id); }}>
                                     Edit
                                 </ViewButton>}

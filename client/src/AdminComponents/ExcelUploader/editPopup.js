@@ -3,7 +3,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import EditProfile from './editProfile';
 
-const EditPopup = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEditable, isCustomer }) => {
+const EditPopup = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEditable, isCustomer, fetchData }) => {
     return (
         <Modal
             isOpen={isOpen}
@@ -22,7 +22,7 @@ const EditPopup = ({ isOpen, onRequestClose, profileId, handleOpenClick, isEdita
                 },
             }}
         >
-            <EditProfile profileId={profileId} isEditable={isEditable} isOpen={handleOpenClick} isCustomer={isCustomer} />
+            <EditProfile profileId={profileId} isEditable={isEditable} isOpen={handleOpenClick} isCustomer={isCustomer} fetchData={fetchData} />
         </Modal>
     );
 };

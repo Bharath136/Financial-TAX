@@ -17,7 +17,7 @@ const apiStatusConstants = {
 };
 
 let password = ''
-const EditProfile = ({ isOpen, profileId, isEditable }) => {
+const EditProfile = ({ isOpen, profileId, isEditable, fetchData }) => {
 
     const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
     const [apiStatusOTP, setApiStatusOTP] = useState(apiStatusConstants.initial)
@@ -51,6 +51,32 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
         }
         return password;
     }
+
+    const changeStatus = async () => {
+        setApiStatusOTP(apiStatusConstants.inProgress);
+
+        try {
+            const response = await axios.put(
+                `${domain.domain}/dummy-users/status/${profileId}`,
+                {status:'registered'},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            fetchData()
+
+            if (response.status === 200) {
+                setApiStatusOTP(apiStatusConstants.success);
+            } else {
+                setApiStatusOTP(apiStatusConstants.failure);
+            }
+        } catch (error) {
+            setErrorMsg(error)
+            setApiStatusOTP(apiStatusConstants.failure);
+        }
+    };
 
 
     const handleGetUserProfile = async () => {
@@ -146,37 +172,10 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
             }
         } catch (error) {
             console.error('Error sending OTP:', error);
-            setApiStatusOTP(apiStatusConstants.success);
-        }
-    };
-
-    const changeStatus = async () => {
-        setApiStatusOTP(apiStatusConstants.inProgress);
-
-        try {
-            // Ensure that domain.domain is a valid URL, and profileId and token are defined
-            const response = await axios.put(
-                `${domain.domain}/dummy-users/status/${profileId}`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            // Check the response status or data if needed
-            if (response.status === 200) {
-                setApiStatusOTP(apiStatusConstants.success);
-            } else {
-                setApiStatusOTP(apiStatusConstants.failure);
-            }
-        } catch (error) {
-            console.error('Error:', error);
+            setErrorMsg(error.response.data.message)
             setApiStatusOTP(apiStatusConstants.failure);
         }
     };
-
 
     const handleSubmit = async () => {
         try {
@@ -197,6 +196,7 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
                 setApiStatus(apiStatusConstants.success);
                 setProfileBg(getRandomColor())
                 isOpen()
+
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
@@ -413,7 +413,7 @@ const EditProfile = ({ isOpen, profileId, isEditable }) => {
                 )}
                 {otpSent ? renderOtpSection() : null}
                 {!otpSent && errorMsg && <span className='text-danger'>{errorMsg}</span>}
-                {!otpSent && <button type="button" onClick={changeStatus} className="register-button w-100 mt-2">
+                {!otpSent && <button type="button" onClick={handleGetOtp} className="register-button w-100 mt-2">
                     {apiStatusOTP === apiStatusConstants.inProgress ? renderLoader() : <span>Get OTP</span>}
                 </button>}
             </div>
